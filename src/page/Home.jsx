@@ -32,6 +32,7 @@ const Home = () => {
     theme: []
   });
   const [userName] = useState('00');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const query = useQuery();
   const searchQuery = query.get('query') || '';
   const navigate = useNavigate();
@@ -71,6 +72,9 @@ const Home = () => {
 
   useEffect(() => {
     loadFarms();
+    // localStorage에서 로그인 상태 확인 (실제 프로젝트에서는 더 안전한 방법 사용)
+    const loginStatus = localStorage.getItem('isLoggedIn') === 'true';
+    setIsLoggedIn(loginStatus);
   }, []);
 
   useEffect(() => {
