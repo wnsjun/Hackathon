@@ -1,32 +1,28 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Searchbar } from '../common/Searchbar';
+import spacefarm_logo_image from '../../assets/spacefarm_logo_image.png';
 
-const imgImage3 = "http://localhost:3845/assets/b6df862180c1f60690c5918bbf0ffbdd9a7d8c64.png";
-const imgVector = "http://localhost:3845/assets/747eb9418c39fe0ea8ada0911673f1cd281d2715.svg";
-const img1 = "http://localhost:3845/assets/3878876ca7121d25b72cd075b57a56a22e489064.svg";
+function LogoIcon() { 
+  return (
+  <img src={spacefarm_logo_image} alt="SpaceFarm Logo" width="48" height="48" />  );}
 
 function UserIcon() {
   return (
-    <div className="relative size-full">
-      <div className="absolute inset-[8.333%]">
-        <div className="absolute inset-[-3.75%]">
-          <img alt="" className="block max-w-none size-full" src={imgVector} />
-        </div>
-      </div>
-    </div>
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 16C19.3137 16 22 13.3137 22 10C22 6.68629 19.3137 4 16 4C12.6863 4 10 6.68629 10 10C10 13.3137 12.6863 16 16 16Z" fill="#666666"/>
+      <path d="M16 20C10.4772 20 6 24.4772 6 30H26C26 24.4772 21.5228 20 16 20Z" fill="#666666"/>
+    </svg>
   );
 }
 
 function ChatIcon() {
   return (
-    <div className="relative shrink-0 size-8">
-      <div className="absolute inset-0" />
-      <div className="absolute inset-[12.5%_4.17%_9.72%_8.33%]">
-        <div className="absolute inset-[-3.01%_-2.68%]">
-          <img alt="" className="block max-w-none size-full" src={img1} />
-        </div>
-      </div>
-    </div>
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 6C4 4.89543 4.89543 4 6 4H26C27.1046 4 28 4.89543 28 6V18C28 19.1046 27.1046 20 26 20H10L4 26V6Z" fill="#666666"/>
+      <circle cx="10" cy="12" r="2" fill="white"/>
+      <circle cx="16" cy="12" r="2" fill="white"/>
+      <circle cx="22" cy="12" r="2" fill="white"/>
+    </svg>
   );
 }
 
@@ -57,11 +53,9 @@ export const Navbar = () => {
       <div className="box-border content-stretch flex flex-row gap-[75px] items-center justify-start p-0 relative w-full h-20">
         {/* Logo Section */}
         <div className="box-border content-stretch flex flex-row gap-1 items-end justify-center p-0 relative shrink-0">
-          <div
-            onClick={handleHomeClick}
-            className="bg-center bg-cover bg-no-repeat shrink-0 size-12 cursor-pointer"
-            style={{ backgroundImage: `url('${imgImage3}')` }}
-          />
+          <div onClick={handleHomeClick} className="cursor-pointer">
+            <LogoIcon />
+          </div>
           <button onClick={handleHomeClick} className="flex flex-col font-medium justify-center leading-[0] relative shrink-0 text-[#1aa752] text-[24px] text-left text-nowrap">
             <p className="block leading-[1.6] whitespace-pre cursor-pointer">SpaceFarm</p>
           </button>

@@ -1,6 +1,12 @@
 import { useState } from 'react';
 
-const imgSearchIcon = "http://localhost:3845/assets/82b0aaded2db2f51ecd3fc655f11bcded1989ca7.svg";
+function SearchIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#1AA752" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
 
 export const Searchbar = ({ onSearch }) => {
   const [query, setQuery] = useState('');
@@ -27,15 +33,8 @@ export const Searchbar = ({ onSearch }) => {
         onChange={handleInputChange}
         className="basis-0 flex flex-col font-semibold grow justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 text-[#bbbbbb] text-[16px] text-left tracking-[-0.48px] bg-transparent border-none outline-none placeholder-[#bbbbbb]"
       />
-      <button type="submit" className="relative shrink-0 size-6">
-        <div className="absolute inset-0" />
-        <div className="absolute contents inset-[8.33%]">
-          <div className="absolute inset-[8.33%]">
-            <div className="absolute inset-[-5%]">
-              <img alt="" className="block max-w-none size-full" src={imgSearchIcon} />
-            </div>
-          </div>
-        </div>
+      <button type="submit" className="flex items-center justify-center shrink-0 size-6">
+        <SearchIcon />
       </button>
     </form>
   );

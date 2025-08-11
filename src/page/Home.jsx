@@ -4,7 +4,6 @@ import FarmCard from '../components/common/FarmCard';
 import { mockFarms } from '../data/mockFarms';
 import { fetchAllFarms } from '../apis/home';
 import ChatbotIcon from '../components/common/ChatbotIcon';
-import { Navbar } from '../components/layouts/Navbar';
 import banner from '../assets/banner.png';
 import LocationFilter from '../components/common/LocationFilter';
 import AreaFilter from '../components/common/AreaFilter';
@@ -59,7 +58,8 @@ const Home = () => {
       setLoading(true);
       setError(null);
       const data = await fetchAllFarms();
-      setFarms(data);
+      // Ensure data is always an array
+      setFarms(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('매물 목록 로딩 실패:', err);
       setError('매물 목록을 불러올 수 없습니다.');
@@ -85,7 +85,7 @@ const Home = () => {
     };
   }, []);
 
-  const filteredFarms = farms.filter((farm) => {
+  const filteredFarms = (Array.isArray(farms) ? farms : []).filter((farm) => {
     // API DTO 구조: { id, title, price, rentalPeriod, address, isAvailable }
     
     // 검색어 필터링 (제목과 주소에서 검색)
@@ -160,7 +160,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <div className="px-6 sm:px-12 lg:px-20 xl:px-32 py-6 pt-24">
         {/* 배너 섹션 */}
         <div className="mb-8">
@@ -184,9 +183,11 @@ const Home = () => {
               className="text-sm text-[#777] font-medium flex items-center gap-1 transition-colors"
             >
               새로고침
-              <svg className="w-6 h-6 p-[2.857px] flex justify-center items-center aspect-square text-[#777]" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.42885 2.00028C2.67228 3.57514 0.857422 6.59914 0.857422 10.0003C0.857422 12.4251 1.82068 14.7506 3.5353 16.4653C5.24992 18.1799 7.57544 19.1431 10.0003 19.1431M14.5717 18.0003C17.1854 16.3911 19.1431 13.294 19.1431 10.0003C19.1431 7.57544 18.1799 5.24992 16.4653 3.5353C14.7506 1.82068 12.4251 0.857422 10.0003 0.857422" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M5.42885 6.57143V2H0.857422M14.5717 13.4286V18H19.1431" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+              <svg className="w-4 h-4 text-[#777]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M21 3v5h-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M3 21v-5h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
 
             </button>
