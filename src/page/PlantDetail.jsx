@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import plant from '../assets/plant.png';
+import ChatbotIcon from '../components/common/ChatbotIcon';
 
 const PlantDetail = () => {
   const location = useLocation();
@@ -31,6 +32,9 @@ const PlantDetail = () => {
         <p>가격: {farm.price}</p>
         <p>대여 기간: {farm.rentalPeriod}</p>
       </div>
+      
+      {/* 챗봇 아이콘 */}
+      <ChatbotIcon />
     </div>
   );
 };

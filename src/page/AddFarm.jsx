@@ -1,143 +1,370 @@
 import { Navbar } from '../components/layouts/Navbar';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ChatbotIcon from '../components/common/ChatbotIcon';
+
+const imgSliderHandle = "http://localhost:3845/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
+const imgCheckIcon = "http://localhost:3845/assets/c4ebef49d4d01eb4425d11acd7dc025676167712.svg";
 
 const AddFarm = () => {
-  // 입력 상태 관리 예시
+  const navigate = useNavigate();
   const [address, setAddress] = useState('');
-  const [price, setPrice] = useState('');
-  const [rentalPeriod, setRentalPeriod] = useState('');
+  const [price, setPrice] = useState(0);
+  const [rentalPeriod, setRentalPeriod] = useState(0);
   const [farmName, setFarmName] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [bankAccount, setBankAccount] = useState('');
+  const [selectedBank, setSelectedBank] = useState('신한');
+  const [accountNumber, setAccountNumber] = useState('110-345-434154');
+  const [area, setArea] = useState(0);
+  const [selectedTheme, setSelectedTheme] = useState('');
+  const [accountSelected, setAccountSelected] = useState(false);
+
+  const isFormValid = () => {
+    return address.trim() !== '' && 
+          price > 0 && 
+          rentalPeriod > 0 && 
+          farmName.trim() !== '' && 
+          description.trim() !== '' && 
+          area > 0 && 
+          selectedTheme !== '' && 
+          image !== null &&
+          accountSelected;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 등록 로직
-    alert('등록 버튼 클릭됨!');
+    if (isFormValid()) {
+      alert('등록 버튼 클릭됨!');
+    }
   };
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setImage(file);
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImagePreview(event.target.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
+
+  const handleAreaChange = (e) => {
+    setArea(e.target.value);
+  };
+
+  const handleAccountClick = () => {
+    setAccountSelected(!accountSelected);
+  };
+
+  const handleAddAccountClick = () => {
+    alert('계좌를 등록해주세요');
+    navigate('/mypage');
+  };
+
+  const themes = [
+    { id: 'rooftop', name: '옥상', description: '아파트 및 건물 옥상, 지붕 위 공간' },
+    { id: 'lot', name: '공터', description: '건물 옆 자투리 공간, 쓰임 없는 부지 ' },
+    { id: 'garden', name: '화단', description: '아파트 단지 내 화단, 빌라 현관 앞 꽃밭' },
+    { id: 'park', name: '공원', description: '공원 내 공공 텃밭, 산책로 옆 잔디' }
+  ];
+
+  const LocationIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12 22C12 22 4 16 4 10C4 5 8 2 12 2C16 2 20 5 20 10C20 16 12 22 12 22ZM12 13C12.7956 13 13.5587 12.6839 14.1213 12.1213C14.6839 11.5587 15 10.7956 15 10C15 9.20435 14.6839 8.44129 14.1213 7.87868C13.5587 7.31607 12.7956 7 12 7C11.2044 7 10.4413 7.31607 9.87868 7.87868C9.31607 8.44129 9 9.20435 9 10C9 10.7956 9.31607 11.5587 9.87868 12.1213C10.4413 12.6839 11.2044 13 12 13Z" stroke="#777777" strokeWidth="1.5"/>
+    </svg>
+  );
+
+  const WonIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 18" fill="none">
+      <path d="M22.6667 1L17.3333 17L12 1L6.66667 17L1.33333 1M0 5.94277H24" stroke="#777777" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const DateIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path d="M17 4H3C1.89543 4 1 4.89543 1 6V17C1 18.1046 1.89543 19 3 19H17C18.1046 19 19 18.1046 19 17V6C19 4.89543 18.1046 4 17 4Z" stroke="#777777" strokeWidth="1.5"/>
+    <path d="M1 8C1 6.114 1 5.172 1.586 4.586C2.172 4 3.114 4 5 4H15C16.886 4 17.828 4 18.414 4.586C19 5.172 19 6.114 19 8H1Z" fill="#777777"/>
+    <path d="M5 1V4M15 1V4" stroke="#777777" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const PaymentIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M5.25 5C4.38805 5 3.5614 5.34241 2.9519 5.9519C2.34241 6.5614 2 7.38805 2 8.25V9.5H22V8.25C22 7.8232 21.9159 7.40059 21.7526 7.00628C21.5893 6.61197 21.3499 6.25369 21.0481 5.9519C20.7463 5.65011 20.388 5.41072 19.9937 5.24739C19.5994 5.08406 19.1768 5 18.75 5H5.25ZM22 11H2V15.75C2 16.612 2.34241 17.4386 2.9519 18.0481C3.5614 18.6576 4.38805 19 5.25 19H18.75C19.1768 19 19.5994 18.9159 19.9937 18.7526C20.388 18.5893 20.7463 18.3499 21.0481 18.0481C21.3499 17.7463 21.5893 17.388 21.7526 16.9937C21.9159 16.5994 22 16.1768 22 15.75V11ZM15.75 14.5H18.25C18.4489 14.5 18.6397 14.579 18.7803 14.7197C18.921 14.8603 19 15.0511 19 15.25C19 15.4489 18.921 15.6397 18.7803 15.7803C18.6397 15.921 18.4489 16 18.25 16H15.75C15.5511 16 15.3603 15.921 15.2197 15.7803C15.079 15.6397 15 15.4489 15 15.25C15 15.0511 15.079 14.8603 15.2197 14.7197C15.3603 14.579 15.5511 14.5 15.75 14.5Z" fill="#777777"/>
+    </svg>
+  );
+
+  const AreaIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M14.25 4.5H19.5V9.75M19.0205 4.97812L5.24906 18.7509M9.75 19.5H4.5V14.25" stroke="#777777" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ThemeIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12.5 10C12.5 8.136 12.5 7.204 12.197 6.47C11.9959 5.98427 11.7009 5.54295 11.3291 5.17129C10.9573 4.79963 10.5158 4.50492 10.03 4.304C9.296 4 8.364 4 6.5 4C6.5 5.864 6.5 6.796 6.803 7.53C7.00414 8.01573 7.29906 8.45705 7.67089 8.82871C8.04273 9.20037 8.48418 9.49508 8.97 9.696C9.704 10 10.636 10 12.5 10ZM12.5 10C12.5 8.757 12.5 8.136 12.703 7.646C12.974 6.993 13.493 6.473 14.146 6.203C14.636 6 15.461 6 16.703 6C16.703 7.243 16.703 7.864 16.5 8.354C16.229 9.00709 15.5071 9.52604 14.854 9.797C14.364 10 13.742 10 12.5 10ZM12.5 10V15M20 15C14.5327 15 9.46734 15 4 15M20 18C14.5327 18 9.46734 18 4 18M20 21C14.5327 21 9.46734 21 4 21" stroke="#777777" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const PlusIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7z" fill="currentColor"/>
+    </svg>
+  );
+
+  const CheckCircle = ({ checked = false, onChange }) => (
+    <div className="relative w-6 h-6 cursor-pointer" onClick={onChange}>
+      <div className={`w-6 h-6 rounded-full border-2 ${checked ? 'border-[#1aa752] bg-[#1aa752]' : 'border-[#bbbbbb] bg-white'} flex items-center justify-center`}>
+        {checked && (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="white"/>
+          </svg>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <>
       <Navbar />
-      <div className="max-w-4xl mx-auto px-6 mt-40 ">
-        {/* 매물올리기 + 등록 버튼 */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">매물 올리기</h1>
-          <button
-            onClick={handleSubmit}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-blue-400 transition cursor-pointer"
-          >
-            등록
-          </button>
+      <div className="bg-white min-h-screen pt-20">
+        <div className="max-w-[1440px] mx-auto px-40 py-8">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-12">
+            <h1 className="text-[32px] font-semibold text-black leading-[1.5] tracking-[-0.64px]">텃밭 매물 등록</h1>
+            <div className="flex items-center gap-4">
+              {isFormValid() && (
+                <div className="flex items-center gap-1 text-[#1aa752]">
+                  <span className="text-[16px] font-semibold">친환경 점수 +10</span>
+                </div>
+              )}
+              <button
+                onClick={handleSubmit}
+                className={`px-7 py-3 rounded-[100px] flex items-center gap-2 transition-colors ${
+                  isFormValid() 
+                    ? 'bg-[#1aa752] text-white' 
+                    : 'bg-[#f7f7f7] text-[#bbbbbb] cursor-not-allowed'
+                }`}
+                disabled={!isFormValid()}
+              >
+                <span className="text-[24px] tracking-[-0.48px]">등록</span>
+                <div className={isFormValid() ? 'text-white' : 'text-[#bbbbbb]'}>
+                  <PlusIcon />
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-8">
+            {/* Left Column - Main Form */}
+            <div className="col-span-2 space-y-8">
+              {/* Address */}
+              <div className="flex items-center gap-[101px]">
+                <div className="flex items-center gap-2">
+                  <LocationIcon />
+                  <label className="text-[20px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">주소</label>
+                </div>
+                <div className="flex-1 border-b border-[#bbbbbb] pb-3">
+                  <input
+                    type="text"
+                    placeholder="주소를 입력하세요."
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full font-semibold text-[20px] text-[#111111] tracking-[-0.6px] bg-transparent outline-none placeholder-[#bbbbbb]"
+                  />
+                </div>
+              </div>
+
+              {/* Price and Period */}
+              <div className="flex gap-[120px]">
+                {/* Price */}
+                <div className="flex items-center justify-between w-[357px]">
+                  <div className="flex items-center gap-2">
+                    <WonIcon />
+                    <label className="text-[20px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">가격</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="border-b border-[#bbbbbb] pb-1">
+                      <input
+                        type="number"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        className="w-[164px] text-[32px] font-semibold text-[#111111] text-right tracking-[-0.64px] bg-transparent outline-none"
+                      />
+                    </div>
+                    <span className="text-[24px] text-[#111111] tracking-[-0.48px] h-8">원</span>
+                  </div>
+                </div>
+
+                {/* Period */}
+                <div className="flex items-center justify-between w-[260px]">
+                  <div className="flex items-center gap-2">
+                    <DateIcon />
+                    <label className="text-[20px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">대여 기간</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="border-b border-[#bbbbbb] pb-1">
+                      <input
+                        type="number"
+                        value={rentalPeriod}
+                        onChange={(e) => setRentalPeriod(e.target.value)}
+                        className="w-[68px] text-[32px] font-semibold text-[#111111] text-right tracking-[-0.64px] bg-transparent outline-none"
+                      />
+                    </div>
+                    <span className="text-[24px] text-[#111111] tracking-[-0.48px] h-8">일</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Image Upload */}
+              <div className="bg-[#f7f7f7] h-[588px] rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden" onClick={() => document.getElementById('imageUpload').click()}>
+                {imagePreview ? (
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover rounded-2xl"
+                  />
+                ) : (
+                  <>
+                    <div className="w-8 h-8 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 20" fill="none">
+                      <path d="M19.2002 3.5293H22C23.1045 3.5293 23.9999 4.42478 24 5.5293V18C24 19.1046 23.1046 20 22 20H2C0.895431 20 0 19.1046 0 18V5.5293C6.25466e-05 4.42478 0.895469 3.5293 2 3.5293H4.7998L7.2002 0H16.7998L19.2002 3.5293ZM12 7.05957C9.34912 7.05967 7.2002 9.1667 7.2002 11.7656L7.20605 12.0078C7.3308 14.4136 9.29893 16.3428 11.7529 16.4648L12 16.4717C14.5677 16.4714 16.6651 14.4938 16.7939 12.0078L16.7998 11.7656C16.7998 9.1668 14.6507 7.05983 12 7.05957ZM12 8.55957C13.8504 8.55983 15.2998 10.0231 15.2998 11.7656C15.2994 13.5079 13.8502 14.9714 12 14.9717C10.1496 14.9716 8.70056 13.508 8.7002 11.7656C8.7002 10.023 10.1494 8.55967 12 8.55957ZM10.8008 3.36816C10.3866 3.36816 10.0508 3.70395 10.0508 4.11816C10.051 4.53215 10.3867 4.86816 10.8008 4.86816H13.2012L13.2773 4.86426C13.6552 4.82572 13.9509 4.50616 13.9512 4.11816C13.9512 3.72998 13.6553 3.41067 13.2773 3.37207L13.2012 3.36816H10.8008Z" fill="#777777"/>
+                    </svg>
+                    </div>
+                    <p className="text-[14px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
+                      사진을 선택해주세요.
+                    </p>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="imageUpload"
+                />
+              </div>
+
+              {/* Farm Name and Description */}
+              <div className="space-y-8">
+                <div className="border-b border-[#bbbbbb] pb-2">
+                  <input
+                    type="text"
+                    placeholder="텃밭 이름을 입력하세요"
+                    value={farmName}
+                    onChange={(e) => setFarmName(e.target.value)}
+                    className="w-full text-[36px] font-semibold text-[#111111] tracking-[-0.72px] bg-transparent outline-none placeholder-[#bbbbbb]"
+                  />
+                </div>
+                <div className="border-b border-[#bbbbbb] pb-2">
+                  <textarea
+                    placeholder="텃밭 설명을 입력하세요"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full text-[20px] text-[#111111] tracking-[-0.6px] bg-transparent outline-none placeholder-[#bbbbbb] resize-none h-20"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-8">
+              {/* Account */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <PaymentIcon />
+                    <label className="text-[20px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">계좌</label>
+                  </div>
+                  <div className="cursor-pointer" onClick={handleAddAccountClick}>
+                    <PlusIcon />
+                  </div>
+                </div>
+                <div 
+                  className={`cursor-pointer rounded-2xl px-6 py-4 h-[72px] flex items-center gap-4 transition-colors ${
+                    accountSelected 
+                      ? 'bg-[#f7f7f7] border border-[#1aa752]' 
+                      : 'border border-[#bbbbbb] bg-white'
+                  }`}
+                  onClick={handleAccountClick}
+                >
+                  <div className="relative w-6 h-6">
+                    {accountSelected && (
+                      <img src={imgCheckIcon} alt="check" className="w-6 h-6" />
+                    )}
+                  </div>
+                  <div className="flex gap-2 text-[14px] text-black tracking-[-0.42px]">
+                    <span>{selectedBank}</span>
+                    <span>{accountNumber}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Area */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <AreaIcon />
+                  <label className="text-[20px] font-semibold text-black leading-[1.5] tracking-[-0.6px]">평수</label>
+                </div>
+                <div className="space-y-2">
+                  <div className="relative">
+                    <div className="bg-[#f7f7f7] h-2 rounded-full"></div>
+                    <div className="bg-[#1aa752] h-2 rounded-full absolute top-0 left-0" style={{ width: `${(area / 100) * 100}%` }}></div>
+                    <div className="absolute -top-4 left-0 w-10 h-10" style={{ left: `${(area / 100) * 100}%`, transform: 'translateX(-50%)' }}>
+                      <img src={imgSliderHandle} alt="slider" className="w-10 h-10" />
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={area}
+                      onChange={handleAreaChange}
+                      className="absolute top-0 left-0 w-full h-2 opacity-0 cursor-pointer"
+                    />
+                  </div>
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-1">
+                      <span className="text-[16px] font-semibold text-black tracking-[-0.48px]">{area}</span>
+                      <span className="text-[16px] text-black tracking-[-0.48px]">㎡</span>
+                    </div>
+                  </div>
+                  <p className="text-[14px] text-[#777777] leading-[1.5] tracking-[-0.42px]">측정이 어려울 경우 대략적인 크기를 입력해주세요.</p>
+                </div>
+              </div>
+
+              {/* Theme */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <ThemeIcon />
+                  <label className="text-[20px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">테마</label>
+                </div>
+                <div className="space-y-2">
+                  {themes.map((theme) => (
+                    <div key={theme.id} className="flex items-center justify-between py-4">
+                      <div className="flex items-center gap-4">
+                        <CheckCircle 
+                          checked={selectedTheme === theme.id}
+                          onChange={() => setSelectedTheme(selectedTheme === theme.id ? '' : theme.id)}
+                        />
+                        <span className="text-[16px] font-semibold text-[#111111] tracking-[-0.48px]">{theme.name}</span>
+                      </div>
+                      <span className="text-[14px] text-[#777777] tracking-[-0.42px]">{theme.description}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* 주소 */}
-          <div className="flex items-center space-x-4">
-            <label htmlFor="address" className="w-20 font-semibold">
-              주소
-            </label>
-            <input
-              id="address"
-              type="text"
-              placeholder="주소를 입력하세요"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="flex-grow border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* 가격 / 대여기간 */}
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <label htmlFor="price" className="w-20 font-semibold">
-                가격
-              </label>
-              <input
-                id="price"
-                type="number"
-                min="0"
-                placeholder="금액"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="w-32 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              <span>원</span>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <label htmlFor="rentalPeriod" className="w-24 font-semibold">
-                대여기간
-              </label>
-              <input
-                id="rentalPeriod"
-                type="number"
-                min="0"
-                placeholder="기간"
-                value={rentalPeriod}
-                onChange={(e) => setRentalPeriod(e.target.value)}
-                className="w-32 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              <span>일</span>
-            </div>
-          </div>
-
-          {/* 텃밭 이름 */}
-          <div className="flex items-center space-x-4">
-            <label htmlFor="farmName" className="w-20 font-semibold">
-              텃밭 이름
-            </label>
-            <input
-              id="farmName"
-              type="text"
-              placeholder="텃밭 이름을 입력하세요"
-              value={farmName}
-              onChange={(e) => setFarmName(e.target.value)}
-              className="flex-grow border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* 텃밭 사진 업로드 */}
-          <div className="flex items-center space-x-4">
-            <label htmlFor="farmImage" className="w-20 font-semibold">
-              텃밭 사진
-            </label>
-            <input
-              id="farmImage"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="flex-grow"
-              required
-            />
-          </div>
-
-          {/* 텃밭 설명 */}
-          <div className="flex flex-col space-y-2">
-            <label htmlFor="description" className="font-semibold">
-              텃밭 설명
-            </label>
-            <textarea
-              id="description"
-              rows="5"
-              placeholder="텃밭에 대해 설명해 주세요"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              required
-            />
-          </div>
-        </form>
+      {/* 챗봇 아이콘 */}
+      <ChatbotIcon />
       </div>
     </>
   );

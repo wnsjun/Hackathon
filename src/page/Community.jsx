@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import FarmCard from '../components/common/FarmCard';
 import { mockFarms } from '../data/mockFarms';
 import Button from '../components/common/Button';
+import ChatbotIcon from '../components/common/ChatbotIcon';
 
 export const Community = () => {
   const [farms, setFarms] = useState([]);
@@ -70,6 +71,9 @@ export const Community = () => {
           ))}
         </div>
       )}
+      
+      {/* 챗봇 아이콘 */}
+      <ChatbotIcon />
     </div>
   );
 };
