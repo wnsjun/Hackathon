@@ -121,6 +121,7 @@ import React from 'react';
 import ChatIcon from '../assets/chaticon.svg';
 import profile from '../assets/profile.svg';
 import vector from '../assets/Vector.svg';
+import ChatbotIcon from '../components/common/ChatbotIcon';
 
 export const ChatPage = () => {
   return (
@@ -239,6 +240,9 @@ export const ChatPage = () => {
           </button>
         </div>
       </section>
+      
+      {/* 챗봇 아이콘 */}
+      <ChatbotIcon />
     </div>
   );
 };

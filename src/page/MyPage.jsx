@@ -3,6 +3,7 @@ import profile from '../assets/profile.svg';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/mypage.module.css';
 import Button from '../components/common/Button';
+import ChatbotIcon from '../components/common/ChatbotIcon';
 
 // FarmCard 간단 버전
 const FarmCard = ({ farm }) => {
@@ -223,6 +224,9 @@ export const MyPage = () => {
           </div>
         </div>
       </div>
+      
+      {/* 챗봇 아이콘 */}
+      <ChatbotIcon />
     </div>
   );
 };
