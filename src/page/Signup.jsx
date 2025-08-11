@@ -1,142 +1,174 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import checkIcon from '../assets/check.svg';
 
 export const Signup = () => {
   const navigate = useNavigate();
-
-  // 입력값 상태
   const [email, setEmail] = useState('');
-  const [authCode, setAuthCode] = useState('');
-  const [isAuthSent, setIsAuthSent] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [account, setAccount] = useState('');
 
-  // 인증번호 발송
-  const handleSendAuthCode = () => {
-    // 실제로는 이메일로 인증번호 발송 API 호출 필요
-    alert('인증번호가 발송되었습니다.');
-    setIsAuthSent(true);
+  const isPasswordLengthValid = password.length >= 8;
+  const isPasswordMatch = password === passwordCheck && isPasswordLengthValid;
+
+  const labelStyle = {
+    color: 'var(--500, #111)',
+    fontFamily: 'Pretendard',
+    fontSize: '16px',
+    fontWeight: 400,
+    lineHeight: '150%',
+    letterSpacing: '-0.48px',
+    fontStyle: 'normal',
   };
 
-  //비밀번호 일치여부 검사
-  const isPasswordMatch = password === passwordCheck || passwordCheck === '';
+  const starStyle = {
+    color: 'var(--Error, #FF3232)',
+    fontFamily: 'Pretendard',
+    fontSize: '16px',
+    fontWeight: 400,
+    lineHeight: '150%',
+    letterSpacing: '-0.48px',
+    fontStyle: 'normal',
+  };
 
-  // 회원가입 제출
-  const handleSubmit = (e) => {
+  const infoTextBaseStyle = {
+    fontFamily: 'Pretendard',
+    fontSize: '12px',
+    fontStyle: 'normal',
+    fontWeight: 400,
+    lineHeight: '150%',
+    letterSpacing: '-0.36px',
+  };
+
+  const checkIconStyle = {
+    width: '16px',
+    height: '16px',
+    aspectRatio: '1 / 1',
+    position: 'absolute',
+    right: '10px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+  };
+
+  const inputWrapperStyle = {
+    position: 'relative',
+  };
+
+  const handleNext = (e) => {
     e.preventDefault();
-    // 실제 회원가입 API 호출 필요
-    alert('회원가입이 완료되었습니다!');
-    navigate('/login');
+    if (!isPasswordMatch) {
+      alert('비밀번호가 일치하지 않거나 8자 이상이 아닙니다.');
+      return;
+    }
+    navigate('/signupinfo', {
+      state: { email, password },
+    });
   };
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-white">
-      <h1 className="text-2xl font-bold mb-8">회원가입</h1>
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-3 w-[320px] bg-gray-50 p-6 rounded shadow"
-      >
-        {/* 이메일 + 인증번호 받기 */}
-        <div className="flex gap-2">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
+      <h1 className="text-2xl font-bold mb-6">회원가입 하기</h1>
+      <form onSubmit={handleNext} className="flex flex-col gap-6 w-[320px]">
+        {/* 이메일 */}
+        <div style={inputWrapperStyle}>
+          <label
+            htmlFor="email"
+            className="block mb-1 select-none"
+            style={labelStyle}
+          >
+            이메일
+            <span style={starStyle}>*</span>
+          </label>
           <input
+            id="email"
             type="email"
-            placeholder="이메일(ID)"
+            placeholder="이메일을 입력하세요"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border rounded px-3 py-2 flex-1"
+            className="w-full border-b border-gray-300 focus:outline-none focus:border-green-600 py-2"
             required
           />
-          <button
-            type="button"
-            onClick={handleSendAuthCode}
-            className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded transition cursor-pointer"
-          >
-            인증번호 받기
-          </button>
+          {email.trim() !== '' && (
+            <img src={checkIcon} alt="check" style={checkIconStyle} />
+          )}
         </div>
-        {/* 인증번호 입력 */}
-        {isAuthSent && (
+
+        {/* 비밀번호 */}
+        <div style={inputWrapperStyle}>
+          <label
+            htmlFor="password"
+            className="block mb-1 select-none"
+            style={labelStyle}
+          >
+            비밀번호
+            <span style={starStyle}>*</span>
+          </label>
           <input
-            type="text"
-            placeholder="인증번호 입력"
-            value={authCode}
-            onChange={(e) => setAuthCode(e.target.value)}
-            className="border rounded px-3 py-2"
+            id="password"
+            type="password"
+            placeholder="비밀번호를 입력하세요"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border-b border-gray-300 focus:outline-none focus:border-green-600 py-2"
             required
           />
-        )}
-        {/* 비밀번호 */}
-        <input
-          type="password"
-          placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border rounded px-3 py-2"
-          required
-        />
+          {isPasswordLengthValid && (
+            <img src={checkIcon} alt="check" style={checkIconStyle} />
+          )}
+          <p
+            className="mt-1 select-none"
+            style={{
+              ...infoTextBaseStyle,
+              color: isPasswordLengthValid
+                ? 'var(--Main, #1AA752)'
+                : 'text-gray-400',
+            }}
+          >
+            영문, 숫자 포함 8자 이상
+          </p>
+        </div>
+
         {/* 비밀번호 확인 */}
-        <input
-          type="password"
-          placeholder="비밀번호 확인"
-          value={passwordCheck}
-          onChange={(e) => setPasswordCheck(e.target.value)}
-          className="border rounded px-3 py-2"
-          required
-        />
-        {!isPasswordMatch && (
-          <div className="text-red-500 text-sm mb-2">비밀번호가 일치하지 않습니다.</div>
+        <div style={inputWrapperStyle}>
+          <input
+            id="passwordCheck"
+            type="password"
+            placeholder="비밀번호를 재입력하세요"
+            value={passwordCheck}
+            onChange={(e) => setPasswordCheck(e.target.value)}
+            className="w-full border-b border-gray-300 focus:outline-none focus:border-green-600 py-2"
+            required
+          />
+          {passwordCheck.trim() !== '' && isPasswordMatch && (
+            <img src={checkIcon} alt="check" style={checkIconStyle} />
+          )}
+        </div>
+
+        {/* 비밀번호 일치 여부 메시지 */}
+        {passwordCheck && (
+          <>
+            {isPasswordMatch ? (
+              <div
+                className="select-none"
+                style={{
+                  color: 'var(--Main, #1AA752)',
+                  ...infoTextBaseStyle,
+                }}
+              >
+                비밀번호가 일치해요.
+              </div>
+            ) : (
+              <div className="text-red-500 text-sm select-none"></div>
+            )}
+          </>
         )}
-        {/* 이름 */}
-        <input
-          type="text"
-          placeholder="이름"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="border rounded px-3 py-2"
-          required
-        />
-        {/* 연락처 */}
-        <input
-          type="tel"
-          placeholder="연락처"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="border rounded px-3 py-2"
-          required
-        />
-        {/* 닉네임 */}
-        <input
-          type="text"
-          placeholder="닉네임"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          className="border rounded px-3 py-2"
-          required
-        />
-        {/* 계좌등록(선택) */}
-        <input
-          type="text"
-          placeholder="계좌등록 (선택)"
-          value={account}
-          onChange={(e) => setAccount(e.target.value)}
-          className="border rounded px-3 py-2"
-        />
+
         <button
           type="submit"
-          className="bg-green-600 text-white py-2 rounded hover:bg-green-700 transition mt-2 cursor-pointer"
+          className="bg-green-600 text-white py-2 rounded mt-2 cursor-pointer disabled:bg-gray-300"
+          disabled={!isPasswordMatch}
         >
-          회원가입
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate('/login')}
-          className="text-gray-500 underline mt-1 cursor-pointer"
-        >
-          로그인으로 돌아가기
+          다음
         </button>
       </form>
     </main>
