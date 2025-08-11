@@ -7,8 +7,9 @@ import AddFarm from './page/AddFarm';
 import PlantDetail from './page/PlantDetail';
 import { Community } from './page/Community';
 import { Signup } from './page/Signup';
-import {MyPage} from './page/MyPage';
-
+import { MyPage } from './page/MyPage';
+import AddInfo from './page/AddInfo';
+import SignupInfo from './page/SignupInfo';
 
 const App = () => {
   return (
@@ -24,6 +25,8 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/addinfo" element={<AddInfo />} />
+          <Route path="/signupinfo" element={<SignupInfo />} />
         </Route>
       </Routes>
     </BrowserRouter>
