@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000', // API 서버 주소
+  baseURL: 'https://spacefarm.shop', // API 서버 주소
   headers: {
     'Content-Type': 'application/json',
   },
