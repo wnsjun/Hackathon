@@ -54,7 +54,7 @@ const FarmCard = ({ farm }) => {
       {/* 이미지 섹션 */}
       <div
         className="bg-center bg-cover bg-no-repeat h-[284px] rounded-tl-[16px] rounded-tr-[16px] w-full"
-        style={{ backgroundImage: `url('${imgRectangle11}')` }}
+        style={{ backgroundImage: `url('${farm.thumbnailUrl }')` }}
       />
 
       {/* 카드 내용 */}
@@ -66,7 +66,7 @@ const FarmCard = ({ farm }) => {
               {farm.title }
             </div>
             <div className="font-normal text-sm text-[#777777] tracking-[-0.42px] leading-[1.5] text-right w-8 h-[25px] flex items-center justify-center">
-              {farm.area }㎡
+              {farm.size || '-'}㎡
             </div>
           </div>
 
@@ -96,7 +96,7 @@ const FarmCard = ({ farm }) => {
             </div>
             <div className="flex items-center gap-1 h-8 text-xl text-black tracking-[-0.6px] leading-[1.5]">
               <div className="font-semibold">
-                {farm.period}
+                {farm.rentalPeriod}
               </div>
               <div className="font-normal">
                 일
