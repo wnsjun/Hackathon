@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from './axiosinstance';
 
 // 로그인 API
 export const loginApi = async ({ email, password }) => {
