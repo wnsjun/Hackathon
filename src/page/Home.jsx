@@ -59,9 +59,9 @@ const Home = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchAllFarms();
-      // Ensure data is always an array
-      setFarms(Array.isArray(data) ? data : []);
+      const response = await fetchAllFarms();
+      // API response에서 farms 배열 추출
+      setFarms(response.farms || []);
     } catch (err) {
       console.error('매물 목록 로딩 실패:', err);
       setError('매물 목록을 불러올 수 없습니다.');
@@ -73,8 +73,8 @@ const Home = () => {
 
   useEffect(() => {
     loadFarms();
-    // localStorage에서 로그인 상태 확인 (실제 프로젝트에서는 더 안전한 방법 사용)
-    const loginStatus = localStorage.getItem('isLoggedIn') === 'true';
+    // accessToken으로 로그인 상태 확인
+    const loginStatus = !!localStorage.getItem('accessToken');
     setIsLoggedIn(loginStatus);
   }, []);
 
