@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FarmCard from '../components/common/FarmCard';
+import RecommendFarmCard from '../components/common/RecommendFarmCard';
 import { mockFarms } from '../data/mockFarms';
 import { fetchAllFarms } from '../apis/home';
 import ChatbotIcon from '../components/common/ChatbotIcon';
@@ -31,7 +32,7 @@ const Home = () => {
     price: { minPrice: 1000, maxPrice: 1000000 },
     theme: []
   });
-  const [userName] = useState('00');
+  const [userName] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const query = useQuery();
   const searchQuery = query.get('query') || '';
@@ -198,7 +199,7 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {filteredFarms.slice(0, 3).map((farm) => (
-              <FarmCard key={farm.id} farm={farm} isRecommended={true} />
+              <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
             ))}
           </div>
         </div>
