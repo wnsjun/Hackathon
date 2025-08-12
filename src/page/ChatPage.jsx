@@ -137,7 +137,7 @@
 import React, { useState } from 'react';
 import ChatIcon from '../assets/chaticon.svg';
 import profile from '../assets/profile.svg';
-import vector from '../assets/vector.svg';
+import vector from '../assets/Vector.svg';
 import picture from '../assets/picture-icon.svg';
 import right from '../assets/right-icon.svg';
 
