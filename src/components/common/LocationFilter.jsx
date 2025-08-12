@@ -5,29 +5,47 @@ const LocationFilter = ({ isOpen, onClose, farms, onApplyFilter }) => {
   const [selectedLocations, setSelectedLocations] = useState([]);
   const popupRef = useRef(null);
 
-  // 농장 데이터에서 위치 정보를 추출 (구, 동 형태)
-  const extractLocations = (farmData) => {
+  // 마포구 16개 동 리스트
+  const mapoguDongs = [
+    '마포구 상수동',
+    '마포구 합정동',
+    '마포구 망원동',
+    '마포구 연남동',
+    '마포구 성산동',
+    '마포구 서교동',
+    '마포구 홍대동',
+    '마포구 서강동',
+    '마포구 당인동',
+    '마포구 마포동',
+    '마포구 도화동',
+    '마포구 용강동',
+    '마포구 토정동',
+    '마포구 신수동',
+    '마포구 현석동',
+    '마포구 구수동'
+  ];
+
+  // 농장 데이터에서 추가 위치 정보 추출 (마포구 외 다른 지역)
+  const extractOtherLocations = (farmData) => {
     const locations = farmData.map(farm => {
       const addressParts = farm.address.split(' ');
-      // "서울 마포구 창전동" -> "마포구 창전동"
       if (addressParts.length >= 3) {
         const district = addressParts[1];
         const dong = addressParts[2];
-        return `${district} ${dong}`;
-      } else if (addressParts.length >= 2) {
-        // 동 정보가 없는 경우 예시 동들을 생성
-        const district = addressParts[1];
-        const dongList = ['창전동', '서교동', '서강동', '합정동'];
-        return dongList.map(dong => `${district} ${dong}`);
+        const location = `${district} ${dong}`;
+        // 마포구가 아닌 경우만 추가
+        if (!district.includes('마포구')) {
+          return location;
+        }
       }
-      return [];
-    });
+      return null;
+    }).filter(location => location !== null);
     
-    // 중복 제거 및 평탄화
-    return [...new Set(locations.flat())].sort();
+    return [...new Set(locations)].sort();
   };
 
-  const locations = extractLocations(farms);
+  const otherLocations = extractOtherLocations(farms);
+  const locations = [...mapoguDongs, ...otherLocations];
 
   const handleLocationToggle = (location) => {
     setSelectedLocations(prev => {
