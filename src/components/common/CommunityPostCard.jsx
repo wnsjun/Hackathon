@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const imgEllipse83 = "/assets/08bc8f0fb0393f4fa955e7165c21fdf8b107680f.png";
 const imgIcon = "/assets/51e16bae4ba6aa22f935249b1e06b165f15e09d5.svg";
@@ -22,21 +23,21 @@ const HeartButton = ({ isLiked = false, onToggle }) => {
   );
 };
 
-const CommunityPostCard = ({ image, username, timeAgo, title, content, initialLiked = false }) => {
+const CommunityPostCard = ({ id, image, username, timeAgo, title, content, initialLiked = false }) => {
   const [isLiked, setIsLiked] = useState(initialLiked);
+  const navigate = useNavigate();
 
   const handleLikeToggle = () => {
     setIsLiked(!isLiked);
   };
 
   const handleCardClick = () => {
-    // 게시글 상세 페이지로 이동
-    console.log('Navigate to post detail');
+    navigate(`/community/${id}`);
   };
 
   const handleDetailClick = (e) => {
     e.stopPropagation();
-    console.log('Navigate to post detail');
+    navigate(`/community/${id}`);
   };
 
   return (

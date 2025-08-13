@@ -1,4 +1,3 @@
-// src/data/mockCommunity.js
 export const mockCertificationPosts = [
   {
     id: 1,
