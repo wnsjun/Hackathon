@@ -150,6 +150,7 @@ const SignupInfo = () => {
         <div>
           <label style={labelStyle} className="block mb-1 select-none">
             계좌등록
+            <span style={starStyle}>*</span>
           </label>
           <div className="flex gap-2 items-center">
             <select

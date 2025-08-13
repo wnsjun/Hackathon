@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import checkIcon from '../assets/check.svg';
+import Button from '../components/common/Button';
 
 export const Signup = () => {
   const navigate = useNavigate();
@@ -67,13 +68,13 @@ export const Signup = () => {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
-      <h1 className="text-2xl font-bold mb-6">회원가입 하기</h1>
+      <h1 className="text-2xl mt-[267px] font-bold mb-6">회원가입 하기</h1>
       <form onSubmit={handleNext} className="flex flex-col gap-6 w-[320px]">
         {/* 이메일 */}
         <div style={inputWrapperStyle}>
           <label
             htmlFor="email"
-            className="block mb-1 select-none"
+            className="block mb-1 mt-12 select-none"
             style={labelStyle}
           >
             이메일
@@ -85,7 +86,7 @@ export const Signup = () => {
             placeholder="이메일을 입력하세요"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border-b border-gray-300 focus:outline-none focus:border-green-600 py-2"
+            className="w-full pl-2 border-b border-gray-300 focus:outline-none focus:border-gray-500 py-2"
             required
           />
           {email.trim() !== '' && (
@@ -97,7 +98,7 @@ export const Signup = () => {
         <div style={inputWrapperStyle}>
           <label
             htmlFor="password"
-            className="block mb-1 select-none"
+            className="block mb-1 pt-8 select-none"
             style={labelStyle}
           >
             비밀번호
@@ -109,19 +110,17 @@ export const Signup = () => {
             placeholder="비밀번호를 입력하세요"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border-b border-gray-300 focus:outline-none focus:border-green-600 py-2"
+            className="w-full pl-2 border-b border-gray-300 focus:outline-none focus:border-gray-500 py-2"
             required
           />
           {isPasswordLengthValid && (
             <img src={checkIcon} alt="check" style={checkIconStyle} />
           )}
           <p
-            className="mt-1 select-none"
+            className="mt-1 pl-2 select-none"
             style={{
               ...infoTextBaseStyle,
-              color: isPasswordLengthValid
-                ? 'var(--Main, #1AA752)'
-                : 'text-gray-400',
+              color: isPasswordLengthValid ? 'var(--Main, #1AA752)' : '#6B7280',
             }}
           >
             영문, 숫자 포함 8자 이상
@@ -136,7 +135,7 @@ export const Signup = () => {
             placeholder="비밀번호를 재입력하세요"
             value={passwordCheck}
             onChange={(e) => setPasswordCheck(e.target.value)}
-            className="w-full border-b border-gray-300 focus:outline-none focus:border-green-600 py-2"
+            className="w-full pl-2 pt-8 border-b border-gray-300 focus:outline-none focus:border-gray-500 py-2"
             required
           />
           {passwordCheck.trim() !== '' && isPasswordMatch && (
@@ -163,13 +162,14 @@ export const Signup = () => {
           </>
         )}
 
-        <button
-          type="submit"
-          className="bg-green-600 text-white py-2 rounded mt-2 cursor-pointer disabled:bg-gray-300"
-          disabled={!isPasswordMatch}
+        <Button
+          color="next"
+          type="submit" // form 제출용 버튼임을 명확히
+          className="mt-8 mb-[267px]"
+          disabled={!isPasswordMatch} // 비밀번호 조건에 따라 활성화/비활성화
         >
           다음
-        </button>
+        </Button>
       </form>
     </main>
   );
