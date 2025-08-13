@@ -306,7 +306,7 @@ const AddFarm = () => {
                 </div>
               </div>
 
-              {/* Area */}
+              {/* 면적 */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <AreaIcon />
@@ -338,7 +338,7 @@ const AddFarm = () => {
                 </div>
               </div>
 
-              {/* Theme */}
+              {/* 테마 */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <ThemeIcon />
