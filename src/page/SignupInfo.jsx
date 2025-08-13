@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import Button from '../components/common/Button';
 
 const SignupInfo = () => {
   const navigate = useNavigate();
@@ -12,13 +13,13 @@ const SignupInfo = () => {
   const [bank, setBank] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
 
-  // 전화번호 숫자만 입력 처리
+  const banks = ['국민은행', '신한은행', '하나은행', '우리은행', '기업은행'];
+
   const handlePhoneChange = (e) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     setPhone(value);
   };
 
-  // 계좌번호 숫자만 입력 처리
   const handleAccountNumberChange = (e) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     setAccountNumber(value);
@@ -45,25 +46,29 @@ const SignupInfo = () => {
   };
 
   const inputStyle =
-    'w-full border-b border-gray-300 focus:outline-none focus:border-green-600 py-2 placeholder:text-[var(--300,#BBB)] placeholder:text-base';
+    'pl-2 w-full border-b border-gray-300 focus:outline-none focus:border-gray-500 py-2 placeholder:text-[var(--300,#BBB)] placeholder:text-base';
 
   const infoTextStyle = {
     color: 'var(--400, #777)',
     fontFamily: 'Pretendard',
     fontSize: '12px',
     fontWeight: 400,
-    lineHeight: '150%', // 18px
+    lineHeight: '150%',
     letterSpacing: '-0.36px',
     fontStyle: 'normal',
   };
 
-  // 필수 3개 입력 확인
+  // 필수 입력 확인
   const isRequiredFilled =
-    name.trim() !== '' && phone.trim() !== '' && nickname.trim() !== '';
+    name.trim() !== '' &&
+    phone.trim() !== '' &&
+    nickname.trim() !== '' &&
+    bank.trim() !== '' &&
+    accountNumber.trim() !== '';
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
-      <h1 className="text-2xl font-bold mb-6">회원가입 하기</h1>
+      <h1 className="text-2xl pt-14 font-bold mb-6">회원가입 하기</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -89,8 +94,7 @@ const SignupInfo = () => {
             style={labelStyle}
             className="block mb-1 select-none"
           >
-            이름
-            <span style={starStyle}>*</span>
+            이름<span style={starStyle}>*</span>
           </label>
           <input
             id="name"
@@ -110,8 +114,7 @@ const SignupInfo = () => {
             style={labelStyle}
             className="block mb-1 select-none"
           >
-            연락처
-            <span style={starStyle}>*</span>
+            연락처<span style={starStyle}>*</span>
           </label>
           <input
             id="phone"
@@ -132,8 +135,7 @@ const SignupInfo = () => {
             style={labelStyle}
             className="block mb-1 select-none"
           >
-            닉네임
-            <span style={starStyle}>*</span>
+            닉네임<span style={starStyle}>*</span>
           </label>
           <input
             id="nickname"
@@ -149,67 +151,112 @@ const SignupInfo = () => {
         {/* 은행 선택 + 계좌번호 */}
         <div>
           <label style={labelStyle} className="block mb-1 select-none">
-            계좌등록
-            <span style={starStyle}>*</span>
+            계좌등록<span style={starStyle}>*</span>
           </label>
           <div className="flex gap-2 items-center">
-            <select
-              id="bank"
-              value={bank}
-              onChange={(e) => setBank(e.target.value)}
-              className="w-[120px] border-b border-gray-300 focus:outline-none focus:border-green-600 py-2 bg-white"
+            {/* 은행 select */}
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <select
+                id="bank"
+                value={bank}
+                onChange={(e) => setBank(e.target.value)}
+                style={{
+                  display: 'flex',
+                  height: '48px',
+                  padding: '8px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '8px',
+                  borderBottom: '1px solid var(--300, #BBB)',
+                  color: bank ? 'var(--500, #111)' : 'var(--300, #BBB)',
+                  fontFamily: 'Pretendard',
+                  fontSize: '16px',
+                  fontWeight: 400,
+                  lineHeight: '150%',
+                  letterSpacing: '-0.48px',
+                  backgroundColor: 'white',
+                  appearance: 'none',
+                  paddingRight: '32px',
+                  cursor: 'pointer',
+                }}
+              >
+                <option value="" disabled hidden>
+                  은행
+                </option>
+                {banks.map((b) => (
+                  <option
+                    key={b}
+                    value={b}
+                    style={{
+                      color: 'var(--500, #111)',
+                      fontFamily: 'Pretendard',
+                      fontSize: '16px',
+                      fontWeight: 400,
+                      lineHeight: '150%',
+                      letterSpacing: '-0.48px',
+                    }}
+                  >
+                    {b}
+                  </option>
+                ))}
+              </select>
+              {/* 화살표 */}
+              <span
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  pointerEvents: 'none',
+                  fontSize: '16px',
+                  color: 'var(--300, #BBB)',
+                }}
+              >
+                ▼
+              </span>
+            </div>
+
+            {/* 계좌번호 입력 */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                alignSelf: 'stretch',
+                flexGrow: 1,
+                borderBottom: '1px solid var(--300, #BBB)',
+              }}
             >
-              <option value="">은행</option>
-              <option value="국민은행">국민은행</option>
-              <option value="신한은행">신한은행</option>
-              <option value="하나은행">하나은행</option>
-              <option value="우리은행">우리은행</option>
-              <option value="기업은행">기업은행</option>
-            </select>
-            <input
-              id="accountNumber"
-              type="text"
-              placeholder="계좌번호를 입력하세요"
-              value={accountNumber}
-              onChange={handleAccountNumberChange}
-              maxLength={20}
-              className="flex-grow border-b border-gray-300 focus:outline-none focus:border-green-600 py-2 placeholder:text-[var(--300,#BBB)] placeholder:text-base"
-            />
+              <input
+                id="accountNumber"
+                type="text"
+                placeholder="계좌번호를 입력하세요"
+                value={accountNumber}
+                onChange={handleAccountNumberChange}
+                maxLength={20}
+                className="flex-grow py-2 placeholder:text-[var(--300,#BBB)] placeholder:text-base focus:outline-none"
+                style={{
+                  fontFamily: 'Pretendard',
+                  fontSize: '16px',
+                  lineHeight: '150%',
+                }}
+              />
+            </div>
           </div>
-          <p style={infoTextStyle} className="mt-1 select-none">
+          <p style={infoTextStyle} className="mt-1 pl-2 select-none">
             가입 후 마이페이지에서 등록할 수 있어요.
           </p>
         </div>
 
-        {/* 버튼 */}
-        <button
+        {/* 다음 버튼 */}
+        <Button
+          color="next"
           type="submit"
+          className="mt-8 mb-[267px]"
           disabled={!isRequiredFilled}
-          className="mt-4"
-          style={{
-            display: 'flex',
-            height: '62px',
-            padding: '10px 20px',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            alignSelf: 'stretch',
-            borderRadius: '8px',
-            background: !isRequiredFilled ? '#F7F7F7' : 'var(--Main, #1AA752)',
-            color: !isRequiredFilled ? '#BBB' : 'var(--100, #FFF)',
-            textAlign: 'center',
-            fontFamily: 'Pretendard',
-            fontSize: '20px',
-            fontWeight: 600,
-            fontStyle: 'normal',
-            lineHeight: '150%',
-            letterSpacing: '-0.6px',
-            cursor: !isRequiredFilled ? 'not-allowed' : 'pointer',
-          }}
         >
           다음
-        </button>
+        </Button>
       </form>
     </main>
   );
