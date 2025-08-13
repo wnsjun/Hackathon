@@ -1,6 +1,6 @@
-import kakaoLogo from '../assets/kakao-icon.svg';
+import kakaoLogo from '../assets/kakao-icon.svg?url';
 import { useNavigate } from 'react-router-dom';
-import SpaceFarm from '../assets/SpaceFarm.svg';
+import SpaceFarm from '../assets/SpaceFarm.svg?url';
 import { useState } from 'react';
 import { useLogin } from '../hooks/useAuth';
 

@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 
-const imgSliderHandle = "http://localhost:3845/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
-const imgCheckIcon = "http://localhost:3845/assets/c4ebef49d4d01eb4425d11acd7dc025676167712.svg";
+const imgSliderHandle = "/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
+const imgCheckIcon = "/assets/c4ebef49d4d01eb4425d11acd7dc025676167712.svg";
 
 const AddFarm = () => {
   const navigate = useNavigate();

@@ -9,7 +9,7 @@ export const mockFarms = [
     address: '서울 성북구 안암동',
     area: 20,
     theme: '옥상',
-    thumbnailUrl: 'https://via.placeholder.com/300x200.png?text=텃밭1',
+    thumbnailUrl: '/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png',
     isAvailable: true,
   },
   {
@@ -21,7 +21,7 @@ export const mockFarms = [
     address: '서울 강남구 역삼동',
     area: 30,
     theme: '공터',
-    thumbnailUrl: 'https://via.placeholder.com/300x200.png?text=텃밭2',
+    thumbnailUrl: '/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png',
     isAvailable: false,
   },
   {
@@ -33,7 +33,7 @@ export const mockFarms = [
     address: '서울 마포구 창전동',
     area: 18,
     theme: '옥상',
-    thumbnailUrl: 'https://via.placeholder.com/300x200.png?text=텃밭3',
+    thumbnailUrl: '/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png',
     isAvailable: true,
   },
   {
@@ -45,7 +45,7 @@ export const mockFarms = [
     address: '서울 서초구 방배동',
     area: 25,
     theme: '화단',
-    thumbnailUrl: 'https://via.placeholder.com/300x200.png?text=텃밭4',
+    thumbnailUrl: '/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png',
     isAvailable: true,
   },
   {
@@ -57,7 +57,7 @@ export const mockFarms = [
     address: '서울 은평구 연신내동',
     area: 16,
     theme: '공원',
-    thumbnailUrl: 'https://via.placeholder.com/300x200.png?text=텃밭5',
+    thumbnailUrl: '/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png',
     isAvailable: false,
   },
   {
@@ -69,7 +69,7 @@ export const mockFarms = [
     address: '서울 용산구 이태원동',
     area: 22,
     theme: '옥상',
-    thumbnailUrl: 'https://via.placeholder.com/300x200.png?text=텃밭6',
+    thumbnailUrl: '/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png',
     isAvailable: true,
   },
 ];

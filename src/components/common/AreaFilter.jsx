@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 
-const imgSliderHandle = "http://localhost:3845/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
+const imgSliderHandle = "/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
 
 const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
-  const [minArea, setMinArea] = useState(16);
-  const [maxArea, setMaxArea] = useState(24);
+  const [minArea, setMinArea] = useState(0);
+  const [maxArea, setMaxArea] = useState(100);
   const sliderRef = useRef(null);
   const [isDragging, setIsDragging] = useState(null);
 
@@ -34,12 +34,12 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
 
     const rect = sliderRef.current.getBoundingClientRect();
     const percent = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
-    const value = Math.round((percent / 100) * 84 + 16);
+    const value = Math.round((percent / 100) * 100);
 
     if (isDragging === 'min') {
-      setMinArea(Math.min(value, maxArea - 2));
+      setMinArea(Math.min(value, maxArea - 1));
     } else if (isDragging === 'max') {
-      setMaxArea(Math.max(value, minArea + 2));
+      setMaxArea(Math.max(value, minArea + 1));
     }
   };
 
@@ -59,8 +59,8 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
     }
   }, [isDragging, minArea, maxArea]);
 
-  const minPercent = ((minArea - 16) / 84) * 100;
-  const maxPercent = ((maxArea - 16) / 84) * 100;
+  const minPercent = (minArea / 100) * 100;
+  const maxPercent = (maxArea / 100) * 100;
 
   if (!isOpen) return null;
 
@@ -160,8 +160,8 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
         <div className="flex justify-between w-full gap-2 mt-2">
           <button
             onClick={() => {
-              setMinArea(16);
-              setMaxArea(24);
+              setMinArea(0);
+              setMaxArea(100);
             }}
             className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-xs text-gray-700 hover:bg-gray-50 transition-colors"
           >

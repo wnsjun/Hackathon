@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import checkIcon from '../assets/check.svg';
+import checkIcon from '../assets/check.svg?url';
 import Button from '../components/common/Button';
 
 export const Signup = () => {

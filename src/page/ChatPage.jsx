@@ -330,7 +330,7 @@ export const ChatPage = ({ userId }) => {
             {/* 입력창 */}
             <div className="mt-auto flex items-center border h-16 rounded-[100px] px-4 py-2 border-green-500">
               <input
-                className="flex-1 pl-2 text-black outline-none text-[#BBB] font-pretendard text-[20px] font-normal leading-[30px] tracking-[-0.6px]"
+                className="flex-1 pl-2 text-black outline-none font-pretendard text-[20px] font-normal leading-[30px] tracking-[-0.6px]"
                 placeholder="채팅을 입력하세요"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}

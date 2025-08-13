@@ -5,7 +5,7 @@ import RecommendFarmCard from '../components/common/RecommendFarmCard';
 import { mockFarms } from '../data/mockFarms';
 import { fetchAllFarms } from '../apis/home';
 import ChatbotIcon from '../components/common/ChatbotIcon';
-import banner from '../assets/banner.png';
+import banner from '../assets/banner.png?url';
 import LocationFilter from '../components/common/LocationFilter';
 import AreaFilter from '../components/common/AreaFilter';
 import PriceFilter from '../components/common/PriceFilter';
@@ -17,6 +17,7 @@ function useQuery() {
 
 const Home = () => {
   const [farms, setFarms] = useState([]);
+  const [recommendedFarms, setRecommendedFarms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
@@ -59,9 +60,13 @@ const Home = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log("63줄")
       const response = await fetchAllFarms();
       // API response에서 farms 배열 추출
+      console.log(response)
       setFarms(response.farms || []);
+
+      setRecommendedFarms(response.recommendedFarms || []);
     } catch (err) {
       console.error('매물 목록 로딩 실패:', err);
       setError('매물 목록을 불러올 수 없습니다.');
@@ -127,11 +132,17 @@ const Home = () => {
     setOpenFilter(openFilter === filterType ? null : filterType);
   };
 
-  const handleLocationFilterApply = (selectedLocations) => {
-    setAppliedFilters(prev => ({
-      ...prev,
-      location: selectedLocations
-    }));
+  const handleLocationToggle = (location) => {
+    setAppliedFilters(prev => {
+      const isSelected = prev.location.includes(location);
+      const newLocation = isSelected 
+        ? prev.location.filter(loc => loc !== location)
+        : [...prev.location, location];
+      return {
+        ...prev,
+        location: newLocation
+      };
+    });
   };
 
   const handleAreaFilterApply = ({ minArea, maxArea }) => {
@@ -148,11 +159,17 @@ const Home = () => {
     }));
   };
 
-  const handleThemeFilterApply = (selectedThemes) => {
-    setAppliedFilters(prev => ({
-      ...prev,
-      theme: selectedThemes
-    }));
+  const handleThemeToggle = (theme) => {
+    setAppliedFilters(prev => {
+      const isSelected = prev.theme.includes(theme);
+      const newTheme = isSelected 
+        ? prev.theme.filter(t => t !== theme)
+        : [...prev.theme, theme];
+      return {
+        ...prev,
+        theme: newTheme
+      };
+    });
   };
 
   const handleRegisterFarmClick = () => {
@@ -250,8 +267,8 @@ const Home = () => {
                   <LocationFilter 
                     isOpen={openFilter === 'location'}
                     onClose={() => setOpenFilter(null)}
-                    farms={farms}
-                    onApplyFilter={handleLocationFilterApply}
+                    onLocationToggle={handleLocationToggle}
+                    selectedLocations={appliedFilters.location}
                   />
                 )}
                 {key === 'area' && (
@@ -272,7 +289,8 @@ const Home = () => {
                   <ThemeFilter 
                     isOpen={openFilter === 'theme'}
                     onClose={() => setOpenFilter(null)}
-                    onApplyFilter={handleThemeFilterApply}
+                    onThemeToggle={handleThemeToggle}
+                    selectedThemes={appliedFilters.theme}
                   />
                 )}
               </div>

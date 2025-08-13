@@ -3,7 +3,7 @@ export const mockCertificationPosts = [
   {
     id: 1,
     image:
-      'http://localhost:3845/assets/683f2e544ed9a4cbff8da9229d0a32f7670e5c60.png',
+      '/assets/683f2e544ed9a4cbff8da9229d0a32f7670e5c60.png',
     username: '윤성',
     timeAgo: '1일 전',
     title: '상추가 이렇게 잘 자랄 줄이야',
@@ -16,7 +16,7 @@ export const mockCertificationPosts = [
   {
     id: 2,
     image:
-      'http://localhost:3845/assets/99ed4a5b97b53e3180927bfe5bd3f23c7540750f.png',
+      '/assets/99ed4a5b97b53e3180927bfe5bd3f23c7540750f.png',
     username: '준희',
     timeAgo: '1일 전',
     title: '토마토가 물들기 시작했어요',
@@ -29,7 +29,7 @@ export const mockCertificationPosts = [
   {
     id: 3,
     image:
-      'http://localhost:3845/assets/1e4759931c6ddb68a06a0c6fbc3e12c428cabd49.png',
+      '/assets/1e4759931c6ddb68a06a0c6fbc3e12c428cabd49.png',
     username: '서현',
     timeAgo: '1일 전',
     title: '흙 밟고 마음이 맑아졌어요',
@@ -42,7 +42,7 @@ export const mockCertificationPosts = [
   {
     id: 4,
     image:
-      'http://localhost:3845/assets/404882df1f8d685efc98cd5e8ee9cd5c3d3256bd.png',
+      '/assets/404882df1f8d685efc98cd5e8ee9cd5c3d3256bd.png',
     username: '윤성',
     timeAgo: '2일 전',
     title: '오늘은 가지 첫 수확!',
@@ -55,7 +55,7 @@ export const mockCertificationPosts = [
   {
     id: 5,
     image:
-      'http://localhost:3845/assets/5127ca003e7f884acd7a412672d6d7f719526e18.png',
+      '/assets/5127ca003e7f884acd7a412672d6d7f719526e18.png',
     username: '준희',
     timeAgo: '2일 전',
     title: '해 질 무렵 텃밭 풍경이 예술이에요',
@@ -68,7 +68,7 @@ export const mockCertificationPosts = [
   {
     id: 6,
     image:
-      'http://localhost:3845/assets/882dfcbd2e094247266012e489cac7e30bc7c32f.png',
+      '/assets/882dfcbd2e094247266012e489cac7e30bc7c32f.png',
     username: '서현',
     timeAgo: '3일 전',
     title: '아이랑 같이 물 주고 왔어요!',
@@ -84,7 +84,7 @@ export const mockTipPosts = [
   {
     id: 7,
     image:
-      'http://localhost:3845/assets/ae7e0e815af8ad3ca50199fe45079c85e48ccc48.png',
+      '/assets/ae7e0e815af8ad3ca50199fe45079c85e48ccc48.png',
     username: '승주',
     timeAgo: '1일 전',
     title: '흙 고르기 너무 중요해요…',
@@ -97,7 +97,7 @@ export const mockTipPosts = [
   {
     id: 8,
     image:
-      'http://localhost:3845/assets/48bb7f079cc2d4cc96453e79c3bd8322e744f1d9.png',
+      '/assets/48bb7f079cc2d4cc96453e79c3bd8322e744f1d9.png',
     username: '신애',
     timeAgo: '1일 전',
     title: '커피찌꺼기 활용해보세요!',
@@ -110,7 +110,7 @@ export const mockTipPosts = [
   {
     id: 9,
     image:
-      'http://localhost:3845/assets/65473a436e3221c06a218eb920877a6622221dce.png',
+      '/assets/65473a436e3221c06a218eb920877a6622221dce.png',
     username: '홍엽',
     timeAgo: '2일 전',
     title: '루꼴라부터 시작해보세요',
@@ -123,7 +123,7 @@ export const mockTipPosts = [
   {
     id: 10,
     image:
-      'http://localhost:3845/assets/d7257e0c64c6bd23802e975e1d247341170b7580.png',
+      '/assets/d7257e0c64c6bd23802e975e1d247341170b7580.png',
     username: '승주',
     timeAgo: '2일 전',
     title: '여름철 물주기 꿀팁',
@@ -136,7 +136,7 @@ export const mockTipPosts = [
   {
     id: 11,
     image:
-      'http://localhost:3845/assets/0acfa8f7991b844f3f4f6dd5d313ec6be5660d0c.png',
+      '/assets/0acfa8f7991b844f3f4f6dd5d313ec6be5660d0c.png',
     username: '신애',
     timeAgo: '3일 전',
     title: '벌레 없이 상추 키우는 법',
@@ -149,7 +149,7 @@ export const mockTipPosts = [
   {
     id: 12,
     image:
-      'http://localhost:3845/assets/f4e367d40826f8e3628440ca2be271dc1a21d9ce.png',
+      '/assets/f4e367d40826f8e3628440ca2be271dc1a21d9ce.png',
     username: '홍엽',
     timeAgo: '4일 전',
     title: '상추 연작 방지 팁',

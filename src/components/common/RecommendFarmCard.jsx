@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import plant from '../../assets/plant.png';
+import { useState } from 'react';
+import plant from '../../assets/plant.png?url';
 
 // Location icon component
 const LocationIcon = () => {
@@ -25,8 +26,28 @@ const ArrowIcon = () => {
   );
 };
 
+// Bookmark icon component
+const BookmarkIcon = ({ isBookmarked, onClick }) => {
+  return (
+    <button 
+      onClick={onClick}
+      className="p-1 rounded-full hover:bg-black/10 transition-colors"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path 
+          d="M5 2V22L12 19L19 22V2H5Z" 
+          fill={isBookmarked ? "#1aa752" : "none"}
+          stroke="#1aa752"
+          strokeWidth="1.5"
+        />
+      </svg>
+    </button>
+  );
+};
+
 const RecommendFarmCard = ({ farm, isRecommended }) => {
   const navigate = useNavigate();
+  const [isBookmarked, setIsBookmarked] = useState(farm.bookmarked || false);
 
   const handleCardClick = () => {
     navigate(`/plant/${farm.id}`, { state: { farm } });
@@ -37,16 +58,27 @@ const RecommendFarmCard = ({ farm, isRecommended }) => {
     navigate(`/plant/${farm.id}`, { state: { farm } });
   };
 
+  const handleBookmarkClick = (e) => {
+    e.stopPropagation();
+    setIsBookmarked(!isBookmarked);
+  };
+
   return (
     <div
       onClick={handleCardClick}
       className="cursor-pointer bg-white rounded-2xl shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)] overflow-hidden"
     >
       {/* 이미지 섹션 */}
-      <div 
-        className="w-full h-[284px] bg-cover bg-center rounded-t-2xl"
-        style={{ backgroundImage: `url(${plant})` }}
-      />
+      <div className="relative">
+        <div 
+          className="w-full h-[284px] bg-cover bg-center rounded-t-2xl"
+          style={{ backgroundImage: `url(${plant})` }}
+        />
+        {/* 북마크 아이콘 - 사진 오른쪽 아래 */}
+        <div className="absolute bottom-3 right-3">
+          <BookmarkIcon isBookmarked={isBookmarked} onClick={handleBookmarkClick} />
+        </div>
+      </div>
 
       {/* 카드 내용 */}
       <div className="px-6 pt-4 pb-6">

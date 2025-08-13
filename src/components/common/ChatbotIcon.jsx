@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import chatbotIcon from '../../assets/chatboticon.png';
+import chatbotIcon from '../../assets/chatboticon.png?url';
 
 const ChatbotIcon = () => {
   const [isHovered, setIsHovered] = useState(false);
