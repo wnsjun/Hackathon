@@ -132,11 +132,17 @@ const Home = () => {
     setOpenFilter(openFilter === filterType ? null : filterType);
   };
 
-  const handleLocationFilterApply = (selectedLocations) => {
-    setAppliedFilters(prev => ({
-      ...prev,
-      location: selectedLocations
-    }));
+  const handleLocationToggle = (location) => {
+    setAppliedFilters(prev => {
+      const isSelected = prev.location.includes(location);
+      const newLocation = isSelected 
+        ? prev.location.filter(loc => loc !== location)
+        : [...prev.location, location];
+      return {
+        ...prev,
+        location: newLocation
+      };
+    });
   };
 
   const handleAreaFilterApply = ({ minArea, maxArea }) => {
@@ -153,11 +159,17 @@ const Home = () => {
     }));
   };
 
-  const handleThemeFilterApply = (selectedThemes) => {
-    setAppliedFilters(prev => ({
-      ...prev,
-      theme: selectedThemes
-    }));
+  const handleThemeToggle = (theme) => {
+    setAppliedFilters(prev => {
+      const isSelected = prev.theme.includes(theme);
+      const newTheme = isSelected 
+        ? prev.theme.filter(t => t !== theme)
+        : [...prev.theme, theme];
+      return {
+        ...prev,
+        theme: newTheme
+      };
+    });
   };
 
   const handleRegisterFarmClick = () => {
@@ -255,8 +267,8 @@ const Home = () => {
                   <LocationFilter 
                     isOpen={openFilter === 'location'}
                     onClose={() => setOpenFilter(null)}
-                    farms={farms}
-                    onApplyFilter={handleLocationFilterApply}
+                    onLocationToggle={handleLocationToggle}
+                    selectedLocations={appliedFilters.location}
                   />
                 )}
                 {key === 'area' && (
@@ -277,7 +289,8 @@ const Home = () => {
                   <ThemeFilter 
                     isOpen={openFilter === 'theme'}
                     onClose={() => setOpenFilter(null)}
-                    onApplyFilter={handleThemeFilterApply}
+                    onThemeToggle={handleThemeToggle}
+                    selectedThemes={appliedFilters.theme}
                   />
                 )}
               </div>
