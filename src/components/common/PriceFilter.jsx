@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 
-const imgSliderHandle = "http://localhost:3845/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
+const imgSliderHandle = "/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
 
 const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
-  const [minPrice, setMinPrice] = useState(1000);
-  const [maxPrice, setMaxPrice] = useState(3000);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000000);
   const sliderRef = useRef(null);
   const [isDragging, setIsDragging] = useState(null);
 
@@ -34,12 +34,12 @@ const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
 
     const rect = sliderRef.current.getBoundingClientRect();
     const percent = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
-    const value = Math.round((percent / 100) * 9000 + 1000);
+    const value = Math.round((percent / 100) * 1000000);
 
     if (isDragging === 'min') {
-      setMinPrice(Math.min(value, maxPrice - 100));
+      setMinPrice(Math.min(value, maxPrice - 1000));
     } else if (isDragging === 'max') {
-      setMaxPrice(Math.max(value, minPrice + 100));
+      setMaxPrice(Math.max(value, minPrice + 1000));
     }
   };
 
@@ -59,8 +59,8 @@ const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
     }
   }, [isDragging, minPrice, maxPrice]);
 
-  const minPercent = ((minPrice - 1000) / 9000) * 100;
-  const maxPercent = ((maxPrice - 1000) / 9000) * 100;
+  const minPercent = (minPrice / 1000000) * 100;
+  const maxPercent = (maxPrice / 1000000) * 100;
 
   if (!isOpen) return null;
 
@@ -160,8 +160,8 @@ const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
         <div className="flex justify-between w-full gap-2 mt-2">
           <button
             onClick={() => {
-              setMinPrice(1000);
-              setMaxPrice(3000);
+              setMinPrice(0);
+              setMaxPrice(1000000);
             }}
             className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-xs text-gray-700 hover:bg-gray-50 transition-colors"
           >

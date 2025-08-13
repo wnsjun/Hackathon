@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-const imgEllipse83 = "http://localhost:3845/assets/08bc8f0fb0393f4fa955e7165c21fdf8b107680f.png";
-const imgIcon = "http://localhost:3845/assets/51e16bae4ba6aa22f935249b1e06b165f15e09d5.svg";
-const imgIconStroke = "http://localhost:3845/assets/db1bd2d126a7247a5da9b519ecec8e6f06df568b.svg";
+const imgEllipse83 = "/assets/08bc8f0fb0393f4fa955e7165c21fdf8b107680f.png";
+const imgIcon = "/assets/51e16bae4ba6aa22f935249b1e06b165f15e09d5.svg";
+const imgIconStroke = "/assets/db1bd2d126a7247a5da9b519ecec8e6f06df568b.svg";
 
 const HeartButton = ({ isLiked = false, onToggle }) => {
   return (

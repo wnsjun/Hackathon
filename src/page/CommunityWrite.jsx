@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 
-const imgGroup137 = "http://localhost:3845/assets/f332ac80ce1bb25afbf288fde0eb65b12ba2ab2c.svg";
-const img2 = "http://localhost:3845/assets/4c6f992d46ed8ac3206b03f54022654255248123.svg";
+const imgGroup137 = "/assets/f332ac80ce1bb25afbf288fde0eb65b12ba2ab2c.svg";
+const img2 = "/assets/4c6f992d46ed8ac3206b03f54022654255248123.svg";
 
 export const CommunityWrite = () => {
   const navigate = useNavigate();

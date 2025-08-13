@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import profile from '../assets/profile.svg';
+import profile from '../assets/profile.svg?url';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/mypage.module.css';
 import Button from '../components/common/Button';

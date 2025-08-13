@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Searchbar } from '../common/Searchbar';
-import spacefarm_logo_image from '../../assets/spacefarm_logo_image.png';
+import spacefarm_logo_image from '../../assets/spacefarm_logo_image.png?url';
 
 function LogoIcon() { 
   return (

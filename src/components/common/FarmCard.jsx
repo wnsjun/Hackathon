@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
-const imgRectangle11 = "http://localhost:3845/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png";
-const imgVector = "http://localhost:3845/assets/a85e6e3c83b334db97a694b1d6d328be4f30afc4.svg";
-const img = "http://localhost:3845/assets/2b8d64d7226c28c99184010bc380a1d664774ae0.svg";
+const imgRectangle11 = "/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png";
+const imgVector = "/assets/a85e6e3c83b334db97a694b1d6d328be4f30afc4.svg";
+const img = "/assets/2b8d64d7226c28c99184010bc380a1d664774ae0.svg";
 
 // Location icon component
 const LocationIcon = () => {
@@ -34,8 +35,28 @@ const ArrowIcon = () => {
   );
 };
 
+// Bookmark icon component
+const BookmarkIcon = ({ isBookmarked, onClick }) => {
+  return (
+    <button 
+      onClick={onClick}
+      className="p-1 rounded-full hover:bg-black/10 transition-colors"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path 
+          d="M5 2V22L12 19L19 22V2H5Z" 
+          fill={isBookmarked ? "#1aa752" : "none"}
+          stroke="#1aa752"
+          strokeWidth="1.5"
+        />
+      </svg>
+    </button>
+  );
+};
+
 const FarmCard = ({ farm }) => {
   const navigate = useNavigate();
+  const [isBookmarked, setIsBookmarked] = useState(farm.bookmarked || false);
 
   const handleCardClick = () => {
     navigate(`/plant/${farm.id}`, { state: { farm } });
@@ -46,16 +67,30 @@ const FarmCard = ({ farm }) => {
     navigate(`/plant/${farm.id}`, { state: { farm } });
   };
 
+  const handleBookmarkClick = (e) => {
+    e.stopPropagation();
+    setIsBookmarked(!isBookmarked);
+  };
+
+  const placeholder = imgRectangle11;
+
   return (
     <div
       onClick={handleCardClick}
       className="cursor-pointer bg-white rounded-2xl shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)] overflow-hidden"
     >
+
       {/* 이미지 섹션 */}
-      <div
-        className="bg-center bg-cover bg-no-repeat h-[284px] rounded-tl-[16px] rounded-tr-[16px] w-full"
-        style={{ backgroundImage: `url('${farm.thumbnailUrl }')` }}
-      />
+      <div className="relative">
+        <div
+          className="bg-center bg-cover bg-no-repeat h-[284px] rounded-tl-[16px] rounded-tr-[16px] w-full"
+          style={{ backgroundImage: `url('${farm.thumbnailUrl || placeholder }')` }}
+        />
+        {/* 북마크 아이콘 - 사진 오른쪽 아래 */}
+        <div className="absolute bottom-3 right-3">
+          <BookmarkIcon isBookmarked={isBookmarked} onClick={handleBookmarkClick} />
+        </div>
+      </div>
 
       {/* 카드 내용 */}
       <div className="flex flex-col gap-6 pb-6 pt-4 px-6 w-full">
