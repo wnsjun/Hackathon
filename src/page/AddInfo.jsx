@@ -211,28 +211,9 @@
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import CheckSquareContained from '../components/common/CheckSquareContained';
+import DongSelector from '../components/common/DongSelector';
 import { useSignup2 } from '../hooks/useAuth'; // react-query 훅
 
-// 동 목록
-const dongList = [
-  '공덕동',
-  '아현동',
-  '도화동',
-  '용강동',
-  '대흥동',
-  '염리동',
-  '신수동',
-  '서강동',
-  '서교동',
-  '합정동',
-  '망원제1동',
-  '망원제2동',
-  '연남동',
-  '성산제1동',
-  '성산제2동',
-  '상암동',
-];
 
 // 테마 목록
 const themes = [
@@ -258,23 +239,33 @@ const themeApiMap = {
   park: 'PARK',
 };
 
+const CheckCircle = ({ checked = false, onChange }) => (
+  <div className="relative w-6 h-6 cursor-pointer" onClick={onChange}>
+    <div className={`w-6 h-6 rounded-full border-2 ${checked ? 'border-[#1aa752] bg-[#1aa752]' : 'border-[#bbbbbb] bg-white'} flex items-center justify-center`}>
+      {checked && (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="white"/>
+        </svg>
+      )}
+    </div>
+  </div>
+);
+
 const AddInfo = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const formData = location.state || {};
 
   const [city] = useState('마포구');
-  const [selectedDongs, setSelectedDongs] = useState([]);
+  const [selectedDong, setSelectedDong] = useState('');
   const [selectedThemes, setSelectedThemes] = useState([]);
   const [showDongList, setShowDongList] = useState(false);
 
   const signup2Mutation = useSignup2();
 
-  // 동 선택 토글
-  const toggleDong = (dong) => {
-    setSelectedDongs(
-      (prev) => (prev.includes(dong) ? prev.filter((d) => d !== dong) : [dong]) // 하나만 선택
-    );
+  // 동 선택 핸들러
+  const handleDongSelect = (dong) => {
+    setSelectedDong(dong);
   };
 
   // 테마 선택 토글
@@ -284,11 +275,13 @@ const AddInfo = () => {
     );
   };
 
+  // 완료 버튼 활성화 조건 체크
+  const isFormValid = selectedDong && selectedThemes.length > 0;
+
   // 제출 처리
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const selectedDong = selectedDongs.length > 0 ? selectedDongs[0] : '';
     const apiThemes = selectedThemes.map((id) => themeApiMap[id]);
 
     signup2Mutation.mutate(
@@ -327,62 +320,36 @@ const AddInfo = () => {
               className="w-full border rounded px-3 py-2 flex justify-between items-center"
             >
               <span>
-                {selectedDongs.length > 0
-                  ? selectedDongs.join(', ')
-                  : '동을 선택하세요'}
+                {selectedDong || '동을 선택하세요'}
               </span>
               <span className="text-gray-500 text-sm">
                 {showDongList ? '▲' : '▼'}
               </span>
             </button>
 
-            {/* 팝업형 드롭다운 */}
-            {showDongList && (
-              <div
-                className="absolute top-full left-0 mt-1 w-full max-w-[600px] bg-white border rounded shadow-lg z-50 p-3
-               grid grid-cols-3 gap-x-6 gap-y-3 overflow-y-auto"
-                style={{ maxHeight: '200px' }}
-              >
-                {dongList.map((dong) => (
-                  <button
-                    key={dong}
-                    type="button"
-                    onClick={() => toggleDong(dong)}
-                    className="flex items-center justify-start cursor-pointer whitespace-nowrap"
-                  >
-                    <span className="text-sm">{dong}</span>
-                    <span style={{ width: 8 }} />
-                    <CheckSquareContained
-                      check={selectedDongs.includes(dong) ? 'on' : 'off'}
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+            <DongSelector
+              isOpen={showDongList}
+              onClose={() => setShowDongList(false)}
+              onDongSelect={handleDongSelect}
+              selectedDong={selectedDong}
+            />
           </div>
         </div>
 
         {/* 관심 텃밭 테마 */}
         <p className="font-bold mt-2">관심 텃밭 테마를 선택해주세요</p>
-        <div className="flex flex-col gap-3">
+        <div className="space-y-2">
           {themes.map((theme) => (
-            <label
-              key={theme.id}
-              className="flex items-center justify-between border-b pb-2 cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
+            <div key={theme.id} className="flex items-center justify-between py-4">
+              <div className="flex items-center gap-4">
+                <CheckCircle 
                   checked={selectedThemes.includes(theme.id)}
                   onChange={() => toggleTheme(theme.id)}
-                  className="w-5 h-5 accent-green-600"
                 />
-                <span className="text-sm font-medium">{theme.label}</span>
+                <span className="text-[16px] font-semibold text-[#111111] tracking-[-0.48px]">{theme.label}</span>
               </div>
-              <span className="text-[14px] font-normal text-gray-500 text-right">
-                {theme.desc}
-              </span>
-            </label>
+              <span className="text-[14px] text-[#777777] tracking-[-0.42px]">{theme.desc}</span>
+            </div>
           ))}
         </div>
 
@@ -398,7 +365,7 @@ const AddInfo = () => {
         <button
           type="submit"
           className="bg-green-600 text-white py-2 rounded mt-4 disabled:bg-gray-300"
-          disabled={signup2Mutation.isLoading}
+          disabled={signup2Mutation.isLoading || !isFormValid}
         >
           {signup2Mutation.isLoading ? '가입 중...' : '완료'}
         </button>
