@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 // import React, { useState } from 'react';
 // import ChatIcon from '../assets/chaticon.svg';
 // import profile from '../assets/profile.svg';
@@ -141,13 +141,6 @@ import profile from '../assets/profile.svg';
 import vector from '../assets/Vector.svg';
 import picture from '../assets/picture-icon.svg';
 import right from '../assets/right-icon.svg';
-=======
-import React from 'react';
-import ChatIcon from '../assets/chaticon.svg?url';
-import profile from '../assets/profile.svg?url';
-import vector from '../assets/Vector.svg?url';
-import ChatbotIcon from '../components/common/ChatbotIcon';
->>>>>>> 6c7027a (home api 수정)
 
 export const ChatPage = () => {
   // 채팅 메시지 배열 상태 (예시: 빈 배열이면 메시지 없음)
