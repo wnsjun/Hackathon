@@ -1,13 +1,12 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://spacefarm.shop', // API 서버 주소
+  baseURL: import.meta.env.VITE_API_URL, // 환경변수 사용
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// 요청 인터셉터 (토큰 자동 추가 가능)
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
