@@ -278,6 +278,10 @@ const SignupInfo = () => {
   const location = useLocation();
   const { email, password } = location.state || {};
 
+  // 디버깅을 위한 로그
+  console.log('Location state:', location.state);
+  console.log('Email:', email, 'Password:', password);
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [nickname, setNickname] = useState('');
@@ -308,12 +312,10 @@ const SignupInfo = () => {
       password,
       confirmPassword: password,
       name,
-      phone: phone.includes('-')
-        ? phone
-        : phone.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3'),
+      phone,
       nickname,
       bank,
-      accountNumber, // 하이픈 있는 그대로 전송
+      accountNumber,
     };
 
     console.log('Signup1 payload:', payload);

@@ -42,14 +42,16 @@ export const useSignup1 = () => {
 
 export const useSignup2 = () => {
   return useMutation({
-    mutationFn: async (data) => {
-      const token = localStorage.getItem('accessToken'); // signup1 완료 후 저장된 토큰
-      return axios.post('https://spacefarm.shop/api/auth/signup2', data, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // 토큰 필요 시
-        },
-      });
+    mutationFn: (payload) => signup2Api(payload),
+    onSuccess: (res) => {
+      alert('회원가입 2단계 완료!');
+    },
+    onError: (error) => {
+      console.error('Signup2 error:', error);
+      alert(
+        error.response?.data?.message ||
+          '회원가입 2단계 실패! 입력값을 확인해주세요.'
+      );
     },
   });
 };
