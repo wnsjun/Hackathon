@@ -13,34 +13,24 @@ export const Signup = () => {
   const isPasswordMatch = password === passwordCheck && isPasswordLengthValid;
 
   const labelStyle = {
-    color: 'var(--500, #111)',
+    color: '#111',
     fontFamily: 'Pretendard',
     fontSize: '16px',
     fontWeight: 400,
     lineHeight: '150%',
     letterSpacing: '-0.48px',
-    fontStyle: 'normal',
   };
-
   const starStyle = {
-    color: 'var(--Error, #FF3232)',
+    color: '#FF3232',
     fontFamily: 'Pretendard',
     fontSize: '16px',
-    fontWeight: 400,
-    lineHeight: '150%',
-    letterSpacing: '-0.48px',
-    fontStyle: 'normal',
   };
-
   const infoTextBaseStyle = {
     fontFamily: 'Pretendard',
     fontSize: '12px',
-    fontStyle: 'normal',
     fontWeight: 400,
     lineHeight: '150%',
-    letterSpacing: '-0.36px',
   };
-
   const checkIconStyle = {
     width: '16px',
     height: '16px',
@@ -50,10 +40,7 @@ export const Signup = () => {
     top: '50%',
     transform: 'translateY(-50%)',
   };
-
-  const inputWrapperStyle = {
-    position: 'relative',
-  };
+  const inputWrapperStyle = { position: 'relative' };
 
   const handleNext = (e) => {
     e.preventDefault();
@@ -61,24 +48,20 @@ export const Signup = () => {
       alert('비밀번호가 일치하지 않거나 8자 이상이 아닙니다.');
       return;
     }
-    navigate('/signupinfo', {
-      state: { email, password },
-    });
+    navigate('/signupinfo', { state: { email, password } });
   };
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
       <h1 className="text-2xl mt-[267px] font-bold mb-6">회원가입 하기</h1>
       <form onSubmit={handleNext} className="flex flex-col gap-6 w-[320px]">
-        {/* 이메일 */}
         <div style={inputWrapperStyle}>
           <label
             htmlFor="email"
             className="block mb-1 mt-12 select-none"
             style={labelStyle}
           >
-            이메일
-            <span style={starStyle}>*</span>
+            이메일<span style={starStyle}>*</span>
           </label>
           <input
             id="email"
@@ -94,15 +77,13 @@ export const Signup = () => {
           )}
         </div>
 
-        {/* 비밀번호 */}
         <div style={inputWrapperStyle}>
           <label
             htmlFor="password"
             className="block mb-1 pt-8 select-none"
             style={labelStyle}
           >
-            비밀번호
-            <span style={starStyle}>*</span>
+            비밀번호<span style={starStyle}>*</span>
           </label>
           <input
             id="password"
@@ -120,14 +101,13 @@ export const Signup = () => {
             className="mt-1 pl-2 select-none"
             style={{
               ...infoTextBaseStyle,
-              color: isPasswordLengthValid ? 'var(--Main, #1AA752)' : '#6B7280',
+              color: isPasswordLengthValid ? '#1AA752' : '#6B7280',
             }}
           >
             영문, 숫자 포함 8자 이상
           </p>
         </div>
 
-        {/* 비밀번호 확인 */}
         <div style={inputWrapperStyle}>
           <input
             id="passwordCheck"
@@ -143,30 +123,25 @@ export const Signup = () => {
           )}
         </div>
 
-        {/* 비밀번호 일치 여부 메시지 */}
         {passwordCheck && (
-          <>
-            {isPasswordMatch ? (
-              <div
-                className="select-none"
-                style={{
-                  color: 'var(--Main, #1AA752)',
-                  ...infoTextBaseStyle,
-                }}
-              >
-                비밀번호가 일치해요.
-              </div>
-            ) : (
-              <div className="text-red-500 text-sm select-none"></div>
-            )}
-          </>
+          <div
+            className="select-none"
+            style={{
+              color: isPasswordMatch ? '#1AA752' : '#FF3232',
+              ...infoTextBaseStyle,
+            }}
+          >
+            {isPasswordMatch
+              ? '비밀번호가 일치해요.'
+              : '비밀번호가 일치하지 않아요.'}
+          </div>
         )}
 
         <Button
           color="next"
-          type="submit" // form 제출용 버튼임을 명확히
+          type="submit"
           className="mt-8 mb-[267px]"
-          disabled={!isPasswordMatch} // 비밀번호 조건에 따라 활성화/비활성화
+          disabled={!isPasswordMatch}
         >
           다음
         </Button>
