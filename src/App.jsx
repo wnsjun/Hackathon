@@ -11,6 +11,7 @@ import {MyPage} from './page/MyPage';
 import CommunityWrite from './page/CommunityWrite';
 import AddInfo from './page/AddInfo';
 import SignupInfo from './page/SignupInfo';
+import CommunityDetail from './page/CommunityDetail';
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/community" element={<Community />} />
           <Route path="/community/write" element={<CommunityWrite />} />
+          <Route path="/community/:id" element={<CommunityDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/mypage" element={<MyPage />} />
