@@ -56,6 +56,17 @@ export const useSignup2 = () => {
   });
 };
 
+// 로그인 상태 확인
+export const useAuth = () => {
+  const isLoggedIn = !!localStorage.getItem('accessToken');
+  
+  const logout = () => {
+    localStorage.removeItem('accessToken');
+  };
+
+  return { isLoggedIn, logout };
+};
+
 // 로그인
 export const useLogin = () => {
   return useMutation({

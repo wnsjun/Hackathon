@@ -1,16 +1,25 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Searchbar } from '../common/Searchbar';
 import spacefarm_logo_image from '../../assets/spacefarm_logo_image.png?url';
+import { useAuth } from '../../hooks/useAuth';
 
 function LogoIcon() { 
   return (
   <img src={spacefarm_logo_image} alt="SpaceFarm Logo" width="48" height="48" />  );}
 
-function UserIcon() {
+function UserIcon({ isLoggedIn }) {
+  if (isLoggedIn) {
+    return (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 16C19.3137 16 22 13.3137 22 10C22 6.68629 19.3137 4 16 4C12.6863 4 10 6.68629 10 10C10 13.3137 12.6863 16 16 16Z" fill="#666666"/>
+        <path d="M16 20C10.4772 20 6 24.4772 6 30H26C26 24.4772 21.5228 20 16 20Z" fill="#666666"/>
+      </svg>
+    );
+  }
+  
   return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M16 16C19.3137 16 22 13.3137 22 10C22 6.68629 19.3137 4 16 4C12.6863 4 10 6.68629 10 10C10 13.3137 12.6863 16 16 16Z" fill="#666666"/>
-      <path d="M16 20C10.4772 20 6 24.4772 6 30H26C26 24.4772 21.5228 20 16 20Z" fill="#666666"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <path d="M16.0003 16.0003C19.6837 16.0003 22.667 13.017 22.667 9.33366C22.667 5.65033 19.6837 2.66699 16.0003 2.66699C12.317 2.66699 9.33366 5.65033 9.33366 9.33366C9.33366 13.017 12.317 16.0003 16.0003 16.0003ZM16.0003 19.3337C11.5503 19.3337 2.66699 21.567 2.66699 26.0003V29.3337H29.3337V26.0003C29.3337 21.567 20.4503 19.3337 16.0003 19.3337Z" stroke="#111111" strokeWidth="1.5"/>
     </svg>
   );
 }
@@ -29,6 +38,7 @@ function ChatIcon() {
 export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isLoggedIn, logout } = useAuth();
 
   const handleSearch = (query) => {
     if (location.pathname !== '/home') {
@@ -46,6 +56,11 @@ export const Navbar = () => {
       window.dispatchEvent(new CustomEvent('resetHomeFilters'));
     }
     navigate('/home');
+  };
+
+  const handleLogoutClick = () => {
+    logout();
+    navigate('/');
   };
 
   return (
@@ -81,9 +96,17 @@ export const Navbar = () => {
           <Link to="/chat">
             <ChatIcon />
           </Link>
-          <Link to="/login" className="overflow-clip relative shrink-0 size-8">
-            <UserIcon />
+          <Link to={isLoggedIn ? "/mypage" : "/login"} className="overflow-clip relative shrink-0 size-8">
+            <UserIcon isLoggedIn={isLoggedIn} />
           </Link>
+          {isLoggedIn && (
+            <button 
+              onClick={handleLogoutClick}
+              className="text-sm font-medium text-gray-600 hover:text-gray-800 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              로그아웃
+            </button>
+          )}
         </div>
       </div>
     </nav>
