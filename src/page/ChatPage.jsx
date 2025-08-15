@@ -1,362 +1,302 @@
-// import React, { useState } from 'react';
-// import ChatIcon from '../assets/chaticon.svg';
-// import profile from '../assets/profile.svg';
-// import vector from '../assets/Vector.svg';
-// import picture from '../assets/picture-icon.svg';
-// import right from '../assets/right-icon.svg';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import useStompClient from '../hooks/useStompClient';
+import {
+  getChatRooms,
+  getMessages,
+  markRead,
+  uploadImages,
+} from '../apis/chatApi';
+import ChatRoomList from '../components/common/chat/ChatRoomList';
+import ChatMessage from '../components/common/chat/ChatMessage';
 
-// export const ChatPage = () => {
-//   // 채팅 메시지 배열 상태 (예시: 빈 배열이면 메시지 없음)
-//   const [messages, setMessages] = useState([]);
-
-//   return (
-//     <div className="flex flex-1 bg-white h-screen my-20">
-//       {/* 채팅 목록 */}
-//       <aside className="w-[331px] h-[774px] bg-white m-12 p-6 flex-shrink-0">
-//         <div className="flex items-center gap-4 border-b border-gray-400">
-//           <img src={ChatIcon} alt="chat" className="w-28px h-24px" />
-//           <h2
-//             className="mb-4"
-//             style={{
-//               color: 'var(--400, #777)',
-//               fontFamily: 'Pretendard',
-//               fontSize: '24px',
-//               fontStyle: 'normal',
-//               fontWeight: 600,
-//               lineHeight: '150%',
-//               letterSpacing: '-0.48px',
-//             }}
-//           >
-//             채팅 목록
-//           </h2>
-//         </div>
-
-//         {[1, 2, 3].map((i) => (
-//           <div key={i} className="mb-6 my-5 border-b border-gray-200">
-//             <div className="flex justify-between">
-//               <span className="font-semibold">닉네임</span>
-//               <span className="text-xs text-gray-500">22시간전</span>
-//             </div>
-//             <div className="text-sm text-gray-700">어쩌고저쩌고</div>
-//           </div>
-//         ))}
-//       </aside>
-
-//       {/* 채팅방 */}
-//       <section
-//         className="flex flex-col pb-6 m-12 p-8 bg-white border border-[#BBB] rounded-[48px] shadow-[0_4px_20px_0_rgba(0,0,0,0.10)]"
-//         style={{ height: '700px', width: '739px' }}
-//       >
-//         <div className="flex items-center gap-4 mb-6">
-//           <img src={profile} alt="profile" className="w-48px h-48px" />
-//           <span
-//             className="font-bold text-lg"
-//             style={{
-//               fontFamily: 'Pretendard',
-//               fontSize: '24px',
-//               fontStyle: 'normal',
-//               fontWeight: 600,
-//               lineHeight: '150%',
-//               letterSpacing: '-0.48px',
-//             }}
-//           >
-//             닉네임
-//           </span>
-//           <button className="flex text-white items-center ml-auto bg-green-500 rounded-[100px] px-4 py-2 font-semibold cursor-pointer hover:bg-green-400">
-//             결제하기
-//             <img src={right} alt="right-icon" className="h-6 w-6 ml-2" />
-//           </button>
-//         </div>
-
-//         {/* 채팅 메시지 영역 */}
-//         <div className="flex flex-col gap-4 mb-6 my-10 flex-1 overflow-y-auto">
-//           {messages.length === 0 ? (
-//             <p className="text-center text-gray-400 mt-20">
-//               채팅 기록이 없습니다.
-//             </p>
-//           ) : (
-//             messages.map((msg, idx) => (
-//               <div
-//                 key={idx}
-//                 className={`flex justify-center items-start ${
-//                   msg.isMine ? 'self-end w-1/3' : 'w-1/2'
-//                 }`}
-//                 style={{
-//                   padding: '20px 28px 24px 28px',
-//                   borderRadius: msg.isMine
-//                     ? '40px 0 40px 40px'
-//                     : '0 40px 40px 40px',
-//                   border: '1px solid var(--300, #BBB)',
-//                   background: 'var(--200, #F0F0F0)',
-//                   backdropFilter: 'blur(5px)',
-//                 }}
-//               >
-//                 {msg.text}
-//               </div>
-//             ))
-//           )}
-//         </div>
-
-//         {/* 입력창 */}
-//         <div className="mt-auto flex items-center border h-16 rounded-[100px] px-4 py-2 border-green-500">
-//           <input
-//             className="flex-1 pl-2 text-black outline-none text-[#BBB] font-pretendard text-[20px] font-normal leading-[30px] tracking-[-0.6px]"
-//             placeholder="채팅을 입력하세요"
-//           />
-
-//           <button className="ml-2 cursor-pointer flex items-center">
-//             <img src={picture} alt="picture-icon" className="w-48px h-48px" />
-//             <img src={vector} alt="vector" className="w-48px h-48px pl-4" />
-//           </button>
-//         </div>
-//       </section>
-//     </div>
-//   );
-// };
-
-import React, { useEffect, useState, useRef } from 'react';
-import axiosInstance from '../apis/axiosInstance'; // axiosInstance.js를 가져온다고 가정
 import ChatIcon from '../assets/chaticon.svg';
 import profile from '../assets/profile.svg';
-import vector from '../assets/Vector.svg';
-import picture from '../assets/picture-icon.svg';
 import right from '../assets/right-icon.svg';
+import picture from '../assets/picture-icon.svg';
 
-export const ChatPage = ({ userId }) => {
-  const [chatRooms, setChatRooms] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState(null);
+const ChatPage = ({ userId }) => {
+  const [rooms, setRooms] = useState([]);
+  const [selected, setSelected] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const messagesEndRef = useRef(null);
+  const [page, setPage] = useState(0);
+  const [last, setLast] = useState(true);
+  const [input, setInput] = useState('');
+  const [stompConnected, setStompConnected] = useState(false);
 
-  // 1. 채팅방 목록 가져오기
-  const fetchChatRooms = async () => {
+  const listRef = useRef(null);
+  const endRef = useRef(null);
+  const topSentinelRef = useRef(null);
+  const loadingRef = useRef(false);
+
+  const { connected, subscribeRoom, unsubscribeRoom, sendText, connect } =
+    useStompClient();
+
+  /** STOMP 연결 */
+  useEffect(() => {
+    if (!stompConnected) {
+      connect()
+        .then(() => setStompConnected(true))
+        .catch((err) => {
+          console.error('STOMP 연결 실패:', err);
+          setTimeout(() => setStompConnected(false), 5000);
+        });
+    }
+  }, [stompConnected, connect]);
+
+  /** 채팅방 목록 로드 */
+  const refreshRooms = useCallback(async () => {
     try {
-      const res = await axiosInstance.get('/chat/room/list');
-      setChatRooms(res.data);
-      if (res.data.length > 0) {
-        setSelectedRoom(res.data[0]);
+      const data = await getChatRooms();
+      setRooms(Array.isArray(data) ? data : []);
+      if (!selected && data?.length) setSelected(data[0]);
+    } catch (e) {
+      console.error('채팅방 목록 로드 실패:', e);
+      setRooms([]);
+    }
+  }, [selected]);
+
+  /** 메시지 초기/재입장 로드 */
+  const loadInitialMessages = useCallback(
+    async (chatRoomId) => {
+      if (!chatRoomId) return;
+      loadingRef.current = true;
+      try {
+        const data = await getMessages({ chatRoomId, page: 0, size: 30 });
+        const sorted = [...(data?.content || [])].sort(
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+        );
+        setMessages(sorted);
+        setPage(0);
+        setLast(data?.last ?? true);
+
+        await markRead({ chatRoomId, userId });
+        setRooms((prev) =>
+          prev.map((r) =>
+            r.chatroomId === chatRoomId ? { ...r, unreadCount: 0 } : r
+          )
+        );
+
+        setTimeout(
+          () => endRef.current?.scrollIntoView({ behavior: 'auto' }),
+          0
+        );
+      } catch (e) {
+        console.error('메시지 로드 실패:', e);
+        setMessages([]);
+      } finally {
+        loadingRef.current = false;
       }
-    } catch (error) {
-      console.error('채팅방 목록 불러오기 실패:', error);
-    }
-  };
+    },
+    [userId]
+  );
 
-  // 2. 선택된 채팅방 메시지 불러오기
-  const fetchMessages = async (chatRoomId) => {
+  /** 이전 페이지 무한 스크롤 */
+  const loadMore = useCallback(async () => {
+    if (!selected || last || loadingRef.current) return;
+    loadingRef.current = true;
     try {
-      const res = await axiosInstance.get(`/chat/room/${chatRoomId}`);
-      // 메시지는 최신이 마지막이니까 그대로 사용
-      setMessages(res.data.content);
-    } catch (error) {
-      console.error('메시지 불러오기 실패:', error);
-      setMessages([]);
-    }
-  };
-
-  // 3. 메시지 읽음 처리 API 호출
-  const markMessagesRead = async (chatRoomId) => {
-    try {
-      await axiosInstance.patch(
-        `/chat/room/${chatRoomId}/read?userId=${userId}`
+      const nextPage = page + 1;
+      const data = await getMessages({
+        chatRoomId: selected.chatroomId,
+        page: nextPage,
+        size: 30,
+      });
+      const sorted = [...(data?.content || [])].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
       );
-      // unreadCount 0 처리 UI 반영
-      setChatRooms((prev) =>
-        prev.map((room) =>
-          room.chatroomId === chatRoomId ? { ...room, unreadCount: 0 } : room
+      const listEl = listRef.current;
+      const prevScrollHeight = listEl?.scrollHeight ?? 0;
+
+      setMessages((prev) => [...sorted, ...prev]);
+      setPage(nextPage);
+      setLast(data?.last ?? true);
+
+      setTimeout(() => {
+        const newScrollHeight = listEl?.scrollHeight ?? 0;
+        listEl.scrollTop =
+          newScrollHeight - prevScrollHeight + (listEl.scrollTop || 0);
+      }, 0);
+    } catch (e) {
+      console.error('이전 메시지 로드 실패:', e);
+    } finally {
+      loadingRef.current = false;
+    }
+  }, [selected, page, last]);
+
+  /** 상단 sentinel 옵저버 */
+  useEffect(() => {
+    const el = topSentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => entry.isIntersecting && loadMore(),
+      {
+        root: listRef.current,
+        threshold: 1,
+      }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore]);
+
+  /** 방 선택 시 메시지 로드 + STOMP 구독 */
+  useEffect(() => {
+    if (!selected || !connected) return;
+
+    loadInitialMessages(selected.chatroomId);
+
+    const unsub = subscribeRoom(selected.chatroomId, (incoming) => {
+      setMessages((prev) => [...prev, incoming]);
+      setRooms((prev) =>
+        prev.map((r) =>
+          r.chatroomId === selected.chatroomId
+            ? {
+                ...r,
+                lastMessage:
+                  incoming.messageType === 'TEXT' ? incoming.message : '사진',
+                lastMessageCreatedAt: incoming.createdAt,
+              }
+            : r
         )
       );
-    } catch (error) {
-      console.error('메시지 읽음 처리 실패:', error);
+      setTimeout(
+        () => endRef.current?.scrollIntoView({ behavior: 'smooth' }),
+        0
+      );
+    });
+
+    return () => {
+      if (unsub) unsub();
+      else if (selected?.chatroomId) unsubscribeRoom(selected.chatroomId);
+    };
+  }, [
+    selected,
+    connected,
+    subscribeRoom,
+    unsubscribeRoom,
+    loadInitialMessages,
+  ]);
+
+  /** 초기 목록 로드 */
+  useEffect(() => {
+    refreshRooms();
+  }, [refreshRooms]);
+
+  const handleSend = () => {
+    if (!input.trim() || !selected) return;
+    try {
+      sendText(selected.chatroomId, input.trim());
+      setInput('');
+    } catch (e) {
+      console.error('메시지 전송 실패:', e);
+      alert('메시지 전송 실패');
     }
   };
 
-  // 채팅방 선택 핸들러
-  const handleSelectRoom = (room) => {
-    setSelectedRoom(room);
-  };
-
-  // selectedRoom 변경될 때 메시지 불러오고 읽음 처리하기
-  useEffect(() => {
-    if (selectedRoom) {
-      fetchMessages(selectedRoom.chatroomId);
-      markMessagesRead(selectedRoom.chatroomId);
+  const onPickImages = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length || !selected) return;
+    try {
+      await uploadImages({ chatRoomId: selected.chatroomId, files });
+    } catch (err) {
+      console.error('이미지 전송 실패:', err);
+      alert('이미지 전송 실패');
+    } finally {
+      e.target.value = '';
     }
-  }, [selectedRoom]);
-
-  // 처음 로드 시 채팅방 목록 가져오기
-  useEffect(() => {
-    fetchChatRooms();
-  }, []);
-
-  // 메시지 리스트 끝으로 스크롤
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  // 메시지 전송 (API 명세서에 없어서 UI만 구현, 실제 API 필요 시 알려줘)
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
-    // TODO: 메시지 전송 API 호출 필요
-    alert('메시지 전송 API 연동 필요합니다.');
-    setInputMessage('');
   };
 
   return (
     <div className="flex flex-1 bg-white h-screen my-20">
-      {/* 채팅 목록 */}
       <aside className="w-[331px] h-[774px] bg-white m-12 p-6 flex-shrink-0 overflow-y-auto">
         <div className="flex items-center gap-4 border-b border-gray-400">
           <img src={ChatIcon} alt="chat" className="w-7 h-6" />
-          <h2
-            className="mb-4"
-            style={{
-              color: 'var(--400, #777)',
-              fontFamily: 'Pretendard',
-              fontSize: '24px',
-              fontStyle: 'normal',
-              fontWeight: 600,
-              lineHeight: '150%',
-              letterSpacing: '-0.48px',
-            }}
-          >
+          <h2 className="mb-4 text-2xl font-semibold text-gray-700">
             채팅 목록
           </h2>
         </div>
 
-        {chatRooms.length === 0 && (
-          <p className="text-center mt-20 text-gray-400">채팅방이 없습니다.</p>
-        )}
-
-        {chatRooms.map((room) => (
-          <div
-            key={room.chatroomId}
-            className={`mb-6 my-5 border-b border-gray-200 cursor-pointer p-2 ${
-              selectedRoom?.chatroomId === room.chatroomId ? 'bg-gray-200' : ''
-            }`}
-            onClick={() => handleSelectRoom(room)}
-          >
-            <div className="flex justify-between">
-              <span className="font-semibold">
-                {room.consumer.id === userId
-                  ? room.provider.nickname
-                  : room.consumer.nickname}
-              </span>
-              <span className="text-xs text-gray-500">
-                {new Date(room.lastMessageAt).toLocaleString()}
-              </span>
-            </div>
-            <div className="text-sm text-gray-700 truncate">
-              {room.lastMessage || '메시지가 없습니다.'}
-            </div>
-            {room.unreadCount > 0 && (
-              <span className="text-xs bg-red-500 text-white rounded-full px-2 ml-2">
-                {room.unreadCount}
-              </span>
-            )}
-          </div>
-        ))}
+        <ChatRoomList
+          rooms={rooms}
+          selectedId={selected?.chatroomId}
+          onSelect={setSelected}
+          userId={userId}
+        />
       </aside>
 
-      {/* 채팅방 영역 */}
       <section
         className="flex flex-col pb-6 m-12 p-8 bg-white border border-[#BBB] rounded-[48px] shadow-[0_4px_20px_0_rgba(0,0,0,0.10)]"
         style={{ height: '700px', width: '739px' }}
       >
-        {selectedRoom ? (
+        {selected ? (
           <>
             <div className="flex items-center gap-4 mb-6">
               <img
                 src={
-                  selectedRoom.consumer.id === userId
-                    ? selectedRoom.provider.profileImage || profile
-                    : selectedRoom.consumer.profileImage || profile
+                  selected.consumer?.id === userId
+                    ? selected.provider?.profileImage || profile
+                    : selected.consumer?.profileImage || profile
                 }
                 alt="profile"
                 className="w-12 h-12 rounded-full object-cover"
               />
-              <span
-                className="font-bold text-lg"
-                style={{
-                  fontFamily: 'Pretendard',
-                  fontSize: '24px',
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  lineHeight: '150%',
-                  letterSpacing: '-0.48px',
-                }}
-              >
-                {selectedRoom.consumer.id === userId
-                  ? selectedRoom.provider.nickname
-                  : selectedRoom.consumer.nickname}
+              <span className="font-bold text-lg">
+                {selected.consumer?.id === userId
+                  ? selected.provider?.nickname
+                  : selected.consumer?.nickname}
               </span>
-              <button className="flex text-white items-center ml-auto bg-green-500 rounded-[100px] px-4 py-2 font-semibold cursor-pointer hover:bg-green-400">
-                결제하기
-                <img src={right} alt="right-icon" className="h-6 w-6 ml-2" />
+
+              <button className="ml-auto flex items-center bg-green-500 text-white px-3 py-1 rounded font-semibold">
+                채팅하기
+                <img src={right} alt="right" className="ml-2 w-3 h-3" />
               </button>
             </div>
 
-            {/* 메시지 영역 */}
-            <div className="flex flex-col gap-4 mb-6 my-10 flex-1 overflow-y-auto">
-              {messages.length === 0 ? (
-                <p className="text-center text-gray-400 mt-20">
-                  채팅 기록이 없습니다.
-                </p>
-              ) : (
-                messages.map((msg) => (
-                  <div
-                    key={msg.messageId}
-                    className={`flex justify-center items-start ${
-                      msg.senderId === userId ? 'self-end w-1/3' : 'w-1/2'
-                    }`}
-                    style={{
-                      padding: '20px 28px 24px 28px',
-                      borderRadius:
-                        msg.senderId === userId
-                          ? '40px 0 40px 40px'
-                          : '0 40px 40px 40px',
-                      border: '1px solid var(--300, #BBB)',
-                      background: 'var(--200, #F0F0F0)',
-                      backdropFilter: 'blur(5px)',
-                    }}
-                  >
-                    {msg.message}
-                  </div>
-                ))
-              )}
-              <div ref={messagesEndRef} />
+            <div ref={listRef} className="flex-1 overflow-y-auto mb-4">
+              <div ref={topSentinelRef} />
+              {messages.map((msg) => (
+                <ChatMessage
+                  key={msg.id || msg.createdAt}
+                  msg={msg}
+                  isMine={msg.senderId === userId}
+                />
+              ))}
+              <div ref={endRef} />
             </div>
 
-            {/* 입력창 */}
-            <div className="mt-auto flex items-center border h-16 rounded-[100px] px-4 py-2 border-green-500">
+            <div className="flex gap-2">
               <input
-                className="flex-1 pl-2 text-black outline-none font-pretendard text-[20px] font-normal leading-[30px] tracking-[-0.6px]"
-                placeholder="채팅을 입력하세요"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
+                className="flex-1 p-3 border rounded-lg focus:outline-none"
+                placeholder="메시지를 입력하세요..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               />
-
+              <label className="flex items-center px-3 bg-gray-200 rounded cursor-pointer">
+                <img src={picture} alt="img" className="w-6 h-6" />
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={onPickImages}
+                />
+              </label>
               <button
-                className="ml-2 cursor-pointer flex items-center"
-                onClick={handleSendMessage}
+                className="px-4 py-2 bg-green-500 text-white rounded"
+                onClick={handleSend}
               >
-                <img src={picture} alt="picture-icon" className="w-12 h-12" />
-                <img src={vector} alt="vector" className="w-12 h-12 pl-4" />
+                전송
               </button>
             </div>
           </>
         ) : (
           <p className="text-center text-gray-400 mt-20">
-            채팅방을 선택하세요.
+            채팅방을 선택해주세요.
           </p>
         )}
       </section>
     </div>
   );
 };
+
+export default ChatPage;
