@@ -6,7 +6,7 @@ export const fetchFeedPosts = async () => {
     return response.data;
   } catch (error) {
     console.error('인증피드 게시글 조회 실패:', error);
-    throw error;
+    return [];
   }
 };
 
@@ -16,7 +16,7 @@ export const fetchTipPosts = async () => {
     return response.data;
   } catch (error) {
     console.error('재배팁 게시글 조회 실패:', error);
-    throw error;
+    return [];
   }
 };
 

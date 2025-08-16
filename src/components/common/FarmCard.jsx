@@ -2,8 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 const imgRectangle11 = "/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png";
-const imgVector = "/assets/a85e6e3c83b334db97a694b1d6d328be4f30afc4.svg";
-const img = "/assets/2b8d64d7226c28c99184010bc380a1d664774ae0.svg";
 
 // Location icon component
 const LocationIcon = () => {

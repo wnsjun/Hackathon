@@ -19,7 +19,7 @@ export const Community = () => {
           fetchTipPosts()
         ]);
         
-        const transformedFeedPosts = feedPosts.map(post => ({
+        const transformedFeedPosts = (feedPosts || []).map(post => ({
           id: post.id,
           title: post.title,
           username: post.authorNickname,
@@ -27,7 +27,7 @@ export const Community = () => {
           likes: post.likeCount
         }));
 
-        const transformedTipPosts = tipPosts.map(post => ({
+        const transformedTipPosts = (tipPosts || []).map(post => ({
           id: post.id,
           title: post.title,
           username: post.authorNickname,
@@ -35,10 +35,14 @@ export const Community = () => {
           likes: post.likeCount
         }));
 
-        setPosts({
-          certification: transformedFeedPosts,
-          tips: transformedTipPosts
-        });
+        if (transformedFeedPosts.length === 0 && transformedTipPosts.length === 0) {
+          setPosts(mockCommunityPosts);
+        } else {
+          setPosts({
+            certification: transformedFeedPosts.length > 0 ? transformedFeedPosts : mockCommunityPosts.certification,
+            tips: transformedTipPosts.length > 0 ? transformedTipPosts : mockCommunityPosts.tips
+          });
+        }
       } catch (error) {
         console.error('게시글 로드 실패:', error);
         setPosts(mockCommunityPosts);
