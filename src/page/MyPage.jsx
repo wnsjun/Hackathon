@@ -4,51 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../styles/mypage.module.css';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import { useAuth } from '../hooks/useAuth';
-
-// FarmCard 간단 버전
-const FarmCard = ({ farm }) => {
-  return (
-    <div className="cursor-pointer border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow duration-300 flex flex-col w-full max-w-xs">
-      <div
-        className="w-full h-48 bg-cover bg-center rounded-t-lg"
-        style={{ backgroundImage: `url(${farm.image})` }}
-      />
-      <div className="p-4 flex flex-col gap-2">
-        <h3 className="font-semibold text-lg">{farm.title}</h3>
-        <p className="text-gray-600 text-sm">{farm.address}</p>
-        <div className="flex justify-between text-sm text-gray-700 font-medium">
-          <span>가격: {farm.price}</span>
-          <span>대여 기간: {farm.rentalPeriod}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// CommunityCard: FarmCard와 동일한 사이즈로 재구성
-const CommunityCard = ({ post }) => {
-  return (
-    <div className="cursor-pointer border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow duration-300 flex flex-col w-full max-w-xs">
-      <div
-        className="w-full h-48 bg-cover bg-center rounded-t-lg"
-        style={{ backgroundImage: `url(${post.image})` }}
-      />
-      <div className="p-4 flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          <img
-            src={post.profileImg}
-            alt="Profile"
-            className="w-8 h-8 rounded-full"
-          />
-          <p className="font-medium text-sm">{post.nickname}</p>
-          <span className="text-xs text-gray-400">{post.timeAgo}</span>
-        </div>
-        <h3 className="font-semibold text-base">{post.title}</h3>
-        <p className="text-sm text-gray-600 line-clamp-2">{post.content}</p>
-      </div>
-    </div>
-  );
-};
+import setting from '../assets/setting.svg';
+import RentingFarmCard from '../components/common/RentingFarmCard';
+import FarmCard from '../components/common/FarmCard';
+import CommunityPostCard from '../components/common/CommunityPostCard';
 
 export const MyPage = () => {
   const navigate = useNavigate();
@@ -56,15 +15,20 @@ export const MyPage = () => {
   const [farmToggle, setFarmToggle] = useState('my');
   const [communityToggle, setCommunityToggle] = useState('written');
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  // === API 연동 시 받아올 데이터 (임시 더미) ===
   const handleLogoutClick = () => {
     logout();
     navigate('/');
   };
 
-  const farmData = [
+  const myFarms = [
     {
       id: 1,
-      image: profile,
       title: '텃밭 1',
       address: '서울 마포구',
       price: '50,000원',
@@ -72,7 +36,6 @@ export const MyPage = () => {
     },
     {
       id: 2,
-      image: profile,
       title: '텃밭 2',
       address: '서울 성동구',
       price: '70,000원',
@@ -80,41 +43,120 @@ export const MyPage = () => {
     },
     {
       id: 3,
-      image: profile,
       title: '텃밭 3',
       address: '서울 강남구',
       price: '90,000원',
       rentalPeriod: '1년',
     },
+    {
+      id: 4,
+      title: '텃밭 4',
+      address: '서울 종로구',
+      price: '60,000원',
+      rentalPeriod: '6개월',
+    },
   ];
 
-  const communityData = [
+  const rentingFarms = [
+    {
+      id: 5,
+      title: '대여텃밭 1',
+      address: '서울 중구',
+      price: '40,000원',
+      rentalPeriod: '3개월',
+    },
+    {
+      id: 6,
+      title: '대여텃밭 2',
+      address: '서울 동작구',
+      price: '55,000원',
+      rentalPeriod: '6개월',
+    },
+    {
+      id: 7,
+      title: '대여텃밭 3',
+      address: '서울 서대문구',
+      price: '80,000원',
+      rentalPeriod: '1년',
+    },
+  ];
+
+  const bookmarkedFarms = [
+    {
+      id: 8,
+      title: '북마크 텃밭 1',
+      address: '서울 은평구',
+      price: '65,000원',
+      rentalPeriod: '3개월',
+    },
+    {
+      id: 9,
+      title: '북마크 텃밭 2',
+      address: '서울 송파구',
+      price: '85,000원',
+      rentalPeriod: '6개월',
+    },
+    {
+      id: 10,
+      title: '북마크 텃밭 3',
+      address: '서울 강서구',
+      price: '95,000원',
+      rentalPeriod: '1년',
+    },
+  ];
+
+  const writtenPosts = [
     {
       id: 1,
-      image: profile,
-      profileImg: profile,
+      title: '첫 글',
+      content: '첫번째 글 내용',
       nickname: '사용자1',
       timeAgo: '1일 전',
-      title: '첫 번째 글 제목',
-      content: '이곳은 첫 번째 글의 내용이 들어가는 부분입니다.',
     },
     {
       id: 2,
-      image: profile,
-      profileImg: profile,
+      title: '두번째 글',
+      content: '두번째 글 내용',
       nickname: '사용자2',
       timeAgo: '2일 전',
-      title: '두 번째 글 제목',
-      content: '두 번째 글의 내용은 조금 더 길게 작성할 수도 있습니다.',
     },
     {
       id: 3,
-      image: profile,
-      profileImg: profile,
+      title: '세번째 글',
+      content: '세번째 글 내용',
       nickname: '사용자3',
       timeAgo: '3일 전',
-      title: '세 번째 글 제목',
-      content: '세 번째 글 내용입니다. 간단하게 요약해서 보여줍니다.',
+    },
+    {
+      id: 4,
+      title: '네번째 글',
+      content: '네번째 글 내용',
+      nickname: '사용자4',
+      timeAgo: '4일 전',
+    },
+  ];
+
+  const likedPosts = [
+    {
+      id: 5,
+      title: '좋아요 글1',
+      content: '좋아요 한 글',
+      nickname: '사용자A',
+      timeAgo: '5일 전',
+    },
+    {
+      id: 6,
+      title: '좋아요 글2',
+      content: '좋아요 두번째',
+      nickname: '사용자B',
+      timeAgo: '6일 전',
+    },
+    {
+      id: 7,
+      title: '좋아요 글3',
+      content: '좋아요 세번째',
+      nickname: '사용자C',
+      timeAgo: '7일 전',
     },
   ];
 
@@ -122,12 +164,12 @@ export const MyPage = () => {
     <div>
       {/* 프로필 영역 */}
       <div className="flex pt-32">
-        <div className="flex pt-12 pl-40 w-full h-[336px]">
+        <div className="flex pt-12 pl-40 w-full h-[336px] relative">
           <img className="w-60 h-60" src={profile} alt="Profile" />
           <div className="flex flex-col pl-[46px] pt-[43px] items-start">
             <div className="flex items-center gap-4">
               <h1 className={styles.nickname}>닉네임</h1>
-              <button 
+              <button
                 onClick={handleLogoutClick}
                 className="text-sm font-medium text-gray-600 hover:text-gray-800 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               >
@@ -139,6 +181,21 @@ export const MyPage = () => {
               <p className={styles.ecoScore}>친환경 점수</p>
               <p className={styles.ecoScoreValue}>83점</p>
             </div>
+          </div>
+
+          {/* 로그아웃 & 설정 버튼 */}
+          <div className="absolute top-4 right-6 mt-12 flex items-center gap-3">
+            <button
+              onClick={handleLogout}
+              className="text-red-500 font-semibold hover:underline"
+            >
+              로그아웃
+            </button>
+            <img
+              src={setting}
+              alt="설정"
+              className="mr-40 w-6 h-6 cursor-pointer"
+            />
           </div>
         </div>
       </div>
@@ -154,7 +211,7 @@ export const MyPage = () => {
           {[1, 2, 3].map((_, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 p-4 border rounded-lg w-1/3"
+              className="flex items-center gap-3 p-4 rounded-lg w-1/3"
             >
               <img
                 src={profile}
@@ -174,35 +231,59 @@ export const MyPage = () => {
           ))}
         </div>
 
-        {/* 텃밭 토글 */}
+        {/* 텃밭 */}
         <div className="flex items-center justify-between mb-6">
           <h1 className={styles.tradeReviewTitle}>텃밭</h1>
         </div>
         <div className="flex items-center justify-between mb-6">
           <div className="flex gap-4">
             <button
-              className={`px-4 py-2 rounded ${farmToggle === 'my' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+              className={`px-4 py-2 rounded ${
+                farmToggle === 'my' ? 'bg-green-600 text-white' : 'bg-gray-200'
+              }`}
               onClick={() => setFarmToggle('my')}
             >
               내 텃밭
             </button>
             <button
-              className={`px-4 py-2 rounded ${farmToggle === 'renting' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+              className={`px-4 py-2 rounded ${
+                farmToggle === 'renting'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-200'
+              }`}
               onClick={() => setFarmToggle('renting')}
             >
               대여중인 텃밭
+            </button>
+            <button
+              className={`px-4 py-2 rounded ${
+                farmToggle === 'bookmark'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-200'
+              }`}
+              onClick={() => setFarmToggle('bookmark')}
+            >
+              북마크한 텃밭
             </button>
           </div>
           <button className="text-green-600 hover:underline">전체보기</button>
         </div>
 
         <div className="flex gap-6 mb-16">
-          {farmData.map((farm) => (
-            <FarmCard key={farm.id} farm={farm} />
-          ))}
+          {farmToggle === 'my'
+            ? myFarms
+                .slice(0, 3)
+                .map((farm) => <FarmCard key={farm.id} farm={farm} />)
+            : farmToggle === 'renting'
+              ? rentingFarms
+                  .slice(0, 3)
+                  .map((farm) => <RentingFarmCard key={farm.id} farm={farm} />)
+              : bookmarkedFarms
+                  .slice(0, 3)
+                  .map((farm) => <FarmCard key={farm.id} farm={farm} />)}
         </div>
 
-        {/* 커뮤니티 영역 */}
+        {/* 커뮤니티 */}
         <div className="pt-18">
           <div className="flex items-center justify-between mb-6">
             <h1 className={styles.tradeReviewTitle}>커뮤니티</h1>
@@ -211,13 +292,21 @@ export const MyPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex gap-4">
               <button
-                className={`px-4 py-2 rounded ${communityToggle === 'written' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+                className={`px-4 py-2 rounded ${
+                  communityToggle === 'written'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-gray-200'
+                }`}
                 onClick={() => setCommunityToggle('written')}
               >
                 작성글
               </button>
               <button
-                className={`px-4 py-2 rounded ${communityToggle === 'liked' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+                className={`px-4 py-2 rounded ${
+                  communityToggle === 'liked'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-gray-200'
+                }`}
                 onClick={() => setCommunityToggle('liked')}
               >
                 좋아요 누른 글
@@ -232,13 +321,15 @@ export const MyPage = () => {
           </div>
 
           <div className="flex gap-6 mb-24">
-            {communityData.map((post) => (
-              <CommunityCard key={post.id} post={post} />
-            ))}
+            {(communityToggle === 'written' ? writtenPosts : likedPosts)
+              .slice(0, 3)
+              .map((post) => (
+                <CommunityPostCard key={post.id} post={post} />
+              ))}
           </div>
         </div>
       </div>
-      
+
       {/* 챗봇 아이콘 */}
       <ChatbotIcon />
     </div>
