@@ -64,7 +64,11 @@ export const useAuth = () => {
     localStorage.removeItem('accessToken');
   };
 
-  return { isLoggedIn, logout };
+  // For now, using a default coin balance
+  // This should be fetched from an API in the future
+  const coinBalance = isLoggedIn ? 50000 : 0;
+
+  return { isLoggedIn, logout, coinBalance };
 };
 
 // 로그인

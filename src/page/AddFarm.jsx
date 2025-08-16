@@ -1,10 +1,9 @@
 import { Navbar } from '../components/layouts/Navbar';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Button from '../components/common/Button';
 import ChatbotIcon from '../components/common/ChatbotIcon';
-
-const imgSliderHandle = "/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
-const imgCheckIcon = "/assets/c4ebef49d4d01eb4425d11acd7dc025676167712.svg";
+import { createFarm } from '../apis/home';
 
 const AddFarm = () => {
   const navigate = useNavigate();
@@ -15,12 +14,9 @@ const AddFarm = () => {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [bankAccount, setBankAccount] = useState('');
-  const [selectedBank, setSelectedBank] = useState('신한');
-  const [accountNumber, setAccountNumber] = useState('110-345-434154');
   const [area, setArea] = useState(0);
   const [selectedTheme, setSelectedTheme] = useState('');
-  const [accountSelected, setAccountSelected] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isFormValid = () => {
     return address.trim() !== '' && 
@@ -30,14 +26,53 @@ const AddFarm = () => {
           description.trim() !== '' && 
           area > 0 && 
           selectedTheme !== '' && 
-          image !== null &&
-          accountSelected;
+          image !== null;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isFormValid()) {
-      alert('등록 버튼 클릭됨!');
+    if (!isFormValid() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    
+    try {
+      // 선택된 테마의 API 값 찾기
+      const selectedThemeObj = themes.find(theme => theme.id === selectedTheme);
+      const themeApiValue = selectedThemeObj?.apiValue || '';
+
+      const farmData = {
+        title: farmName.trim(),
+        description: description.trim(),
+        address: address.trim(),
+        price: parseInt(price) || 0,
+        rentalPeriod: parseInt(rentalPeriod) || 0,
+        size: parseInt(area) || 0,
+        theme: themeApiValue
+      };
+      
+      // 데이터 validation 로그
+      console.log('전송 전 데이터 검증:', {
+        title: farmData.title.length + ' chars',
+        description: farmData.description.length + ' chars', 
+        address: farmData.address.length + ' chars',
+        price: farmData.price + ' (number)',
+        rentalPeriod: farmData.rentalPeriod + ' (number)',
+        size: farmData.size + ' (number)',
+        theme: farmData.theme + ' (string)',
+        hasImage: !!image
+      });
+
+      const response = await createFarm(farmData, image);
+      console.log('텃밭 등록 성공:', response);
+      
+      // 성공 시 홈으로 이동
+      alert('텃밭이 성공적으로 등록되었습니다!');
+      navigate('/home');
+    } catch (error) {
+      console.error('텃밭 등록 실패:', error);
+      alert('텃밭 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -58,20 +93,12 @@ const AddFarm = () => {
     setArea(e.target.value);
   };
 
-  const handleAccountClick = () => {
-    setAccountSelected(!accountSelected);
-  };
-
-  const handleAddAccountClick = () => {
-    alert('계좌를 등록해주세요');
-    navigate('/mypage');
-  };
 
   const themes = [
-    { id: 'rooftop', name: '옥상', description: '아파트 및 건물 옥상, 지붕 위 공간' },
-    { id: 'lot', name: '공터', description: '건물 옆 자투리 공간, 쓰임 없는 부지 ' },
-    { id: 'garden', name: '화단', description: '아파트 단지 내 화단, 빌라 현관 앞 꽃밭' },
-    { id: 'park', name: '공원', description: '공원 내 공공 텃밭, 산책로 옆 잔디' }
+    { id: 'rooftop', name: '옥상', description: '아파트 및 건물 옥상, 지붕 위 공간', apiValue: 'ROOFTOP' },
+    { id: 'lot', name: '공터', description: '건물 옆 자투리 공간, 쓰임 없는 부지', apiValue: 'EMPTY_LOT' },
+    { id: 'garden', name: '화단', description: '아파트 단지 내 화단, 빌라 현관 앞 꽃밭', apiValue: 'FLOWER_BED' },
+    { id: 'park', name: '공원', description: '공원 내 공공 텃밭, 산책로 옆 잔디', apiValue: 'PARK' }
   ];
 
   const LocationIcon = () => (
@@ -94,11 +121,6 @@ const AddFarm = () => {
     </svg>
   );
 
-  const PaymentIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path d="M5.25 5C4.38805 5 3.5614 5.34241 2.9519 5.9519C2.34241 6.5614 2 7.38805 2 8.25V9.5H22V8.25C22 7.8232 21.9159 7.40059 21.7526 7.00628C21.5893 6.61197 21.3499 6.25369 21.0481 5.9519C20.7463 5.65011 20.388 5.41072 19.9937 5.24739C19.5994 5.08406 19.1768 5 18.75 5H5.25ZM22 11H2V15.75C2 16.612 2.34241 17.4386 2.9519 18.0481C3.5614 18.6576 4.38805 19 5.25 19H18.75C19.1768 19 19.5994 18.9159 19.9937 18.7526C20.388 18.5893 20.7463 18.3499 21.0481 18.0481C21.3499 17.7463 21.5893 17.388 21.7526 16.9937C21.9159 16.5994 22 16.1768 22 15.75V11ZM15.75 14.5H18.25C18.4489 14.5 18.6397 14.579 18.7803 14.7197C18.921 14.8603 19 15.0511 19 15.25C19 15.4489 18.921 15.6397 18.7803 15.7803C18.6397 15.921 18.4489 16 18.25 16H15.75C15.5511 16 15.3603 15.921 15.2197 15.7803C15.079 15.6397 15 15.4489 15 15.25C15 15.0511 15.079 14.8603 15.2197 14.7197C15.3603 14.579 15.5511 14.5 15.75 14.5Z" fill="#777777"/>
-    </svg>
-  );
 
   const AreaIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -112,9 +134,11 @@ const AddFarm = () => {
     </svg>
   );
 
-  const PlusIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7z" fill="currentColor"/>
+
+  const SliderHandle = () => (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="18" fill="white" stroke="#1aa752" strokeWidth="4"/>
+      <circle cx="20" cy="20" r="6" fill="#1aa752"/>
     </svg>
   );
 
@@ -133,7 +157,7 @@ const AddFarm = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-white min-h-screen pt-20">
+      <div className="bg-white min-h-screen pt-32">
         <div className="max-w-[1440px] mx-auto px-40 py-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-12">
@@ -144,20 +168,13 @@ const AddFarm = () => {
                   <span className="text-[16px] font-semibold">친환경 점수 +10</span>
                 </div>
               )}
-              <button
+              <Button
                 onClick={handleSubmit}
-                className={`px-7 py-3 rounded-[100px] flex items-center gap-2 transition-colors ${
-                  isFormValid() 
-                    ? 'bg-[#1aa752] text-white' 
-                    : 'bg-[#f7f7f7] text-[#bbbbbb] cursor-not-allowed'
-                }`}
-                disabled={!isFormValid()}
+                variant="farm"
+                disabled={!isFormValid() || isSubmitting}
               >
-                <span className="text-[24px] tracking-[-0.48px]">등록</span>
-                <div className={isFormValid() ? 'text-white' : 'text-[#bbbbbb]'}>
-                  <PlusIcon />
-                </div>
-              </button>
+                {isSubmitting ? '등록 중...' : '등록'}
+              </Button>
             </div>
           </div>
 
@@ -275,37 +292,6 @@ const AddFarm = () => {
 
             {/* Right Column */}
             <div className="space-y-8">
-              {/* Account */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <PaymentIcon />
-                    <label className="text-[20px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">계좌</label>
-                  </div>
-                  <div className="cursor-pointer" onClick={handleAddAccountClick}>
-                    <PlusIcon />
-                  </div>
-                </div>
-                <div 
-                  className={`cursor-pointer rounded-2xl px-6 py-4 h-[72px] flex items-center gap-4 transition-colors ${
-                    accountSelected 
-                      ? 'bg-[#f7f7f7] border border-[#1aa752]' 
-                      : 'border border-[#bbbbbb] bg-white'
-                  }`}
-                  onClick={handleAccountClick}
-                >
-                  <div className="relative w-6 h-6">
-                    {accountSelected && (
-                      <img src={imgCheckIcon} alt="check" className="w-6 h-6" />
-                    )}
-                  </div>
-                  <div className="flex gap-2 text-[14px] text-black tracking-[-0.42px]">
-                    <span>{selectedBank}</span>
-                    <span>{accountNumber}</span>
-                  </div>
-                </div>
-              </div>
-
               {/* 면적 */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
@@ -317,7 +303,7 @@ const AddFarm = () => {
                     <div className="bg-[#f7f7f7] h-2 rounded-full"></div>
                     <div className="bg-[#1aa752] h-2 rounded-full absolute top-0 left-0" style={{ width: `${(area / 100) * 100}%` }}></div>
                     <div className="absolute -top-4 left-0 w-10 h-10" style={{ left: `${(area / 100) * 100}%`, transform: 'translateX(-50%)' }}>
-                      <img src={imgSliderHandle} alt="slider" className="w-10 h-10" />
+                      <SliderHandle />
                     </div>
                     <input
                       type="range"

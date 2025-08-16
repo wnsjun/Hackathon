@@ -69,7 +69,7 @@ export const CommunityWrite = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-white min-h-screen pt-20">
+      <div className="bg-white min-h-screen pt-32">
         <div className="max-w-[1440px] mx-auto px-40 py-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-12">

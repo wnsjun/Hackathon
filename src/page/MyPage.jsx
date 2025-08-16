@@ -3,17 +3,17 @@ import profile from '../assets/profile.svg?url';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/mypage.module.css';
 import ChatbotIcon from '../components/common/ChatbotIcon';
-import setting from '../assets/setting.svg';
 import { useAuth } from '../hooks/useAuth';
+import setting from '../assets/setting.svg';
 import RentingFarmCard from '../components/common/RentingFarmCard';
 import FarmCard from '../components/common/FarmCard';
 import CommunityPostCard from '../components/common/CommunityPostCard';
 
 export const MyPage = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [farmToggle, setFarmToggle] = useState('my');
   const [communityToggle, setCommunityToggle] = useState('written');
-  const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -21,6 +21,11 @@ export const MyPage = () => {
   };
 
   // === API 연동 시 받아올 데이터 (임시 더미) ===
+  const handleLogoutClick = () => {
+    logout();
+    navigate('/');
+  };
+
   const myFarms = [
     {
       id: 1,
@@ -158,11 +163,19 @@ export const MyPage = () => {
   return (
     <div>
       {/* 프로필 영역 */}
-      <div className="flex pt-20">
+      <div className="flex pt-32">
         <div className="flex pt-12 pl-40 w-full h-[336px] relative">
           <img className="w-60 h-60" src={profile} alt="Profile" />
           <div className="flex flex-col pl-[46px] pt-[43px] items-start">
-            <h1 className={styles.nickname}>닉네임</h1>
+            <div className="flex items-center gap-4">
+              <h1 className={styles.nickname}>닉네임</h1>
+              <button
+                onClick={handleLogoutClick}
+                className="text-sm font-medium text-gray-600 hover:text-gray-800 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                로그아웃
+              </button>
+            </div>
             <p className={styles.location}>마포구 창전동</p>
             <div className="flex items-center gap-x-4 pt-1">
               <p className={styles.ecoScore}>친환경 점수</p>
