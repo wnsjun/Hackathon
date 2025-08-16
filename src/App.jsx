@@ -12,6 +12,7 @@ import CommunityWrite from './page/CommunityWrite';
 import AddInfo from './page/AddInfo';
 import SignupInfo from './page/SignupInfo';
 import CommunityDetail from './page/CommunityDetail';
+import SettingPage from './page/Setting';
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/community/:id" element={<CommunityDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/setting" element={<SettingPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/addinfo" element={<AddInfo />} />
           <Route path="/signupinfo" element={<SignupInfo />} />

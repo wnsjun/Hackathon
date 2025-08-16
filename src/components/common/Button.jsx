@@ -45,9 +45,11 @@ const Button = ({
     red: 'bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white',
     green: 'bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white',
     gray: 'bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white',
-    next: '', // next 버튼은 스타일 직접 지정
+    next: '', // next 버튼은 별도 처리
+    review: '', // review 버튼은 별도 처리
   };
 
+  // next 버튼 스타일
   if (color === 'next') {
     const nextButtonStyle = {
       display: 'flex',
@@ -59,14 +61,13 @@ const Button = ({
       gap: '10px',
       alignSelf: 'stretch',
       borderRadius: '8px',
-      background: disabled ? 'var(--F7F7F7, #F7F7F7)' : 'var(--Main, #1AA752)',
+      background: disabled ? '#F7F7F7' : '#1AA752',
       border: 'none',
       cursor: disabled ? 'not-allowed' : 'pointer',
-      opacity: 1,
     };
 
     const nextButtonTextStyle = {
-      color: disabled ? 'var(--BBB, #BBB)' : 'var(--100, #FFF)',
+      color: disabled ? '#BBB' : '#FFF',
       textAlign: 'center',
       fontFamily: 'Pretendard',
       fontSize: '20px',
@@ -90,6 +91,49 @@ const Button = ({
     );
   }
 
+  // review 버튼 스타일
+  if (color === 'review') {
+    const reviewButtonStyle = {
+      display: 'flex',
+      height: '52px',
+      padding: '10px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: '10px',
+      alignSelf: 'stretch',
+      borderRadius: '12px',
+      background: disabled ? '#F7F7F7' : '#1AA752',
+      border: 'none',
+      cursor: disabled ? 'not-allowed' : 'pointer',
+      width: '100%',
+    };
+
+    const reviewButtonTextStyle = {
+      color: disabled ? '#BBB' : '#FFF',
+      textAlign: 'center',
+      fontFamily: 'Pretendard',
+      fontSize: '20px',
+      fontStyle: 'normal',
+      fontWeight: 600,
+      lineHeight: '150%', // 30px
+      letterSpacing: '-0.6px',
+      userSelect: 'none',
+    };
+
+    return (
+      <button
+        type={type}
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        style={reviewButtonStyle}
+        {...props}
+      >
+        <span style={reviewButtonTextStyle}>{children}</span>
+      </button>
+    );
+  }
+
+  // 기본 버튼 (blue, red, green, gray)
   const colorClasses = colors[color] || colors.green;
 
   return (
