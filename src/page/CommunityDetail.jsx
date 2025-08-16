@@ -13,7 +13,6 @@ const CommunityDetail = () => {
   const imgEllipse82 = "http://localhost:3845/assets/03eab3ed8c78bad7cdec7c3357374c5806558d02.png";
   const imgRectangle161125945 = "http://localhost:3845/assets/99ed4a5b97b53e3180927bfe5bd3f23c7540750f.png";
   const imgEllipse83 = "http://localhost:3845/assets/08bc8f0fb0393f4fa955e7165c21fdf8b107680f.png";
-  const imgVector = "http://localhost:3845/assets/747eb9418c39fe0ea8ada0911673f1cd281d2715.svg";
   const imgIconStroke = "http://localhost:3845/assets/fcf78ba651ba6c64f9aef73aba247eaf75c7443b.svg";
   const imgVector1 = "http://localhost:3845/assets/1b193f7832bcdbddc1ce4e049b217cc1f504e158.svg";
   const img2 = "http://localhost:3845/assets/7cf7e64aface95ddfb54c919d250b988a81ec18c.svg";

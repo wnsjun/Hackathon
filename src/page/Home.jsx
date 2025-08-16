@@ -194,32 +194,45 @@ const Home = () => {
 
         </div>
 
-        {/* 추천 섹션 */}
-        <div className="mb-10">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {userName}님만을 위한 텃밭이에요
-            </h2>
-            <button 
-              onClick={handleViewAllRecommendationsClick}
-              className="text-sm text-[#777] font-medium flex items-center gap-1 transition-colors"
-            >
-              새로고침
-              <svg className="w-4 h-4 text-[#777]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M21 3v5h-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M3 21v-5h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-
-            </button>
+        {/* 추천 섹션 - 로그인 상태일 때만 표시 */}
+        {isLoggedIn && (
+          <div className="mb-10">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {userName}님만을 위한 텃밭이에요
+              </h2>
+              <button 
+                onClick={handleViewAllRecommendationsClick}
+                className="text-sm text-[#777] font-medium flex items-center gap-1 transition-colors"
+              >
+                새로고침
+                <svg className="w-4 h-4 text-[#777]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M21 3v5h-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M3 21v-5h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+            {Array.isArray(recommendedFarms) && recommendedFarms.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+                {recommendedFarms.slice(0, 3).map((farm) => (
+                  <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gray-400">
+                    <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M20 6L9 17l-5-5"/>
+                  </svg>
+                </div>
+                <p className="text-gray-500 text-lg">추천 매물이 없습니다</p>
+                <p className="text-gray-400 text-sm mt-1">더 많은 매물이 등록되면 맞춤 추천해드릴게요</p>
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-            {filteredFarms.slice(0, 3).map((farm) => (
-              <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* 텃밭 매물 확인 섹션 */}
         <div className="bg-white rounded-xl p-6 shadow-sm">

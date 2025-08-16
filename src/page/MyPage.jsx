@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import profile from '../assets/profile.svg?url';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/mypage.module.css';
-import Button from '../components/common/Button';
 import ChatbotIcon from '../components/common/ChatbotIcon';
+import { useAuth } from '../hooks/useAuth';
 
 // FarmCard 간단 버전
 const FarmCard = ({ farm }) => {
@@ -52,8 +52,14 @@ const CommunityCard = ({ post }) => {
 
 export const MyPage = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [farmToggle, setFarmToggle] = useState('my');
   const [communityToggle, setCommunityToggle] = useState('written');
+
+  const handleLogoutClick = () => {
+    logout();
+    navigate('/');
+  };
 
   const farmData = [
     {
@@ -119,7 +125,15 @@ export const MyPage = () => {
         <div className="flex pt-12 pl-40 w-full h-[336px]">
           <img className="w-60 h-60" src={profile} alt="Profile" />
           <div className="flex flex-col pl-[46px] pt-[43px] items-start">
-            <h1 className={styles.nickname}>닉네임</h1>
+            <div className="flex items-center gap-4">
+              <h1 className={styles.nickname}>닉네임</h1>
+              <button 
+                onClick={handleLogoutClick}
+                className="text-sm font-medium text-gray-600 hover:text-gray-800 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                로그아웃
+              </button>
+            </div>
             <p className={styles.location}>마포구 창전동</p>
             <div className="flex items-center gap-x-4 pt-1">
               <p className={styles.ecoScore}>친환경 점수</p>
