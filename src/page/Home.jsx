@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FarmCard from '../components/common/FarmCard';
 import RecommendFarmCard from '../components/common/RecommendFarmCard';
+import Button from '../components/common/Button';
 import { mockFarms } from '../data/mockFarms';
 import { fetchAllFarms } from '../apis/home';
 import ChatbotIcon from '../components/common/ChatbotIcon';
@@ -182,7 +183,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="px-6 sm:px-12 lg:px-20 xl:px-32 py-6 pt-24">
+      <div className="px-6 sm:px-12 lg:px-20 xl:px-32 py-6 pt-32">
         {/* 배너 섹션 */}
         <div className="mb-8">
         <img
@@ -238,15 +239,12 @@ const Home = () => {
         <div className="bg-white rounded-xl p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <h2 className="text-2xl font-bold text-gray-900">텃밭 매물 확인</h2>
-            <button 
+            <Button 
               onClick={handleRegisterFarmClick}
-              className="bg-[#1aa752] hover:bg-green-600 text-white px-7 py-3 rounded-[100px] font-normal text-[24px] leading-[1.5] tracking-[-0.48px] transition-colors shadow-sm flex items-center gap-2"
+              variant="farm"
             >
               매물 등록
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white">
-                <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14"/>
-              </svg>
-            </button>
+            </Button>
           </div>
 
           {/* 필터 버튼들 */}

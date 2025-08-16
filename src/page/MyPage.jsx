@@ -121,7 +121,7 @@ export const MyPage = () => {
   return (
     <div>
       {/* 프로필 영역 */}
-      <div className="flex pt-20">
+      <div className="flex pt-32">
         <div className="flex pt-12 pl-40 w-full h-[336px]">
           <img className="w-60 h-60" src={profile} alt="Profile" />
           <div className="flex flex-col pl-[46px] pt-[43px] items-start">

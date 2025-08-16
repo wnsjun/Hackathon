@@ -1,6 +1,7 @@
 import { Navbar } from '../components/layouts/Navbar';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Button from '../components/common/Button';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import { createFarm } from '../apis/home';
 
@@ -133,11 +134,6 @@ const AddFarm = () => {
     </svg>
   );
 
-  const PlusIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7z" fill="currentColor"/>
-    </svg>
-  );
 
   const SliderHandle = () => (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -161,7 +157,7 @@ const AddFarm = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-white min-h-screen pt-20">
+      <div className="bg-white min-h-screen pt-32">
         <div className="max-w-[1440px] mx-auto px-40 py-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-12">
@@ -172,22 +168,13 @@ const AddFarm = () => {
                   <span className="text-[16px] font-semibold">친환경 점수 +10</span>
                 </div>
               )}
-              <button
+              <Button
                 onClick={handleSubmit}
-                className={`px-7 py-3 rounded-[100px] flex items-center gap-2 transition-colors ${
-                  isFormValid() && !isSubmitting
-                    ? 'bg-[#1aa752] text-white' 
-                    : 'bg-[#f7f7f7] text-[#bbbbbb] cursor-not-allowed'
-                }`}
+                variant="farm"
                 disabled={!isFormValid() || isSubmitting}
               >
-                <span className="text-[24px] tracking-[-0.48px]">
-                  {isSubmitting ? '등록 중...' : '등록'}
-                </span>
-                <div className={isFormValid() && !isSubmitting ? 'text-white' : 'text-[#bbbbbb]'}>
-                  <PlusIcon />
-                </div>
-              </button>
+                {isSubmitting ? '등록 중...' : '등록'}
+              </Button>
             </div>
           </div>
 

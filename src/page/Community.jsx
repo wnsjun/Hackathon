@@ -4,6 +4,7 @@ import CommunityPostCard from '../components/common/CommunityPostCard';
 import Button from '../components/common/Button';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import { mockCommunityPosts } from '../data/mockCommunity';
+import { fetchFeedPosts, fetchTipPosts } from '../apis/community';
 
 export const Community = () => {
   const [activeTab, setActiveTab] = useState('certification');
@@ -11,7 +12,40 @@ export const Community = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setPosts(mockCommunityPosts);
+    const loadPosts = async () => {
+      try {
+        const [feedPosts, tipPosts] = await Promise.all([
+          fetchFeedPosts(),
+          fetchTipPosts()
+        ]);
+        
+        const transformedFeedPosts = feedPosts.map(post => ({
+          id: post.id,
+          title: post.title,
+          username: post.authorNickname,
+          image: post.thumbnailUrl,
+          likes: post.likeCount
+        }));
+
+        const transformedTipPosts = tipPosts.map(post => ({
+          id: post.id,
+          title: post.title,
+          username: post.authorNickname,
+          image: post.thumbnailUrl,
+          likes: post.likeCount
+        }));
+
+        setPosts({
+          certification: transformedFeedPosts,
+          tips: transformedTipPosts
+        });
+      } catch (error) {
+        console.error('게시글 로드 실패:', error);
+        setPosts(mockCommunityPosts);
+      }
+    };
+
+    loadPosts();
   }, []);
 
   const handleTabClick = (tab) => {
@@ -26,7 +60,7 @@ export const Community = () => {
   const postsToShow = posts[activeTab] || [];
 
   return (
-    <div className="p-12 my-12">
+    <div className="p-12 mt-24 mb-12">
       {/* 탭 네비게이션 */}
       <div className="flex justify-between items-center mb-8 max-w-6xl mx-auto">
         <div className="flex">
@@ -51,7 +85,7 @@ export const Community = () => {
             재배 팁
           </button>
         </div>
-        <Button onClick={handleWriteClick}>작성하기</Button>
+        <Button onClick={handleWriteClick} variant="farm">작성하기</Button>
       </div>
 
       {/* 게시글 그리드 */}

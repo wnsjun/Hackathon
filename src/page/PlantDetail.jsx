@@ -73,7 +73,7 @@ const PlantDetail = () => {
     return (
       <>
         <Navbar />
-        <div className="bg-white min-h-screen pt-20 flex items-center justify-center">
+        <div className="bg-white min-h-screen pt-32 flex items-center justify-center">
           <div className="text-center">
             <p className="text-[20px] text-[#777777]">로딩 중...</p>
           </div>
@@ -86,7 +86,7 @@ const PlantDetail = () => {
     return (
       <>
         <Navbar />
-        <div className="bg-white min-h-screen pt-20 flex items-center justify-center">
+        <div className="bg-white min-h-screen pt-32 flex items-center justify-center">
           <div className="text-center">
             <p className="text-[20px] text-[#777777]">텃밭 정보를 찾을 수 없습니다.</p>
           </div>
@@ -98,7 +98,7 @@ const PlantDetail = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-white min-h-screen pt-20">
+      <div className="bg-white min-h-screen pt-32">
         <div className="max-w-[1440px] mx-auto px-40 py-8">
           
           {/* User info and bookmark */}

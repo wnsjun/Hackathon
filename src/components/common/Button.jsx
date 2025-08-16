@@ -35,7 +35,9 @@ const Button = ({
   onClick,
   disabled = false,
   color = 'green',
+  variant = 'default',
   type = 'button',
+  showIcon = true,
   ...props
 }) => {
   const baseClasses = 'rounded focus:outline-none transition select-none';
@@ -45,7 +47,7 @@ const Button = ({
     red: 'bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white',
     green: 'bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white',
     gray: 'bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white',
-    next: '', // next 버튼은 스타일 직접 지정
+    next: '',
   };
 
   if (color === 'next') {
@@ -72,7 +74,7 @@ const Button = ({
       fontSize: '20px',
       fontStyle: 'normal',
       fontWeight: 600,
-      lineHeight: '150%', // 30px
+      lineHeight: '150%',
       letterSpacing: '-0.6px',
       userSelect: 'none',
     };
@@ -86,6 +88,25 @@ const Button = ({
         {...props}
       >
         <span style={nextButtonTextStyle}>{children}</span>
+      </button>
+    );
+  }
+
+  if (variant === 'farm') {
+    return (
+      <button
+        type={type}
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        className="bg-[#1aa752] hover:bg-green-600 text-white px-7 py-3 rounded-[100px] font-normal text-[24px] leading-[1.5] tracking-[-0.48px] transition-colors shadow-sm flex items-center gap-2"
+        {...props}
+      >
+        {children}
+        {showIcon && (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white">
+            <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14"/>
+          </svg>
+        )}
       </button>
     );
   }
