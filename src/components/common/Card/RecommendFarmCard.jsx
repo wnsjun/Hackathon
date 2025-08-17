@@ -42,6 +42,42 @@ const BookmarkIcon = ({ isBookmarked, onClick }) => {
 const RecommendFarmCard = ({ farm}) => {
   const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(farm.isBookmarked || false);
+  
+  // 지역 정보 로직
+  const getLocationInfo = () => {
+    const userData = localStorage.getItem('userData');
+    if (!userData) return { text: farm.district || '', suffix: '' };
+    
+    const { preferredThemes = [], preferredDong = '' } = JSON.parse(userData);
+    
+    const hasPreferredTheme = preferredThemes.includes(farm.theme);
+    const hasPreferredDong = farm.address && farm.address.includes(preferredDong);
+    
+    if (hasPreferredTheme && hasPreferredDong) {
+      return { 
+        text: `${preferredThemes.find(theme => theme === farm.theme)} · ${preferredDong}`, 
+        suffix: '에 해당해요' 
+      };
+    }
+    
+    if (hasPreferredTheme) {
+      return { 
+        text: preferredThemes.find(theme => theme === farm.theme), 
+        suffix: ' 테마예요' 
+      };
+    }
+    
+    if (hasPreferredDong) {
+      return { 
+        text: preferredDong, 
+        suffix: '에 있어요' 
+      };
+    }
+    
+    return { text: farm.district || '', suffix: '에 있어요' };
+  };
+  
+  const locationInfo = getLocationInfo();
 
   const handleCardClick = () => {
     navigate(`/plant/${farm.id}`, { state: { farm } });
@@ -81,8 +117,8 @@ const RecommendFarmCard = ({ farm}) => {
           <div className="flex flex-col gap-4">
             {/* 지역 정보 */}
             <div className="flex items-start text-base tracking-[-0.48px]">
-              <span className="font-semibold text-[#1aa752]">{farm.district}</span>
-              <span className="font-normal text-black">에 있어요</span>
+              <span className="font-semibold text-[#1aa752]">{locationInfo.text}</span>
+              <span className="font-normal text-black">{locationInfo.suffix}</span>
             </div>
 
             {/* 제목과 면적 */}

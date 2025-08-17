@@ -62,6 +62,7 @@ export const useAuth = () => {
   
   const logout = () => {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('userData');
   };
 
   // For now, using a default coin balance
@@ -79,6 +80,8 @@ export const useLogin = () => {
       const token = res?.accessToken;
       if (token) {
         localStorage.setItem('accessToken', token);
+        // 전체 사용자 데이터를 userData로 저장
+        localStorage.setItem('userData', JSON.stringify(res));
         alert('로그인 성공!');
       }
     },

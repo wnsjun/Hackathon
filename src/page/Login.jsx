@@ -18,6 +18,7 @@ export const Login = () => {
       {
         onSuccess: (data) => {
           localStorage.setItem('accessToken', data.accessToken);
+          localStorage.setItem('userData', JSON.stringify(data));
           alert('로그인 성공!');
           navigate('/home');
         },

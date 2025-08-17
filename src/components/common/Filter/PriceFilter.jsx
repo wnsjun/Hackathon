@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 
-const imgSliderHandle = "/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
-
 const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000000);
@@ -37,16 +35,16 @@ const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
     const value = Math.round((percent / 100) * 1000000);
 
     if (isDragging === 'min') {
-      setMinPrice(Math.min(value, maxPrice - 1000));
+      const newMinPrice = Math.min(value, maxPrice - 1000);
+      setMinPrice(newMinPrice);
+      onApplyFilter({ minPrice: newMinPrice, maxPrice });
     } else if (isDragging === 'max') {
-      setMaxPrice(Math.max(value, minPrice + 1000));
+      const newMaxPrice = Math.max(value, minPrice + 1000);
+      setMaxPrice(newMaxPrice);
+      onApplyFilter({ minPrice, maxPrice: newMaxPrice });
     }
   };
 
-  const handleApplyFilter = () => {
-    onApplyFilter({ minPrice, maxPrice });
-    onClose();
-  };
 
   useEffect(() => {
     if (isDragging) {
@@ -109,11 +107,24 @@ const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
             onMouseDown={() => handleMouseDown('min')}
           >
             <div className="absolute inset-[-20%]">
-              <img
-                alt=""
-                className="block max-w-none size-full"
-                src={imgSliderHandle}
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
+              <g filter="url(#filter0_d_218_2061)">
+              <circle cx="28" cy="28" r="20" fill="white"/>
+              </g>
+              <circle cx="28" cy="28" r="8" fill="#1AA752"/>
+              <defs>
+              <filter id="filter0_d_218_2061" x="0" y="0" width="56" height="56" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset/>
+                <feGaussianBlur stdDeviation="4"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_218_2061"/>
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_218_2061" result="shape"/>
+              </filter>
+              </defs>
+            </svg>
             </div>
           </div>
           
@@ -123,11 +134,24 @@ const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
             onMouseDown={() => handleMouseDown('max')}
           >
             <div className="absolute inset-[-20%]">
-              <img
-                alt=""
-                className="block max-w-none size-full"
-                src={imgSliderHandle}
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
+              <g filter="url(#filter0_d_218_2061)">
+              <circle cx="28" cy="28" r="20" fill="white"/>
+              </g>
+              <circle cx="28" cy="28" r="8" fill="#1AA752"/>
+              <defs>
+              <filter id="filter0_d_218_2061" x="0" y="0" width="56" height="56" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset/>
+                <feGaussianBlur stdDeviation="4"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_218_2061"/>
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_218_2061" result="shape"/>
+              </filter>
+              </defs>
+            </svg>
             </div>
           </div>
         </div>
@@ -157,23 +181,6 @@ const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
           </div>
         </div>
 
-        <div className="flex justify-between w-full gap-2 mt-2">
-          <button
-            onClick={() => {
-              setMinPrice(0);
-              setMaxPrice(1000000);
-            }}
-            className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-xs text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            초기화
-          </button>
-          <button
-            onClick={handleApplyFilter}
-            className="flex-1 px-3 py-1.5 bg-[#1AA752] text-white rounded text-xs hover:bg-green-600 transition-colors"
-          >
-            적용하기
-          </button>
-        </div>
       </div>
     </div>
   );
