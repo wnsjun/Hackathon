@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { mockCertificationPosts, mockTipPosts } from '../data/mockCommunity';
+import { mockFarms } from '../data/mockFarms';
 import profile from '../assets/profile.svg?url';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/mypage.module.css';
@@ -20,145 +22,23 @@ export const MyPage = () => {
     navigate('/');
   };
 
-  // === API 연동 시 받아올 데이터 (임시 더미) ===
-  const handleLogoutClick = () => {
-    logout();
-    navigate('/');
+  // Arrow icon component
+  const ArrowIcon = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+      <path d="M9 14.0498L15.5 8.00051L9 1.95121" stroke="#777777" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
   };
 
-  const myFarms = [
-    {
-      id: 1,
-      title: '텃밭 1',
-      address: '서울 마포구',
-      price: '50,000원',
-      rentalPeriod: '3개월',
-    },
-    {
-      id: 2,
-      title: '텃밭 2',
-      address: '서울 성동구',
-      price: '70,000원',
-      rentalPeriod: '6개월',
-    },
-    {
-      id: 3,
-      title: '텃밭 3',
-      address: '서울 강남구',
-      price: '90,000원',
-      rentalPeriod: '1년',
-    },
-    {
-      id: 4,
-      title: '텃밭 4',
-      address: '서울 종로구',
-      price: '60,000원',
-      rentalPeriod: '6개월',
-    },
-  ];
 
-  const rentingFarms = [
-    {
-      id: 5,
-      title: '대여텃밭 1',
-      address: '서울 중구',
-      price: '40,000원',
-      rentalPeriod: '3개월',
-    },
-    {
-      id: 6,
-      title: '대여텃밭 2',
-      address: '서울 동작구',
-      price: '55,000원',
-      rentalPeriod: '6개월',
-    },
-    {
-      id: 7,
-      title: '대여텃밭 3',
-      address: '서울 서대문구',
-      price: '80,000원',
-      rentalPeriod: '1년',
-    },
-  ];
+ //임의로 mockdata 갖고옴
+  const myFarms = mockFarms.slice(0, 3);
+  const rentingFarms = mockFarms.slice(3, 6);
+  const bookmarkedFarms = mockFarms.slice(2, 5);
 
-  const bookmarkedFarms = [
-    {
-      id: 8,
-      title: '북마크 텃밭 1',
-      address: '서울 은평구',
-      price: '65,000원',
-      rentalPeriod: '3개월',
-    },
-    {
-      id: 9,
-      title: '북마크 텃밭 2',
-      address: '서울 송파구',
-      price: '85,000원',
-      rentalPeriod: '6개월',
-    },
-    {
-      id: 10,
-      title: '북마크 텃밭 3',
-      address: '서울 강서구',
-      price: '95,000원',
-      rentalPeriod: '1년',
-    },
-  ];
-
-  const writtenPosts = [
-    {
-      id: 1,
-      title: '첫 글',
-      content: '첫번째 글 내용',
-      nickname: '사용자1',
-      timeAgo: '1일 전',
-    },
-    {
-      id: 2,
-      title: '두번째 글',
-      content: '두번째 글 내용',
-      nickname: '사용자2',
-      timeAgo: '2일 전',
-    },
-    {
-      id: 3,
-      title: '세번째 글',
-      content: '세번째 글 내용',
-      nickname: '사용자3',
-      timeAgo: '3일 전',
-    },
-    {
-      id: 4,
-      title: '네번째 글',
-      content: '네번째 글 내용',
-      nickname: '사용자4',
-      timeAgo: '4일 전',
-    },
-  ];
-
-  const likedPosts = [
-    {
-      id: 5,
-      title: '좋아요 글1',
-      content: '좋아요 한 글',
-      nickname: '사용자A',
-      timeAgo: '5일 전',
-    },
-    {
-      id: 6,
-      title: '좋아요 글2',
-      content: '좋아요 두번째',
-      nickname: '사용자B',
-      timeAgo: '6일 전',
-    },
-    {
-      id: 7,
-      title: '좋아요 글3',
-      content: '좋아요 세번째',
-      nickname: '사용자C',
-      timeAgo: '7일 전',
-    },
-  ];
+  const writtenPosts = mockCertificationPosts.slice(0, 4);
+  const likedPosts = mockTipPosts.slice(0, 3);
 
   return (
     <div>
@@ -169,12 +49,6 @@ export const MyPage = () => {
           <div className="flex flex-col pl-[46px] pt-[43px] items-start">
             <div className="flex items-center gap-4">
               <h1 className={styles.nickname}>닉네임</h1>
-              <button
-                onClick={handleLogoutClick}
-                className="text-sm font-medium text-gray-600 hover:text-gray-800 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-              >
-                로그아웃
-              </button>
             </div>
             <p className={styles.location}>마포구 창전동</p>
             <div className="flex items-center gap-x-4 pt-1">
@@ -187,7 +61,7 @@ export const MyPage = () => {
           <div className="absolute top-4 right-6 mt-12 flex items-center gap-3">
             <button
               onClick={handleLogout}
-              className="text-red-500 font-semibold hover:underline"
+              className="text-red-500 font-semibold cursor-pointer"
             >
               로그아웃
             </button>
@@ -204,7 +78,12 @@ export const MyPage = () => {
         {/* 거래 리뷰 */}
         <div className="flex items-center justify-between mb-6">
           <h1 className={styles.tradeReviewTitle}>거래 리뷰</h1>
-          <button className="text-green-600 hover:underline">전체보기</button>
+          <button 
+            className="cursor-pointer flex items-center gap-1"
+            style={{ color: '#777777', fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 400, lineHeight: '150%', letterSpacing: '-0.48px' }}
+          >
+            전체보기 <ArrowIcon/>
+          </button>
         </div>
 
         <div className="flex gap-6 mb-16">
@@ -232,99 +111,184 @@ export const MyPage = () => {
         </div>
 
         {/* 텃밭 */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className={styles.tradeReviewTitle}>텃밭</h1>
-        </div>
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex gap-4">
-            <button
-              className={`px-4 py-2 rounded ${
-                farmToggle === 'my' ? 'bg-green-600 text-white' : 'bg-gray-200'
-              }`}
-              onClick={() => setFarmToggle('my')}
-            >
-              내 텃밭
-            </button>
-            <button
-              className={`px-4 py-2 rounded ${
-                farmToggle === 'renting'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-200'
-              }`}
-              onClick={() => setFarmToggle('renting')}
-            >
-              대여중인 텃밭
-            </button>
-            <button
-              className={`px-4 py-2 rounded ${
-                farmToggle === 'bookmark'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-200'
-              }`}
-              onClick={() => setFarmToggle('bookmark')}
-            >
-              북마크한 텃밭
-            </button>
+        <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-full">
+          <div className="flex flex-col font-['Pretendard'] font-semibold justify-center leading-[1.5] not-italic relative shrink-0 text-[#000000] text-[32px] text-left tracking-[-0.64px] w-full">
+            <p className="block">텃밭</p>
           </div>
-          <button className="text-green-600 hover:underline">전체보기</button>
+          <div className="box-border content-stretch flex flex-row items-end justify-between p-0 relative shrink-0 w-full">
+            <div className="box-border content-stretch flex flex-row items-center justify-start leading-[0] p-0 relative shrink-0">
+              <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+                <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 relative w-60">
+                  <div
+                    aria-hidden="true"
+                    className={`absolute border-solid inset-0 pointer-events-none ${
+                      farmToggle === 'my' 
+                        ? 'border-[#1aa752] border-[0px_0px_4px]' 
+                        : 'border-transparent'
+                    }`}
+                  />
+                </div>
+                <button
+                  className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold h-[38.4px] justify-center leading-[0] ml-[87px] mt-[32.2px] not-italic relative text-[24px] text-left tracking-[-0.48px] translate-y-[-50%] w-[67px] cursor-pointer"
+                  style={{ color: farmToggle === 'my' ? '#000000' : '#bbbbbb' }}
+                  onClick={() => setFarmToggle('my')}
+                >
+                  <p className="block leading-[1.5] whitespace-pre">내 텃밭</p>
+                </button>
+              </div>
+              <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+                <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 w-60">
+                  <div
+                    aria-hidden="true"
+                    className={`absolute border-solid inset-0 pointer-events-none ${
+                      farmToggle === 'renting' 
+                        ? 'border-[#1aa752] border-[0px_0px_4px]' 
+                        : 'border-transparent'
+                    }`}
+                  />
+                </div>
+                <button
+                  className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold justify-center leading-[0] ml-14 mt-8 not-italic relative text-[24px] text-left text-nowrap tracking-[-0.48px] translate-y-[-50%] cursor-pointer"
+                  style={{ color: farmToggle === 'renting' ? '#000000' : '#bbbbbb' }}
+                  onClick={() => setFarmToggle('renting')}
+                >
+                  <p className="block leading-[1.5] whitespace-pre">대여중인 텃밭</p>
+                </button>
+              </div>
+              <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+                <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 w-60">
+                  <div
+                    aria-hidden="true"
+                    className={`absolute border-solid inset-0 pointer-events-none ${
+                      farmToggle === 'bookmark' 
+                        ? 'border-[#1aa752] border-[0px_0px_4px]' 
+                        : 'border-transparent'
+                    }`}
+                  />
+                </div>
+                <button
+                  className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold justify-center leading-[0] ml-14 mt-8 not-italic relative text-[24px] text-left text-nowrap tracking-[-0.48px] translate-y-[-50%] cursor-pointer"
+                  style={{ color: farmToggle === 'bookmark' ? '#000000' : '#bbbbbb' }}
+                  onClick={() => setFarmToggle('bookmark')}
+                >
+                  <p className="block leading-[1.5] whitespace-pre">북마크한 텃밭</p>
+                </button>
+              </div>
+            </div>
+            <div className="box-border content-stretch flex flex-row items-center justify-center p-0 relative shrink-0">
+            <button
+              className="cursor-pointer flex items-center gap-1"
+              style={{ color: '#777777', fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 400, lineHeight: '150%', letterSpacing: '-0.48px' }}
+              onClick={() => navigate('/my-all-farms')}
+            >
+              전체보기 <ArrowIcon/>
+            </button>
+            </div>
+          </div>
         </div>
+        <div className="h-6"></div>
 
         <div className="flex gap-6 mb-16">
           {farmToggle === 'my'
             ? myFarms
                 .slice(0, 3)
-                .map((farm) => <FarmCard key={farm.id} farm={farm} />)
+                .map((farm) => (
+                  <div key={farm.id} className="flex-none" style={{ width: 'calc(33.333% - 16px)' }}>
+                    <FarmCard farm={farm} />
+                  </div>
+                ))
             : farmToggle === 'renting'
               ? rentingFarms
                   .slice(0, 3)
-                  .map((farm) => <RentingFarmCard key={farm.id} farm={farm} />)
+                  .map((farm) => (
+                    <div key={farm.id} className="flex-none" style={{ width: 'calc(33.333% - 16px)' }}>
+                      <RentingFarmCard farm={farm} />
+                    </div>
+                  ))
               : bookmarkedFarms
                   .slice(0, 3)
-                  .map((farm) => <FarmCard key={farm.id} farm={farm} />)}
+                  .map((farm) => (
+                    <div key={farm.id} className="flex-none" style={{ width: 'calc(33.333% - 16px)' }}>
+                      <FarmCard farm={farm} />
+                    </div>
+                  ))}
         </div>
 
         {/* 커뮤니티 */}
         <div className="pt-18">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className={styles.tradeReviewTitle}>커뮤니티</h1>
-          </div>
-
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex gap-4">
-              <button
-                className={`px-4 py-2 rounded ${
-                  communityToggle === 'written'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200'
-                }`}
-                onClick={() => setCommunityToggle('written')}
-              >
-                작성글
-              </button>
-              <button
-                className={`px-4 py-2 rounded ${
-                  communityToggle === 'liked'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200'
-                }`}
-                onClick={() => setCommunityToggle('liked')}
-              >
-                좋아요 누른 글
-              </button>
+          <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-full">
+            <div className="flex flex-col font-['Pretendard'] font-semibold justify-center leading-[1.5] not-italic relative shrink-0 text-[#000000] text-[32px] text-left tracking-[-0.64px] w-full">
+              <p className="block">커뮤니티</p>
             </div>
-            <button
-              className="text-green-600 hover:underline"
-              onClick={() => navigate('/community')}
+            <div className="box-border content-stretch flex flex-row items-end justify-between p-0 relative shrink-0 w-full">
+              <div className="box-border content-stretch flex flex-row items-center justify-start leading-[0] p-0 relative shrink-0">
+                <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+                  <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 relative w-60">
+                    <div
+                      aria-hidden="true"
+                      className={`absolute border-solid inset-0 pointer-events-none ${
+                        communityToggle === 'written' 
+                          ? 'border-[#1aa752] border-[0px_0px_4px]' 
+                          : 'border-transparent'
+                      }`}
+                    />
+                  </div>
+                  <button
+                    className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold h-[38.4px] justify-center leading-[0] ml-[87px] mt-[32.2px] not-italic relative text-[24px] text-left tracking-[-0.48px] translate-y-[-50%] w-[67px] cursor-pointer"
+                    style={{ color: communityToggle === 'written' ? '#000000' : '#bbbbbb' }}
+                    onClick={() => setCommunityToggle('written')}
+                  >
+                    <p className="block leading-[1.5] whitespace-pre">작성 글</p>
+                  </button>
+                </div>
+                <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+                  <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 w-60">
+                    <div
+                      aria-hidden="true"
+                      className={`absolute border-solid inset-0 pointer-events-none ${
+                        communityToggle === 'liked' 
+                          ? 'border-[#1aa752] border-[0px_0px_4px]' 
+                          : 'border-transparent'
+                      }`}
+                    />
+                  </div>
+                  <button
+                    className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold justify-center leading-[0] ml-[54px] mt-8 not-italic relative text-[24px] text-left text-nowrap tracking-[-0.48px] translate-y-[-50%] cursor-pointer"
+                    style={{ color: communityToggle === 'liked' ? '#000000' : '#bbbbbb' }}
+                    onClick={() => setCommunityToggle('liked')}
+                  >
+                    <p className="block leading-[1.5] whitespace-pre">좋아요 누른 글</p>
+                  </button>
+                </div>
+              </div>
+              <div className="box-border content-stretch flex flex-row items-center justify-center p-0 relative shrink-0">
+              <button
+              className="cursor-pointer flex items-center gap-1"
+              style={{ color: '#777777', fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 400, lineHeight: '150%', letterSpacing: '-0.48px' }}
+              onClick={() => navigate('/my-all-community')}
             >
-              전체보기
+              전체보기 <ArrowIcon/>
             </button>
+              </div>
+            </div>
           </div>
+          <div className="h-6"></div>
 
           <div className="flex gap-6 mb-24">
             {(communityToggle === 'written' ? writtenPosts : likedPosts)
               .slice(0, 3)
               .map((post) => (
-                <CommunityPostCard key={post.id} post={post} />
+                <div key={post.id} className="flex-none" style={{ width: 'calc(33.333% - 16px)' }}>
+                  <CommunityPostCard 
+                    id={post.id}
+                    image={post.image}
+                    username={post.username}
+                    timeAgo={post.timeAgo}
+                    title={post.title}
+                    content={post.content}
+                    initialLiked={post.initialLiked}
+                  />
+                </div>
               ))}
           </div>
         </div>

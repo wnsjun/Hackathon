@@ -13,6 +13,8 @@ import AddInfo from './page/AddInfo';
 import SignupInfo from './page/SignupInfo';
 import CommunityDetail from './page/CommunityDetail';
 import SettingPage from './page/Setting';
+import MyAllFarms from './page/MyAllFarms';
+import MyAllCommunity from './page/MyAllCommunity';
 
 const App = () => {
   return (
@@ -32,6 +34,8 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/setting" element={<SettingPage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/my-all-farms" element={<MyAllFarms />} />
+          <Route path="/my-all-community" element={<MyAllCommunity />} />
           <Route path="/addinfo" element={<AddInfo />} />
           <Route path="/signupinfo" element={<SignupInfo />} />
         </Route>

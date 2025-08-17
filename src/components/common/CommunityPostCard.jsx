@@ -3,7 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 // Assets from Figma
 const imgEllipse83 = "http://localhost:3845/assets/08bc8f0fb0393f4fa955e7165c21fdf8b107680f.png";
-const imgRightArrow = "http://localhost:3845/assets/19c09d36b269163790cdf45d314bed40a88febca.svg";
+
+const ArrowIcon = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+      <path d="M9 14.0498L15.5 8.00051L9 1.95121" stroke="#777777" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+};
 
 const HeartIcon = ({ filled = false, className = "w-5 h-5" }) => {
   return (
@@ -114,18 +121,17 @@ const CommunityPostCard = ({ id, image, username, timeAgo, title, content, initi
                   <div className="overflow-hidden">{content}</div>
                 }
               </div>
-              <div className="flex items-center justify-end">
-                <button
-                  onClick={handleDetailClick}
-                  className="text-base text-[#777777] tracking-[-0.48px] flex items-center gap-1 hover:text-gray-800"
-                >
-                  자세히 보기
-                  <div className="flex items-center justify-center rotate-180">
-                    <img alt="arrow" className="w-4 h-4" src={imgRightArrow} />
-                  </div>
-                </button>
-              </div>
             </div>
+          </div>
+          <div className="flex items-end justify-end w-full">
+            {/*자세히보기 버튼*/}
+            <button
+              onClick={handleDetailClick}
+              className="flex items-center gap-0 font-normal text-base text-[#777777] tracking-[-0.48px] leading-[1.5]"
+            >
+              자세히 보기
+              <ArrowIcon />
+            </button>
           </div>
         </div>
       </div>

@@ -39,7 +39,7 @@ const BookmarkIcon = ({ isBookmarked, onClick }) => {
   );
 };
 
-const RecommendFarmCard = ({ farm, isRecommended }) => {
+const RecommendFarmCard = ({ farm}) => {
   const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(farm.isBookmarked || false);
 
