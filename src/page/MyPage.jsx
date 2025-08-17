@@ -7,9 +7,9 @@ import styles from '../styles/mypage.module.css';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import { useAuth } from '../hooks/useAuth';
 import setting from '../assets/setting.svg';
-import RentingFarmCard from '../components/common/RentingFarmCard';
-import FarmCard from '../components/common/FarmCard';
-import CommunityPostCard from '../components/common/CommunityPostCard';
+import RentingFarmCard from '../components/common/Card/RentingFarmCard';
+import FarmCard from '../components/common/Card/FarmCard';
+import CommunityPostCard from '../components/common/Card/CommunityPostCard';
 
 export const MyPage = () => {
   const navigate = useNavigate();

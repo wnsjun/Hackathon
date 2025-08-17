@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import FarmCard from '../components/common/FarmCard';
-import RecommendFarmCard from '../components/common/RecommendFarmCard';
+import FarmCard from '../components/common/Card/FarmCard';
+import RecommendFarmCard from '../components/common/Card/RecommendFarmCard';
 import Button from '../components/common/Button';
 import { mockFarms } from '../data/mockFarms';
 import { fetchAllFarms } from '../apis/home';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import banner from '../assets/banner.png?url';
-import LocationFilter from '../components/common/LocationFilter';
-import AreaFilter from '../components/common/AreaFilter';
-import PriceFilter from '../components/common/PriceFilter';
-import ThemeFilter from '../components/common/ThemeFilter';
+import LocationFilter from '../components/common/Filter/LocationFilter';
+import AreaFilter from '../components/common/Filter/AreaFilter';
+import PriceFilter from '../components/common/Filter/PriceFilter';
+import ThemeFilter from '../components/common/Filter/ThemeFilter';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);

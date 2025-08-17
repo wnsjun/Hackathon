@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CommunityPostCard from '../components/common/CommunityPostCard';
+import CommunityPostCard from '../components/common/Card/CommunityPostCard';
 import Button from '../components/common/Button';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import { mockCommunityPosts } from '../data/mockCommunity';

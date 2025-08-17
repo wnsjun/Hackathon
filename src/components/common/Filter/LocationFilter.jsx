@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import CheckSquareContained from './CheckSquareContained';
+import CheckSquareContained from '../CheckSquareContained';
 
 const LocationFilter = ({ isOpen, onClose, onLocationToggle, selectedLocations = [] }) => {
   const filterRef = useRef(null);

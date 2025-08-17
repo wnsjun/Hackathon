@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import plant from '../../assets/plant.png?url';
+import plant from '../../../assets/plant.png?url';
 
 // Location icon component
 const LocationIcon = () => {

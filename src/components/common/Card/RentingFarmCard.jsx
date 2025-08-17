@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import Button from './Button';
+import Button from '../Button';
 
 const imgRectangle11 = '/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png';
 

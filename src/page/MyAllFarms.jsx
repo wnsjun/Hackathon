@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FarmCard from '../components/common/FarmCard';
-import RentingFarmCard from '../components/common/RentingFarmCard';
+import FarmCard from '../components/common/Card/FarmCard';
+import RentingFarmCard from '../components/common/Card/RentingFarmCard';
 import { mockFarms } from '../data/mockFarms';
 
 
