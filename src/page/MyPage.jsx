@@ -195,6 +195,7 @@ export const MyPage = () => {
               src={setting}
               alt="설정"
               className="mr-40 w-6 h-6 cursor-pointer"
+              onClick={() => navigate('/setting')}
             />
           </div>
         </div>
