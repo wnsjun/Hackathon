@@ -1,58 +1,38 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import Button from './Button';
+import Button from '../Button';
 
 const imgRectangle11 = '/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png';
-const imgVector = '/assets/a85e6e3c83b334db97a694b1d6d328be4f30afc4.svg';
-const img = '/assets/2b8d64d7226c28c99184010bc380a1d664774ae0.svg';
 
 // Location icon component
 const LocationIcon = () => {
   return (
-    <div className="relative size-4" data-name="grommet-icons:location">
-      <div className="absolute inset-[8.33%_16.67%]" data-name="Vector">
-        <div className="absolute inset-[-3.75%_-4.69%_-4.69%_-4.69%]">
-          <img alt="" className="block max-w-none size-full" src={imgVector} />
-        </div>
-      </div>
-    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8.00033 14.6663C8.00033 14.6663 2.66699 10.6663 2.66699 6.66634C2.66699 3.33301 5.33366 1.33301 8.00033 1.33301C10.667 1.33301 13.3337 3.33301 13.3337 6.66634C13.3337 10.6663 8.00033 14.6663 8.00033 14.6663ZM8.00033 8.66634C8.53076 8.66634 9.03947 8.45563 9.41454 8.08056C9.78961 7.70548 10.0003 7.19677 10.0003 6.66634C10.0003 6.13591 9.78961 5.6272 9.41454 5.25213C9.03947 4.87705 8.53076 4.66634 8.00033 4.66634C7.46989 4.66634 6.96118 4.87705 6.58611 5.25213C6.21104 5.6272 6.00033 6.13591 6.00033 6.66634C6.00033 7.19677 6.21104 7.70548 6.58611 8.08056C6.96118 8.45563 7.46989 8.66634 8.00033 8.66634Z" stroke="#777777" strokeWidth="1.5"/>
+    </svg>
   );
 };
 
 // Arrow icon component
 const ArrowIcon = () => {
   return (
-    <div className="flex items-center justify-center relative shrink-0">
-      <div className="flex-none rotate-[180deg]">
-        <div className="relative size-4">
-          <div className="absolute inset-[12.19%_56.25%_12.19%_3.13%]">
-            <div className="absolute inset-[-6.2%_-11.54%_-6.2%_-16.94%]">
-              <img alt="" className="block max-w-none size-full" src={img} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+      <path d="M9 14.0498L15.5 8.00051L9 1.95121" stroke="#777777" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
   );
 };
 
 // Bookmark icon component
 const BookmarkIcon = ({ isBookmarked, onClick }) => {
   return (
-    <button
+    <button 
       onClick={onClick}
       className="p-1 rounded-full hover:bg-black/10 transition-colors"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-      >
-        <path
-          d="M5 2V22L12 19L19 22V2H5Z"
-          fill={isBookmarked ? '#1aa752' : 'none'}
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path 
+          d="M5 2V22L12 19L19 22V2H5Z" 
+          fill={isBookmarked ? "#1aa752" : "none"}
           stroke="#1aa752"
           strokeWidth="1.5"
         />

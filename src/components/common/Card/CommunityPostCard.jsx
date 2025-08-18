@@ -1,9 +1,51 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// 날짜 계산 함수
+const getTimeAgo = (createdAt) => {
+  if (!createdAt) return '시간 정보 없음';
+  
+  const now = new Date();
+  const created = new Date(createdAt);
+  
+  // 날짜가 유효한지 확인
+  if (isNaN(created.getTime())) {
+    return '시간 정보 없음';
+  }
+  
+  const diffInMs = now - created;
+  
+  // 음수인 경우 (미래 날짜)
+  if (diffInMs < 0) {
+    return '방금 전';
+  }
+  
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  
+  if (diffInDays === 0) {
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    if (diffInHours === 0) {
+      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+      return diffInMinutes <= 0 ? '방금 전' : `${diffInMinutes}분 전`;
+    }
+    return `${diffInHours}시간 전`;
+  } else if (diffInDays === 1) {
+    return '1일 전';
+  } else {
+    return `${diffInDays}일 전`;
+  }
+};
+
 // Assets from Figma
 const imgEllipse83 = "http://localhost:3845/assets/08bc8f0fb0393f4fa955e7165c21fdf8b107680f.png";
-const imgRightArrow = "http://localhost:3845/assets/19c09d36b269163790cdf45d314bed40a88febca.svg";
+
+const ArrowIcon = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+      <path d="M9 14.0498L15.5 8.00051L9 1.95121" stroke="#777777" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+};
 
 const HeartIcon = ({ filled = false, className = "w-5 h-5" }) => {
   return (
@@ -33,7 +75,7 @@ const HeartButton = ({ isLiked = false, onToggle }) => {
   );
 };
 
-const CommunityPostCard = ({ id, image, username, timeAgo, title, content, initialLiked = false }) => {
+const CommunityPostCard = ({ id, image, username, title, content, initialLiked = false, createdAt }) => {
   const [isLiked, setIsLiked] = useState(initialLiked);
   const navigate = useNavigate();
 
@@ -96,8 +138,8 @@ const CommunityPostCard = ({ id, image, username, timeAgo, title, content, initi
             {username}
           </span>
         </div>
-        <span className="text-base text-[#777777] tracking-[-0.48px]">
-          {timeAgo}
+        <span className="text-base text-black tracking-[-0.48px]">
+          {getTimeAgo(createdAt) }
         </span>
       </div>
 
@@ -114,18 +156,17 @@ const CommunityPostCard = ({ id, image, username, timeAgo, title, content, initi
                   <div className="overflow-hidden">{content}</div>
                 }
               </div>
-              <div className="flex items-center justify-end">
-                <button
-                  onClick={handleDetailClick}
-                  className="text-base text-[#777777] tracking-[-0.48px] flex items-center gap-1 hover:text-gray-800"
-                >
-                  자세히 보기
-                  <div className="flex items-center justify-center rotate-180">
-                    <img alt="arrow" className="w-4 h-4" src={imgRightArrow} />
-                  </div>
-                </button>
-              </div>
             </div>
+          </div>
+          <div className="flex items-end justify-end w-full">
+            {/*자세히보기 버튼*/}
+            <button
+              onClick={handleDetailClick}
+              className="flex items-center gap-0 font-normal text-base text-[#777777] tracking-[-0.48px] leading-[1.5]"
+            >
+              자세히 보기
+              <ArrowIcon />
+            </button>
           </div>
         </div>
       </div>

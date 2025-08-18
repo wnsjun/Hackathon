@@ -9,7 +9,6 @@ const PlantDetail = () => {
   const navigate = useNavigate();
   const [farmData, setFarmData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [reviewText, setReviewText] = useState('');
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
@@ -39,12 +38,6 @@ const PlantDetail = () => {
     navigate('/chat');
   };
 
-  const handleReviewSubmit = () => {
-    if (reviewText.trim()) {
-      console.log('리뷰 제출:', reviewText);
-      setReviewText('');
-    }
-  };
 
   const LocationIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -97,262 +90,277 @@ const PlantDetail = () => {
 
   return (
     <>
-      <Navbar />
-      <div className="bg-white min-h-screen pt-32">
-        <div className="max-w-[1440px] mx-auto px-40 py-8">
+      <div className="bg-white min-h-screen">
+        <div className="relative w-full min-h-screen">
           
-          {/* User info and bookmark */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="relative size-12">
+          {/* User info */}
+          <div className="absolute box-border content-stretch flex flex-row items-center left-40 p-0 top-36">
+            <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0">
+              <div className="box-border content-stretch flex flex-row gap-3 items-center justify-center p-0 relative shrink-0">
+                <div className="relative shrink-0 size-12">
                   <div className="w-12 h-12 bg-[#f7f7f7] rounded-full flex items-center justify-center">
                     <span className="text-[20px] font-semibold text-[#777777]">
                       {farmData.user?.nickname?.charAt(0) || '농'}
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col font-semibold justify-center text-black text-[24px]">
-                  <p className="block leading-[1.5]">{farmData.user?.nickname || '농부'}</p>
+                <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.user?.nickname || '윤성'}</p>
                 </div>
               </div>
-              <div className="flex flex-col font-normal justify-center text-[#777777] text-[16px]">
-                <p className="block leading-[1.5]">
-                  {new Date(farmData.createdAt).toLocaleDateString('ko-KR', {
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </p>
+              <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left text-nowrap tracking-[-0.48px]">
+                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">1일 전</p>
               </div>
             </div>
+          </div>
+
+          <div className="absolute box-border content-stretch flex flex-col gap-12 items-start justify-start left-40 p-0 top-56">
+            {/* Farm image */}
+            <div
+              className="bg-center bg-cover bg-no-repeat h-[588px] rounded-2xl shrink-0 w-[739px]"
+              style={{ 
+                backgroundImage: farmData.imageUrls && farmData.imageUrls.length > 0 
+                  ? `url('${farmData.imageUrls[0]}')` 
+                  : 'none'
+              }}
+            >
+              {(!farmData.imageUrls || farmData.imageUrls.length === 0) && (
+                <div className="w-full h-full flex items-center justify-center text-[#777777]">
+                  이미지가 없습니다
+                </div>
+              )}
+            </div>
+            
+            {/* Farm description */}
+            <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#111111] text-left w-full">
+              <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0 text-[36px] tracking-[-0.72px] w-full">
+                <p className="block leading-[1.5]">{farmData.title}</p>
+              </div>
+              <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[1.5] relative shrink-0 text-[20px] tracking-[-0.6px] w-full">
+                {farmData.description.split('\n').map((line, index) => (
+                  <p key={index} className="block mb-0">{line || '\u00A0'}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bookmark - Same line as user info, above right column */}
+          <div className="absolute top-36" style={{ left: "calc(83.333% - 30px)" }}>
             <div 
-              className="cursor-pointer p-2"
+              className="overflow-clip relative shrink-0 size-6 cursor-pointer"
               onClick={handleBookmarkToggle}
             >
               <BookmarkIcon />
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-12">
-            {/* Left Column - Main Content */}
-            <div className="col-span-2 space-y-12">
-              {/* Farm image */}
-              <div
-                className="bg-center bg-cover bg-no-repeat h-[588px] rounded-2xl w-full bg-[#f7f7f7]"
-                style={{ 
-                  backgroundImage: farmData.imageUrls && farmData.imageUrls.length > 0 
-                    ? `url('${farmData.imageUrls[0]}')` 
-                    : 'none'
-                }}
-              >
-                {(!farmData.imageUrls || farmData.imageUrls.length === 0) && (
-                  <div className="w-full h-full flex items-center justify-center text-[#777777]">
-                    이미지가 없습니다
-                  </div>
-                )}
-              </div>
-              
-              {/* Farm description */}
-              <div className="space-y-8 text-[#111111]">
-                <div className="font-semibold text-[36px] leading-[1.5] tracking-[-0.72px]">
-                  <h1>{farmData.title}</h1>
-                </div>
-                <div className="font-normal text-[20px] leading-[1.5] tracking-[-0.6px]">
-                  <p>{farmData.description}</p>
-                </div>
-              </div>
+          {/* Right Column - Info Panel */}
+          <div className="absolute box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 top-56 w-[338px]" style={{ left: "calc(66.667% - 18px)" }}>
+            {/* Title */}
+            <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[32px] text-left tracking-[-0.64px] w-full">
+              <p className="block leading-[1.5]">{farmData.title}</p>
             </div>
-
-            {/* Right Column - Info Panel */}
-            <div className="space-y-8">
+            <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 relative shrink-0 w-full">
               {/* Address */}
-              <div className="space-y-2">
-                <div className="font-normal text-[#777777] text-[16px] leading-[1.5] tracking-[-0.48px]">
-                  <p>주소</p>
+              <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[273px]">
+                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
+                  <p className="block leading-[1.5]">주소</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <LocationIcon />
-                  <div className="font-normal text-black text-[20px] leading-[1.5] tracking-[-0.6px]">
-                    <p>{farmData.address}</p>
+                <div className="box-border content-stretch flex flex-row gap-2 items-center justify-start p-0 relative shrink-0 w-full">
+                  <div className="overflow-clip relative shrink-0 size-6">
+                    <LocationIcon />
+                  </div>
+                  <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[20px] text-left tracking-[-0.6px]">
+                    <p className="adjustLetterSpacing block leading-[1.5]">{farmData.address}</p>
                   </div>
                 </div>
               </div>
 
               {/* Rental cost */}
-              <div className="space-y-2">
-                <div className="font-normal text-[#777777] text-[16px] leading-[1.5] tracking-[-0.48px]">
-                  <p>대여 비용</p>
+              <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[181px]">
+                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
+                  <p className="block leading-[1.5]">대여 비용</p>
                 </div>
-                <div className="flex items-end gap-2">
-                  <div className="flex items-end gap-1">
-                    <div className="font-semibold text-[#1aa752] text-[32px] leading-[1.5] tracking-[-0.64px]">
-                      <p>{farmData.price.toLocaleString()}</p>
+                <div className="box-border content-stretch flex flex-row gap-2 items-end justify-start p-0 relative shrink-0 w-full">
+                  <div className="box-border content-stretch flex flex-row gap-1 items-end justify-start leading-[0] not-italic p-0 relative shrink-0 text-left">
+                    <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] h-[31px] justify-center relative shrink-0 text-[#1aa752] text-[32px] tracking-[-0.64px] w-[86px]">
+                      <p className="adjustLetterSpacing block leading-[1.5]">{farmData.price.toLocaleString()}</p>
                     </div>
-                    <div className="font-normal text-black text-[24px] leading-[1.5] tracking-[-0.48px]">
-                      <p>원</p>
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-8 justify-center relative shrink-0 text-[#000000] text-[24px] tracking-[-0.48px] w-[18px]">
+                      <p className="adjustLetterSpacing block leading-[1.5]">원</p>
                     </div>
                   </div>
-                  <div className="font-normal text-black text-[20px] leading-[1.5] tracking-[-0.6px]">
-                    <p>/</p>
+                  <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-[33px] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[20px] text-left tracking-[-0.6px] w-[7px]">
+                    <p className="adjustLetterSpacing block leading-[1.5]">/</p>
                   </div>
-                  <div className="flex items-center gap-1 text-black text-[24px] leading-[1.5] tracking-[-0.48px]">
-                    <div className="font-semibold">
-                      <p>{farmData.rentalPeriod}</p>
+                  <div className="box-border content-stretch flex flex-row gap-1 h-8 items-center justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                    <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0">
+                      <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">{farmData.rentalPeriod}</p>
                     </div>
-                    <div className="font-normal">
-                      <p>일</p>
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center relative shrink-0">
+                      <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">일</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Area and Theme */}
-              <div className="flex gap-4">
-                <div className="space-y-2 w-[104px]">
-                  <div className="font-normal text-[#777777] text-[16px] leading-[1.5] tracking-[-0.48px]">
-                    <p>평수</p>
+              <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0 w-full">
+                <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[104px]">
+                  <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
+                    <p className="block leading-[1.5]">평수</p>
                   </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-1">
-                      <div className="font-semibold text-black text-[24px] leading-[1.5] tracking-[-0.48px]">
-                        <p>{farmData.size}</p>
+                  <div className="box-border content-stretch flex flex-col gap-1 items-start justify-start p-0 relative shrink-0 w-full">
+                    <div className="box-border content-stretch flex flex-row gap-1 items-start justify-start p-0 relative shrink-0">
+                      <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0">
+                        <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                          <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.size}</p>
+                        </div>
                       </div>
-                      <div className="font-normal text-black text-[24px] leading-[1.5] tracking-[-0.48px]">
-                        <p>㎡</p>
+                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">㎡</p>
                       </div>
                     </div>
-                    <div className="font-normal text-[#777777] text-[14px] leading-[1.5] tracking-[-0.42px]">
-                      <p>교실 크기</p>
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
+                      <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">교실 크기</p>
                     </div>
                   </div>
                 </div>
-                <div className="space-y-2 flex-1">
-                  <div className="font-normal text-[#777777] text-[16px] leading-[1.5] tracking-[-0.48px]">
-                    <p>테마</p>
+                <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[213px]">
+                  <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
+                    <p className="block leading-[1.5]">테마</p>
                   </div>
-                  <div className="space-y-1">
-                    <div className="font-semibold text-[#111111] text-[24px] leading-[1.5] tracking-[-0.48px]">
-                      <p>{farmData.theme}</p>
+                  <div className="box-border content-stretch flex flex-col gap-1 items-start justify-start p-0 relative shrink-0 w-full">
+                    <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0">
+                      <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.theme}</p>
+                      </div>
                     </div>
-                    <div className="font-normal text-[#777777] text-[14px] leading-[1.5] tracking-[-0.42px]">
-                      <p>
-                        {farmData.theme === '옥상' && '아파트 및 건물 옥상, 지붕 위 공간'}
-                        {farmData.theme === '공터' && '건물 옆 자투리 공간, 쓰임 없는 부지'}
-                        {farmData.theme === '화단' && '아파트 단지 내 화단, 빌라 현관 앞 꽃밭'}
-                        {farmData.theme === '공원' && '공원 내 공공 텃밭, 산책로 옆 잔디'}
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
+                      <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
+                        아파트 및 건물 옥상, 지붕 위 공간
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Chat button */}
-              <div 
-                className="bg-[#1aa752] flex items-center justify-center gap-2 py-3 px-7 rounded-[100px] cursor-pointer"
-                onClick={handleChatButtonClick}
-              >
-                <div className="font-normal text-white text-[24px] leading-[1.5] tracking-[-0.48px]">
-                  <p>채팅하기</p>
-                </div>
-                <div className="rotate-180">
-                  <SendIcon />
+          </div>
+
+          {/* Chat button */}
+          <div 
+            className="absolute bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] top-[752px] cursor-pointer"
+            style={{ left: "calc(83.333% - 78px)" }}
+            onClick={handleChatButtonClick}
+          >
+            <div className="box-border content-stretch flex flex-row items-center justify-start p-0 relative shrink-0">
+              <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">채팅하기</p>
+              </div>
+              <div className="flex items-center justify-center relative shrink-0">
+                <div className="flex-none rotate-[180deg]">
+                  <div className="relative size-6">
+                    <SendIcon />
+                  </div>
                 </div>
               </div>
+            </div>
+          </div>
 
-              {/* Reviews section */}
-              <div className="space-y-8">
-                <div className="font-semibold text-[#111111] text-[24px] leading-[1.5] tracking-[-0.48px]">
-                  <p>텃밭 리뷰</p>
-                </div>
-                <div className="space-y-16">
-                  <div className="space-y-2">
-                    <div className="flex gap-4">
-                      <div className="flex items-center gap-1">
-                        <div className="w-1 h-1 bg-neutral-900 rounded-full"></div>
-                        <div className="font-normal text-[14px] text-neutral-900 leading-[1.5] tracking-[-0.42px]">
-                          <p>등록순</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-1 h-1 bg-[#bbbbbb] rounded-full"></div>
-                        <div className="font-normal text-[#bbbbbb] text-[14px] leading-[1.5] tracking-[-0.42px]">
-                          <p>최신순</p>
-                        </div>
-                      </div>
+          {/* Reviews section */}
+          <div className="absolute box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 top-[873px] w-[333px]" style={{ left: "calc(66.667% - 13px)" }}>
+            <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[24px] text-left tracking-[-0.48px] w-full">
+              <p className="block leading-[1.5]">텃밭 리뷰</p>
+            </div>
+            <div className="box-border content-stretch flex flex-col gap-16 items-start justify-start p-0 relative shrink-0 w-full">
+              <div className="box-border content-stretch flex flex-col gap-2 items-end justify-start p-0 relative shrink-0 w-full">
+                <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0 w-[333px]">
+                  <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0 cursor-pointer">
+                    <div className="relative shrink-0 size-1">
+                      <div className="w-1 h-1 bg-neutral-900 rounded-full"></div>
                     </div>
+                    <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[14px] text-left text-neutral-900 text-nowrap tracking-[-0.42px]">
+                      <p className="[text-overflow:inherit] adjustLetterSpacing block leading-[1.5] overflow-inherit whitespace-pre">최신순</p>
+                    </div>
+                  </div>
+                  <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0 cursor-pointer">
+                    <div className="relative shrink-0 size-1">
+                      <div className="w-1 h-1 bg-[#bbbbbb] rounded-full"></div>
+                    </div>
+                    <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[#bbbbbb] text-[14px] text-left text-nowrap tracking-[-0.42px]">
+                      <p className="[text-overflow:inherit] adjustLetterSpacing block leading-[1.5] overflow-inherit whitespace-pre">등록순</p>
+                    </div>
+                  </div>
+                </div>
                     
-                    {/* Review items */}
-                    <div className="bg-white rounded-t-[8px] space-y-2">
-                      <div className="py-4 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
+                {/* Review items */}
+                <div className="bg-[#ffffff] box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative rounded-tl-[8px] rounded-tr-[8px] shrink-0 w-[333px]">
+                  <div className="box-border content-stretch flex flex-col items-start justify-start p-0 relative shrink-0 w-full">
+                    <div className="bg-[#ffffff] box-border content-stretch flex flex-col gap-2 items-end justify-start px-0 py-4 relative shrink-0 w-full">
+                      <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
+                        <div className="box-border content-stretch flex flex-row gap-2 items-center justify-center p-0 relative shrink-0">
+                          <div className="relative shrink-0 size-8">
                             <div className="w-8 h-8 bg-[#f7f7f7] rounded-full flex items-center justify-center">
                               <span className="text-[14px] font-semibold text-[#777777]">준</span>
                             </div>
-                            <div className="flex items-end gap-2">
-                              <div className="font-semibold text-[16px] text-neutral-900 leading-[1.5] tracking-[-0.48px]">
-                                <p>준희</p>
-                              </div>
-                              <div className="font-normal text-[#bbbbbb] text-[14px] leading-[1.5] tracking-[-0.42px]">
-                                <p>1시간 전</p>
+                          </div>
+                          <div className="box-border content-stretch flex flex-row gap-2 items-end justify-center p-0 relative shrink-0">
+                            <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[16px] text-left text-neutral-900 text-nowrap tracking-[-0.48px]">
+                              <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">준희</p>
+                            </div>
+                            <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0">
+                              <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#bbbbbb] text-[14px] text-left text-nowrap tracking-[-0.42px]">
+                                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">1시간 전</p>
                               </div>
                             </div>
                           </div>
-                          <div className="font-normal text-[#777777] text-[14px] leading-[1.5] tracking-[-0.42px]">
-                            <p>삭제</p>
-                          </div>
                         </div>
-                        <div className="font-normal text-[16px] text-neutral-900 leading-[1.5] tracking-[-0.48px]">
-                          <p>햇빛이 하루 종일 잘 들어서 상추가 쑥쑥 자라요! 물주기만 잘하면 채소 키우기 너무 쉬운 공간이었어요. 사장님도 친절하시고요.</p>
+                        <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
+                          <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">삭제</p>
                         </div>
                       </div>
-                      <div className="py-4 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
+                      <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic relative shrink-0 text-[16px] text-left text-neutral-900 tracking-[-0.48px] w-[293px]">
+                        <p className="adjustLetterSpacing block leading-[1.5]">
+                          햇빛이 하루 종일 잘 들어서 상추가 쑥쑥 자라요! 물주기만 잘하면 채소 키우기 너무 쉬운 공간이었어요.
+                          사장님도 친절하시고요.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="box-border content-stretch flex flex-col gap-2 items-end justify-start px-0 py-4 relative shrink-0 w-full">
+                      <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
+                        <div className="box-border content-stretch flex flex-row gap-2 items-center justify-center p-0 relative shrink-0">
+                          <div className="relative shrink-0 size-8">
                             <div className="w-8 h-8 bg-[#f7f7f7] rounded-full flex items-center justify-center">
                               <span className="text-[14px] font-semibold text-[#777777]">승</span>
                             </div>
-                            <div className="flex items-end gap-2">
-                              <div className="font-semibold text-[16px] text-neutral-900 leading-[1.5] tracking-[-0.48px]">
-                                <p>승주</p>
-                              </div>
-                              <div className="font-normal text-[#bbbbbb] text-[14px] leading-[1.5] tracking-[-0.42px]">
-                                <p>1일 전</p>
-                              </div>
+                          </div>
+                          <div className="box-border content-stretch flex flex-row gap-2 items-end justify-center leading-[0] not-italic p-0 relative shrink-0 text-left text-nowrap">
+                            <div className="font-['Pretendard:SemiBold',_sans-serif] relative shrink-0 text-[16px] text-neutral-900 tracking-[-0.48px]">
+                              <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">승주</p>
+                            </div>
+                            <div className="font-['Pretendard:Regular',_sans-serif] relative shrink-0 text-[#bbbbbb] text-[14px] tracking-[-0.42px]">
+                              <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">1일 전</p>
                             </div>
                           </div>
                         </div>
-                        <div className="font-normal text-[16px] text-neutral-900 leading-[1.5] tracking-[-0.48px]">
-                          <p>도심 한복판에 이런 곳이 있을 줄이야.. 회사 끝나고 들르기 좋은 위치라서 평일에도 종종 왔습니다. 덕분에 마음이 한결 편해졌어요.</p>
-                        </div>
                       </div>
-                    </div>
-                  </div>
-                  
-                  {/* Review input */}
-                  <div className="flex items-center justify-between h-14 pl-8 pr-6 rounded-[100px] border border-[#1aa752]">
-                    <input
-                      type="text"
-                      placeholder="리뷰를 입력하세요."
-                      value={reviewText}
-                      onChange={(e) => setReviewText(e.target.value)}
-                      className="flex-1 font-normal text-[#bbbbbb] text-[16px] leading-[1.5] tracking-[-0.48px] bg-transparent outline-none placeholder-[#bbbbbb]"
-                    />
-                    <div 
-                      className="cursor-pointer size-8 flex items-center justify-center"
-                      onClick={handleReviewSubmit}
-                    >
-                      <SendIcon />
+                      <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic relative shrink-0 text-[16px] text-left text-neutral-900 tracking-[-0.48px] w-[293px]">
+                        <p className="adjustLetterSpacing block leading-[1.5]">
+                          도심 한복판에 이런 곳이 있을 줄이야.. 회사 끝나고 들르기 좋은 위치라서 평일에도 종종 왔습니다.
+                          덕분에 마음이 한결 편해졌어요.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* ChatbotIcon */}
-        <ChatbotIcon />
+          {/* ChatbotIcon */}
+          <ChatbotIcon />
+        </div>
       </div>
     </>
   );

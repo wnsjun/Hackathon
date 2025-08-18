@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 
-const imgSliderHandle = "/assets/168b1d22bac2278116703d0c440fa50a541b3d4d.svg";
-
-const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
-  const [minArea, setMinArea] = useState(0);
-  const [maxArea, setMaxArea] = useState(100);
+const PriceFilter = ({ isOpen, onClose, onApplyFilter }) => {
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000000);
   const sliderRef = useRef(null);
   const [isDragging, setIsDragging] = useState(null);
 
@@ -34,19 +32,19 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
 
     const rect = sliderRef.current.getBoundingClientRect();
     const percent = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
-    const value = Math.round((percent / 100) * 100);
+    const value = Math.round((percent / 100) * 1000000);
 
     if (isDragging === 'min') {
-      setMinArea(Math.min(value, maxArea - 1));
+      const newMinPrice = Math.min(value, maxPrice - 1000);
+      setMinPrice(newMinPrice);
+      onApplyFilter({ minPrice: newMinPrice, maxPrice });
     } else if (isDragging === 'max') {
-      setMaxArea(Math.max(value, minArea + 1));
+      const newMaxPrice = Math.max(value, minPrice + 1000);
+      setMaxPrice(newMaxPrice);
+      onApplyFilter({ minPrice, maxPrice: newMaxPrice });
     }
   };
 
-  const handleApplyFilter = () => {
-    onApplyFilter({ minArea, maxArea });
-    onClose();
-  };
 
   useEffect(() => {
     if (isDragging) {
@@ -57,10 +55,10 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, minArea, maxArea]);
+  }, [isDragging, minPrice, maxPrice]);
 
-  const minPercent = (minArea / 100) * 100;
-  const maxPercent = (maxArea / 100) * 100;
+  const minPercent = (minPrice / 1000000) * 100;
+  const maxPercent = (maxPrice / 1000000) * 100;
 
   if (!isOpen) return null;
 
@@ -79,7 +77,7 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
         <div className="flex justify-between items-center w-full">
           <div className="flex flex-col font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[16px] text-left text-nowrap tracking-[-0.48px]">
             <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
-              평수
+              가격
             </p>
           </div>
           <button
@@ -109,11 +107,24 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
             onMouseDown={() => handleMouseDown('min')}
           >
             <div className="absolute inset-[-20%]">
-              <img
-                alt=""
-                className="block max-w-none size-full"
-                src={imgSliderHandle}
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
+              <g filter="url(#filter0_d_218_2061)">
+              <circle cx="28" cy="28" r="20" fill="white"/>
+              </g>
+              <circle cx="28" cy="28" r="8" fill="#1AA752"/>
+              <defs>
+              <filter id="filter0_d_218_2061" x="0" y="0" width="56" height="56" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset/>
+                <feGaussianBlur stdDeviation="4"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_218_2061"/>
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_218_2061" result="shape"/>
+              </filter>
+              </defs>
+            </svg>
             </div>
           </div>
           
@@ -123,11 +134,24 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
             onMouseDown={() => handleMouseDown('max')}
           >
             <div className="absolute inset-[-20%]">
-              <img
-                alt=""
-                className="block max-w-none size-full"
-                src={imgSliderHandle}
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
+              <g filter="url(#filter0_d_218_2061)">
+              <circle cx="28" cy="28" r="20" fill="white"/>
+              </g>
+              <circle cx="28" cy="28" r="8" fill="#1AA752"/>
+              <defs>
+              <filter id="filter0_d_218_2061" x="0" y="0" width="56" height="56" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset/>
+                <feGaussianBlur stdDeviation="4"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_218_2061"/>
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_218_2061" result="shape"/>
+              </filter>
+              </defs>
+            </svg>
             </div>
           </div>
         </div>
@@ -136,7 +160,7 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
           <div className="box-border flex flex-row font-['Pretendard:SemiBold',_sans-serif] gap-1 items-center justify-start p-0 relative shrink-0">
             <div className="flex flex-col justify-center relative shrink-0">
               <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">
-                {minArea}
+                {minPrice.toLocaleString()}
               </p>
             </div>
             <div className="flex flex-col justify-center relative shrink-0">
@@ -146,37 +170,20 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
             </div>
             <div className="flex flex-col justify-center relative shrink-0">
               <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">
-                {maxArea}
+                {maxPrice.toLocaleString()}
               </p>
             </div>
           </div>
           <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center relative shrink-0">
             <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">
-              ㎡
+              원 / 일
             </p>
           </div>
         </div>
 
-        <div className="flex justify-between w-full gap-2 mt-2">
-          <button
-            onClick={() => {
-              setMinArea(0);
-              setMaxArea(100);
-            }}
-            className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-xs text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            초기화
-          </button>
-          <button
-            onClick={handleApplyFilter}
-            className="flex-1 px-3 py-1.5 bg-[#1AA752] text-white rounded text-xs hover:bg-green-600 transition-colors"
-          >
-            적용하기
-          </button>
-        </div>
       </div>
     </div>
   );
 };
 
-export default AreaFilter;
+export default PriceFilter;

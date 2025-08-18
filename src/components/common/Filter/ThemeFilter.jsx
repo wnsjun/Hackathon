@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import CheckSquareContained from './CheckSquareContained';
+import CheckSquareContained from '../CheckSquareContained';
 
 const ThemeFilter = ({ isOpen, onClose, onThemeToggle, selectedThemes = [] }) => {
   const filterRef = useRef(null);

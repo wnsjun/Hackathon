@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CommunityPostCard from '../components/common/CommunityPostCard';
+import CommunityPostCard from '../components/common/Card/CommunityPostCard';
 import Button from '../components/common/Button';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import { mockCommunityPosts } from '../data/mockCommunity';
@@ -24,7 +24,8 @@ export const Community = () => {
           title: post.title,
           username: post.authorNickname,
           image: post.thumbnailUrl,
-          likes: post.likeCount
+          likes: post.likeCount,
+          createdAt: post.createdAt
         }));
 
         const transformedTipPosts = (tipPosts || []).map(post => ({
@@ -32,7 +33,8 @@ export const Community = () => {
           title: post.title,
           username: post.authorNickname,
           image: post.thumbnailUrl,
-          likes: post.likeCount
+          likes: post.likeCount,
+          createdAt: post.createdAt
         }));
 
         if (transformedFeedPosts.length === 0 && transformedTipPosts.length === 0) {
@@ -70,7 +72,7 @@ export const Community = () => {
         <div className="flex">
           <button
             onClick={() => handleTabClick('certification')}
-            className={`px-6 py-3 mr-4 text-2xl font-semibold border-b-4 transition-colors ${
+            className={`cursor-pointer px-6 py-3 mr-4 text-2xl font-semibold border-b-4 transition-colors ${
               activeTab === 'certification' 
                 ? 'text-black border-[#1aa752]' 
                 : 'text-gray-400 border-transparent'
@@ -80,7 +82,7 @@ export const Community = () => {
           </button>
           <button
             onClick={() => handleTabClick('tips')}
-            className={`px-6 py-3 text-2xl font-semibold border-b-4 transition-colors ${
+            className={`cursor-pointer px-6 py-3 text-2xl font-semibold border-b-4 transition-colors ${
               activeTab === 'tips' 
                 ? 'text-black border-[#1aa752]' 
                 : 'text-gray-400 border-transparent'

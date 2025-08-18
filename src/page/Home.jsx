@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import FarmCard from '../components/common/FarmCard';
-import RecommendFarmCard from '../components/common/RecommendFarmCard';
+import FarmCard from '../components/common/Card/FarmCard';
+import RecommendFarmCard from '../components/common/Card/RecommendFarmCard';
 import Button from '../components/common/Button';
 import { mockFarms } from '../data/mockFarms';
 import { fetchAllFarms } from '../apis/home';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import banner from '../assets/banner.png?url';
-import LocationFilter from '../components/common/LocationFilter';
-import AreaFilter from '../components/common/AreaFilter';
-import PriceFilter from '../components/common/PriceFilter';
-import ThemeFilter from '../components/common/ThemeFilter';
+import LocationFilter from '../components/common/Filter/LocationFilter';
+import AreaFilter from '../components/common/Filter/AreaFilter';
+import PriceFilter from '../components/common/Filter/PriceFilter';
+import ThemeFilter from '../components/common/Filter/ThemeFilter';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -19,6 +19,7 @@ function useQuery() {
 const Home = () => {
   const [farms, setFarms] = useState([]);
   const [recommendedFarms, setRecommendedFarms] = useState([]);
+  const [displayedRecommendedFarms, setDisplayedRecommendedFarms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
@@ -34,11 +35,20 @@ const Home = () => {
     price: { minPrice: 1000, maxPrice: 1000000 },
     theme: []
   });
-  const [userName] = useState();
+  const [nickname, setNickname] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const query = useQuery();
   const searchQuery = query.get('query') || '';
   const navigate = useNavigate();
+
+  // 랜덤으로 3개 선택하는 함수
+  const getRandomFarms = (farms, count = 3) => {
+    if (!Array.isArray(farms) || farms.length === 0) return [];
+    if (farms.length <= count) return farms;
+    
+    const shuffled = [...farms].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
 
   const resetFilters = () => {
     setAppliedFilters({
@@ -67,7 +77,9 @@ const Home = () => {
       console.log(response)
       setFarms(response.farms || []);
 
-      setRecommendedFarms(response.recommendedFarms || []);
+      const recommendedFarmsData = response.recommendedFarms || [];
+      setRecommendedFarms(recommendedFarmsData);
+      setDisplayedRecommendedFarms(getRandomFarms(recommendedFarmsData));
     } catch (err) {
       console.error('매물 목록 로딩 실패:', err);
       setError('매물 목록을 불러올 수 없습니다.');
@@ -82,6 +94,13 @@ const Home = () => {
     // accessToken으로 로그인 상태 확인
     const loginStatus = !!localStorage.getItem('accessToken');
     setIsLoggedIn(loginStatus);
+    
+    // nickname 설정
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      const { nickname: userNickname } = JSON.parse(userData);
+      setNickname(userNickname);
+    }
   }, []);
 
   useEffect(() => {
@@ -109,7 +128,7 @@ const Home = () => {
       appliedFilters.location.some(loc => farm.address?.includes(loc.split(' ')[0]));
     
     // 평수 필터링 (mockFarms와 호환성을 위해 area 속성도 확인)
-    const farmArea = farm.area || farm.size || 20;
+    const farmArea = farm.area || farm.size;
     const matchesArea = farmArea >= appliedFilters.area.minArea && 
       farmArea <= appliedFilters.area.maxArea;
     
@@ -178,7 +197,7 @@ const Home = () => {
   };
 
   const handleViewAllRecommendationsClick = () => {
-    loadFarms();
+    setDisplayedRecommendedFarms(getRandomFarms(recommendedFarms));
   };
 
   return (
@@ -187,24 +206,27 @@ const Home = () => {
         {/* 배너 섹션 */}
         <div className="mb-8">
         <img
-        src={banner}
+          src={banner}
           alt="SpaceFarm 텃밭 대여 서비스"
-  className="w-full max-w-[1440px] aspect-[1440/437] flex-shrink-0 object-cover rounded-xl"
-/>
-
-
+          className="w-full max-w-[1440px] aspect-[1440/437] flex-shrink-0 object-cover rounded-xl"
+        />
         </div>
 
         {/* 추천 섹션 - 로그인 상태일 때만 표시 */}
         {isLoggedIn && (
           <div className="mb-10">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {userName}님만을 위한 텃밭이에요
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex">
+            <h2 className="text-2xl font-bold text-[#1AA752]">
+                {nickname}
               </h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                님만을 위한 텃밭이에요
+              </h2>
+            </div>
               <button 
                 onClick={handleViewAllRecommendationsClick}
-                className="text-sm text-[#777] font-medium flex items-center gap-1 transition-colors"
+                className="text-sm text-[#777] font-medium flex items-center gap-1 transition-colors cursor-pointer"
               >
                 새로고침
                 <svg className="w-4 h-4 text-[#777]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -215,9 +237,9 @@ const Home = () => {
                 </svg>
               </button>
             </div>
-            {Array.isArray(recommendedFarms) && recommendedFarms.length > 0 ? (
+            {Array.isArray(displayedRecommendedFarms) && displayedRecommendedFarms.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-                {recommendedFarms.slice(0, 3).map((farm) => (
+                {displayedRecommendedFarms.map((farm) => (
                   <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
                 ))}
               </div>
