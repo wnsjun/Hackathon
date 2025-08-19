@@ -2,32 +2,48 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
+import FarmReview from '../components/common/FarmReview';
 import { fetchFarmById } from '../apis/home';
+import { fetchReviewsByFarmId } from '../apis/reviewApi';
 
 const PlantDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [farmData, setFarmData] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
-    const fetchFarmData = async () => {
+    const fetchData = async () => {
+      if (!id) return;
+
       try {
         setLoading(true);
-        const data = await fetchFarmById(id);
-        setFarmData(data);
-        setIsBookmarked(data.isBookmarked || false);
+        setReviewsLoading(true);
+
+        const farmData = await fetchFarmById(id);
+        setFarmData(farmData);
+        setIsBookmarked(farmData.isBookmarked || false);
+
+        try {
+          const reviewsData = await fetchReviewsByFarmId(id, 'createdAt_desc');
+          console.log('받은 리뷰 데이터:', reviewsData);
+          setReviews(Array.isArray(reviewsData) ? reviewsData : []);
+        } catch (reviewError) {
+          console.warn('리뷰 데이터 로딩 실패:', reviewError);
+          setReviews([]);
+        }
       } catch (error) {
-        console.error('텃밭 정보를 불러오는데 실패했습니다:', error);
+        console.error('데이터를 불러오는데 실패했습니다:', error);
       } finally {
         setLoading(false);
+        setReviewsLoading(false);
       }
     };
 
-    if (id) {
-      fetchFarmData();
-    }
+    fetchData();
   }, [id]);
 
   const handleBookmarkToggle = () => {
@@ -269,93 +285,13 @@ const PlantDetail = () => {
           </div>
 
           {/* Reviews section */}
-          <div className="absolute box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 top-[873px] w-[333px]" style={{ left: "calc(66.667% - 13px)" }}>
-            <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[24px] text-left tracking-[-0.48px] w-full">
-              <p className="block leading-[1.5]">텃밭 리뷰</p>
-            </div>
-            <div className="box-border content-stretch flex flex-col gap-16 items-start justify-start p-0 relative shrink-0 w-full">
-              <div className="box-border content-stretch flex flex-col gap-2 items-end justify-start p-0 relative shrink-0 w-full">
-                <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0 w-[333px]">
-                  <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0 cursor-pointer">
-                    <div className="relative shrink-0 size-1">
-                      <div className="w-1 h-1 bg-neutral-900 rounded-full"></div>
-                    </div>
-                    <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[14px] text-left text-neutral-900 text-nowrap tracking-[-0.42px]">
-                      <p className="[text-overflow:inherit] adjustLetterSpacing block leading-[1.5] overflow-inherit whitespace-pre">최신순</p>
-                    </div>
-                  </div>
-                  <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0 cursor-pointer">
-                    <div className="relative shrink-0 size-1">
-                      <div className="w-1 h-1 bg-[#bbbbbb] rounded-full"></div>
-                    </div>
-                    <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[#bbbbbb] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                      <p className="[text-overflow:inherit] adjustLetterSpacing block leading-[1.5] overflow-inherit whitespace-pre">등록순</p>
-                    </div>
-                  </div>
-                </div>
-                    
-                {/* Review items */}
-                <div className="bg-[#ffffff] box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative rounded-tl-[8px] rounded-tr-[8px] shrink-0 w-[333px]">
-                  <div className="box-border content-stretch flex flex-col items-start justify-start p-0 relative shrink-0 w-full">
-                    <div className="bg-[#ffffff] box-border content-stretch flex flex-col gap-2 items-end justify-start px-0 py-4 relative shrink-0 w-full">
-                      <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
-                        <div className="box-border content-stretch flex flex-row gap-2 items-center justify-center p-0 relative shrink-0">
-                          <div className="relative shrink-0 size-8">
-                            <div className="w-8 h-8 bg-[#f7f7f7] rounded-full flex items-center justify-center">
-                              <span className="text-[14px] font-semibold text-[#777777]">준</span>
-                            </div>
-                          </div>
-                          <div className="box-border content-stretch flex flex-row gap-2 items-end justify-center p-0 relative shrink-0">
-                            <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[16px] text-left text-neutral-900 text-nowrap tracking-[-0.48px]">
-                              <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">준희</p>
-                            </div>
-                            <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0">
-                              <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#bbbbbb] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">1시간 전</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                          <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">삭제</p>
-                        </div>
-                      </div>
-                      <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic relative shrink-0 text-[16px] text-left text-neutral-900 tracking-[-0.48px] w-[293px]">
-                        <p className="adjustLetterSpacing block leading-[1.5]">
-                          햇빛이 하루 종일 잘 들어서 상추가 쑥쑥 자라요! 물주기만 잘하면 채소 키우기 너무 쉬운 공간이었어요.
-                          사장님도 친절하시고요.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="box-border content-stretch flex flex-col gap-2 items-end justify-start px-0 py-4 relative shrink-0 w-full">
-                      <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
-                        <div className="box-border content-stretch flex flex-row gap-2 items-center justify-center p-0 relative shrink-0">
-                          <div className="relative shrink-0 size-8">
-                            <div className="w-8 h-8 bg-[#f7f7f7] rounded-full flex items-center justify-center">
-                              <span className="text-[14px] font-semibold text-[#777777]">승</span>
-                            </div>
-                          </div>
-                          <div className="box-border content-stretch flex flex-row gap-2 items-end justify-center leading-[0] not-italic p-0 relative shrink-0 text-left text-nowrap">
-                            <div className="font-['Pretendard:SemiBold',_sans-serif] relative shrink-0 text-[16px] text-neutral-900 tracking-[-0.48px]">
-                              <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">승주</p>
-                            </div>
-                            <div className="font-['Pretendard:Regular',_sans-serif] relative shrink-0 text-[#bbbbbb] text-[14px] tracking-[-0.42px]">
-                              <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">1일 전</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="font-['Pretendard:Regular',_sans-serif] leading-[0] not-italic relative shrink-0 text-[16px] text-left text-neutral-900 tracking-[-0.48px] w-[293px]">
-                        <p className="adjustLetterSpacing block leading-[1.5]">
-                          도심 한복판에 이런 곳이 있을 줄이야.. 회사 끝나고 들르기 좋은 위치라서 평일에도 종종 왔습니다.
-                          덕분에 마음이 한결 편해졌어요.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="absolute top-[873px]" style={{ left: "calc(66.667% - 13px)" }}>
+            <FarmReview 
+              farmId={id}
+              reviews={reviews} 
+              loading={reviewsLoading}
+              onReviewsUpdate={setReviews}
+            />
           </div>
 
           {/* ChatbotIcon */}
