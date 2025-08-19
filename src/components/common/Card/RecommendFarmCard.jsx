@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import plant from '../../../assets/plant.png?url';
+import { checkLoginAndExecute } from '../../../utils/auth';
 
 // Location icon component
 const LocationIcon = () => {
@@ -90,7 +91,10 @@ const RecommendFarmCard = ({ farm}) => {
 
   const handleBookmarkClick = (e) => {
     e.stopPropagation();
-    setIsBookmarked(!isBookmarked);
+    checkLoginAndExecute(() => {
+      setIsBookmarked(!isBookmarked);
+      // 여기에 실제 북마크 API 호출 로직 추가
+    });
   };
 
   return (

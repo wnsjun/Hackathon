@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { checkLoginAndExecute } from '../../../utils/auth';
 
 // 날짜 계산 함수
 const getTimeAgo = (createdAt) => {
@@ -90,13 +91,10 @@ const CommunityPostCard = ({ id, image, username, title, content, initialLiked =
   };
 
   const handleLikeToggle = () => {
-    const isLoggedIn = !!localStorage.getItem('accessToken');
-    if (isLoggedIn) {
+    checkLoginAndExecute(() => {
       setIsLiked(!isLiked);
-    } else {
-      alert('로그인해주세요');
-      navigate('/login');
-    }
+      // 여기에 실제 좋아요 API 호출 로직 추가
+    });
   };
 
   const handleCardClick = () => {

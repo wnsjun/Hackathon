@@ -2,73 +2,56 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
-import FarmReview from '../components/common/FarmReview';
+import PaymentSection from '../components/common/PaymentSection';
 import { fetchFarmById } from '../apis/home';
-import { fetchReviewsByFarmId } from '../apis/reviewApi';
 
-const PlantDetail = () => {
+const CreditPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [farmData, setFarmData] = useState(null);
-  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [reviewsLoading, setReviewsLoading] = useState(true);
-  const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!id) return;
-
       try {
         setLoading(true);
-        setReviewsLoading(true);
-
-        const farmData = await fetchFarmById(id);
-        setFarmData(farmData);
-        setIsBookmarked(farmData.isBookmarked || false);
-
-        try {
-          const reviewsData = await fetchReviewsByFarmId(id, 'createdAt_desc');
-          console.log('받은 리뷰 데이터:', reviewsData);
-          setReviews(Array.isArray(reviewsData) ? reviewsData : []);
-        } catch (reviewError) {
-          console.warn('리뷰 데이터 로딩 실패:', reviewError);
-          setReviews([]);
+        // 임시 데이터 사용 (실제로는 결제할 농장 정보를 받아와야 함)
+        if (id) {
+          const farmData = await fetchFarmById(id);
+          setFarmData(farmData);
+        } else {
+          // id가 없는 경우 임시 데이터 사용
+          setFarmData({
+            title: "도심 속 힐링 텃밭",
+            description: "도심에서 즐기는 작은 텃밭 체험\n직접 키운 채소를 수확하는 기쁨을 느껴보세요.\n친환경적이고 건강한 농업 체험이 가능합니다.",
+            imageUrls: [],
+            address: "서울특별시 강남구 테헤란로 123",
+            price: 50000,
+            rentalPeriod: 30,
+            size: 10,
+            theme: "옥상텃밭",
+            user: {
+              nickname: "농부"
+            }
+          });
         }
       } catch (error) {
         console.error('데이터를 불러오는데 실패했습니다:', error);
       } finally {
         setLoading(false);
-        setReviewsLoading(false);
       }
     };
 
     fetchData();
   }, [id]);
 
-  const handleBookmarkToggle = () => {
-    setIsBookmarked(!isBookmarked);
-  };
-
   const handleChatButtonClick = () => {
     navigate('/chat');
   };
 
-
   const LocationIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
       <path d="M12 22C12 22 4 16 4 10C4 5 8 2 12 2C16 2 20 5 20 10C20 16 12 22 12 22ZM12 13C12.7956 13 13.5587 12.6839 14.1213 12.1213C14.6839 11.5587 15 10.7956 15 10C15 9.20435 14.6839 8.44129 14.1213 7.87868C13.5587 7.31607 12.7956 7 12 7C11.2044 7 10.4413 7.31607 9.87868 7.87868C9.31607 8.44129 9 9.20435 9 10C9 10.7956 9.31607 11.5587 9.87868 12.1213C10.4413 12.6839 11.2044 13 12 13Z" stroke="#777777" strokeWidth="1.5"/>
-    </svg>
-  );
-
-  const BookmarkIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path 
-        d="M5 2V22L12 19L19 22V2H5Z"  
-        fill={isBookmarked ? "#1aa752" : "none"}
-        stroke="#1aa752"
-        strokeWidth="1.5"
-      />
     </svg>
   );
 
@@ -109,24 +92,10 @@ const PlantDetail = () => {
       <div className="bg-white min-h-screen">
         <div className="relative w-full min-h-screen">
           
-          {/* User info */}
+          {/* Payment title */}
           <div className="absolute box-border content-stretch flex flex-row items-center left-40 p-0 top-36">
-            <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0">
-              <div className="box-border content-stretch flex flex-row gap-3 items-center justify-center p-0 relative shrink-0">
-                <div className="relative shrink-0 size-12">
-                  <div className="w-12 h-12 bg-[#f7f7f7] rounded-full flex items-center justify-center">
-                    <span className="text-[20px] font-semibold text-[#777777]">
-                      {farmData.user?.nickname?.charAt(0) || '농'}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.user?.nickname || '윤성'}</p>
-                </div>
-              </div>
-              <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left text-nowrap tracking-[-0.48px]">
-                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">1일 전</p>
-              </div>
+            <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+              <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">결제하기</p>
             </div>
           </div>
 
@@ -157,16 +126,6 @@ const PlantDetail = () => {
                   <p key={index} className="block mb-0">{line || '\u00A0'}</p>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* Bookmark - Same line as user info, above right column */}
-          <div className="absolute top-36" style={{ left: "calc(83.333% - 30px)" }}>
-            <div 
-              className="overflow-clip relative shrink-0 size-6 cursor-pointer"
-              onClick={handleBookmarkToggle}
-            >
-              <BookmarkIcon />
             </div>
           </div>
 
@@ -262,36 +221,30 @@ const PlantDetail = () => {
               </div>
             </div>
 
-          </div>
-
-          {/* Chat button */}
-          <div 
-            className="absolute bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] top-[752px] cursor-pointer"
-            style={{ left: "calc(83.333% - 78px)" }}
-            onClick={handleChatButtonClick}
-          >
-            <div className="box-border content-stretch flex flex-row items-center justify-start p-0 relative shrink-0">
-              <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">채팅하기</p>
-              </div>
-              <div className="flex items-center justify-center relative shrink-0">
-                <div className="flex-none rotate-[180deg]">
-                  <div className="relative size-6">
-                    <SendIcon />
+            {/* Chat button - changed text */}
+            <div 
+              className="bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] cursor-pointer"
+              onClick={handleChatButtonClick}
+            >
+              <div className="box-border content-stretch flex flex-row items-center justify-start p-0 relative shrink-0">
+                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">채팅으로 돌아가기</p>
+                </div>
+                <div className="flex items-center justify-center relative shrink-0">
+                  <div className="flex-none rotate-[180deg]">
+                    <div className="relative size-6">
+                      <SendIcon />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Reviews section */}
-          <div className="absolute top-[873px]" style={{ left: "calc(66.667% - 13px)" }}>
-            <FarmReview 
-              farmId={id}
-              reviews={reviews} 
-              loading={reviewsLoading}
-              onReviewsUpdate={setReviews}
-            />
+            {/* Payment Section */}
+            <div className="mt-8">
+              <PaymentSection farmData={farmData} />
+            </div>
+
           </div>
 
           {/* ChatbotIcon */}
@@ -305,4 +258,4 @@ const PlantDetail = () => {
   );
 };
 
-export default PlantDetail;
+export default CreditPage;

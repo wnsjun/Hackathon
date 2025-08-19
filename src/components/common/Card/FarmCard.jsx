@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { checkLoginAndExecute } from '../../../utils/auth';
 
 const imgRectangle11 = "/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png";
 
@@ -55,7 +56,10 @@ const FarmCard = ({ farm }) => {
 
   const handleBookmarkClick = (e) => {
     e.stopPropagation();
-    setIsBookmarked(!isBookmarked);
+    checkLoginAndExecute(() => {
+      setIsBookmarked(!isBookmarked);
+      // 여기에 실제 북마크 API 호출 로직 추가
+    });
   };
 
   const placeholder = imgRectangle11;
