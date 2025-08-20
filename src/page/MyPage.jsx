@@ -301,7 +301,8 @@
 // };
 
 // src/page/MyPage.jsx
-import React, { useEffect, useState } from 'react';
+
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/mypage.module.css';
 import ChatbotIcon from '../components/common/ChatbotIcon';
@@ -311,29 +312,35 @@ import FarmCard from '../components/common/Card/FarmCard';
 import CommunityPostCard from '../components/common/Card/CommunityPostCard';
 
 import {
-  getProfile,
-  getMyFarms,
-  getRentingFarms,
-  getBookmarkedFarms,
-  getWrittenPosts,
-  getLikedPosts,
-} from '../apis/mypage';
+  useProfile,
+  useMyFarms,
+  useRentingFarms,
+  useBookmarkedFarms,
+  useWrittenPosts,
+  useLikedPosts,
+} from '../hooks/useMyPage';
 
 export const MyPage = () => {
   const navigate = useNavigate();
 
-  const [profile, setProfile] = useState(null);
-  const [myFarms, setMyFarms] = useState([]);
-  const [rentingFarms, setRentingFarms] = useState([]);
-  const [bookmarkedFarms, setBookmarkedFarms] = useState([]);
-  const [writtenPosts, setWrittenPosts] = useState([]);
-  const [likedPosts, setLikedPosts] = useState([]);
+  // React Query hooks
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useProfile();
+  const { data: myFarms = [], isLoading: myFarmsLoading } = useMyFarms();
+  const { data: rentingFarms = [], isLoading: rentingFarmsLoading } =
+    useRentingFarms();
+  const { data: bookmarkedFarms = [], isLoading: bookmarkedFarmsLoading } =
+    useBookmarkedFarms();
+  const { data: writtenPosts = [], isLoading: writtenPostsLoading } =
+    useWrittenPosts();
+  const { data: likedPosts = [], isLoading: likedPostsLoading } =
+    useLikedPosts();
 
-  const [farmToggle, setFarmToggle] = useState('my');
-  const [communityToggle, setCommunityToggle] = useState('written');
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [farmToggle, setFarmToggle] = React.useState('my');
+  const [communityToggle, setCommunityToggle] = React.useState('written');
 
   // 로그아웃
   const handleLogout = () => {
@@ -341,44 +348,28 @@ export const MyPage = () => {
     navigate('/');
   };
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  if (
+    profileLoading ||
+    myFarmsLoading ||
+    rentingFarmsLoading ||
+    bookmarkedFarmsLoading ||
+    writtenPostsLoading ||
+    likedPostsLoading
+  ) {
+    return <p className="pl-40 pt-20">로딩 중...</p>;
+  }
 
-      // API 함수 사용
-      const profileData = await getProfile();
-      setProfile(profileData);
+  if (profileError) {
+    return (
+      <p className="pl-40 pt-20 text-red-500">
+        데이터를 불러오는 중 오류가 발생했습니다.
+      </p>
+    );
+  }
 
-      const myFarmsData = await getMyFarms();
-      setMyFarms(myFarmsData);
-
-      const rentingFarmsData = await getRentingFarms();
-      setRentingFarms(rentingFarmsData);
-
-      const bookmarkedFarmsData = await getBookmarkedFarms();
-      setBookmarkedFarms(bookmarkedFarmsData);
-
-      const writtenPostsData = await getWrittenPosts();
-      setWrittenPosts(writtenPostsData);
-
-      const likedPostsData = await getLikedPosts();
-      setLikedPosts(likedPostsData);
-    } catch (err) {
-      console.error(err);
-      setError('데이터를 불러오는 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  if (loading) return <p className="pl-40 pt-20">로딩 중...</p>;
-  if (error) return <p className="pl-40 pt-20 text-red-500">{error}</p>;
-  if (!profile) return <p className="pl-40 pt-20">로그인이 필요합니다.</p>;
+  if (!profile) {
+    return <p className="pl-40 pt-20">로그인이 필요합니다.</p>;
+  }
 
   // Arrow icon component
   const ArrowIcon = () => (
@@ -405,7 +396,7 @@ export const MyPage = () => {
         <div className="flex pt-12 pl-40 w-full h-[336px] relative">
           <img
             className="w-60 h-60 rounded-full"
-            src={profile.image || '/assets/profile.svg'}
+            src={profile.imageUrl || '/assets/profile.svg'} // ✅ 수정
             alt="Profile"
           />
           <div className="flex flex-col pl-[46px] pt-[43px] items-start">
@@ -456,34 +447,12 @@ export const MyPage = () => {
             전체보기 <ArrowIcon />
           </button>
         </div>
-
-        <div className="flex gap-6 mb-16">
-          {profile.tradeReviews?.slice(0, 3).map((review, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-3 p-4 rounded-lg w-1/3"
-            >
-              <img
-                src={review.userImage || '/assets/profile.svg'}
-                alt="Profile"
-                className="w-12 h-12 rounded-full"
-              />
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold text-black text-base">
-                    {review.username}
-                  </p>
-                  <p className="text-sm text-gray-400">{review.timeAgo}</p>
-                </div>
-                <p className="text-sm text-gray-600">{review.content}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* ✅ tradeReviews API 없음 → UI만 표시 or 추후 데이터 연결 */}
+        <p className="text-gray-500 mb-16">아직 등록된 리뷰가 없습니다.</p>
 
         {/* 텃밭 탭 & 카드 */}
-        <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-full">
-          <div className="flex flex-col font-['Pretendard'] font-semibold justify-center leading-[1.5] text-[#000000] text-[32px] text-left tracking-[-0.64px] w-full">
+        <div className="box-border flex flex-col gap-2 items-start w-full">
+          <div className="flex flex-col font-['Pretendard'] font-semibold text-[#000000] text-[32px] tracking-[-0.64px] w-full">
             <p className="block">텃밭</p>
           </div>
         </div>
@@ -536,13 +505,10 @@ export const MyPage = () => {
                 >
                   <CommunityPostCard
                     id={post.id}
-                    image={post.image}
-                    username={post.username}
-                    timeAgo={post.timeAgo}
+                    image={post.thumbnailUrl} // ✅ thumbnailUrl 사용
+                    username={post.authorNickname} // ✅ authorNickname 사용
                     title={post.title}
-                    content={post.content}
-                    initialLiked={post.initialLiked}
-                    createdAt={post.createdAt}
+                    likeCount={post.likeCount} // ✅ 좋아요 수
                   />
                 </div>
               ))}

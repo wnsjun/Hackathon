@@ -1,3 +1,5 @@
+//hooks 폴더의 useMyPage.js의 코드
+
 import { useQuery } from '@tanstack/react-query';
 import {
   getProfile,
