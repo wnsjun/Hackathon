@@ -17,7 +17,8 @@
 // };
 
 import { useMutation } from '@tanstack/react-query';
-import { signup1Api, signup2Api, loginApi } from '../apis/authApi';
+import { signup1Api, signup2Api, loginApi, logoutApi } from '../apis/authApi';
+import { emitLogoutEvent } from '../utils/storageEvents';
 
 // 회원가입 1단계
 export const useSignup1 = () => {
@@ -59,10 +60,12 @@ export const useSignup2 = () => {
 // 로그인 상태 확인
 export const useAuth = () => {
   const isLoggedIn = !!localStorage.getItem('accessToken');
-  
+
   const logout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('userData');
+    localStorage.removeItem('postLikes');
+    localStorage.removeItem('farmBookmarks');
   };
 
   // For now, using a default coin balance
@@ -70,6 +73,29 @@ export const useAuth = () => {
   const coinBalance = isLoggedIn ? 50000 : 0;
 
   return { isLoggedIn, logout, coinBalance };
+};
+
+// 로그아웃
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: logoutApi,
+    onSuccess: () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('postLikes');
+      localStorage.removeItem('farmBookmarks');
+      emitLogoutEvent();
+      alert('로그아웃되었습니다.');
+    },
+    onError: (error) => {
+      console.error('Logout error:', error);
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('postLikes');
+      localStorage.removeItem('farmBookmarks');
+      emitLogoutEvent();
+    },
+  });
 };
 
 // 로그인

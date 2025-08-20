@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { checkLoginAndExecute } from '../../../utils/auth';
+import { toggleBookmark, removeBookmark } from '../../../apis/bookmark';
 
 const imgRectangle11 = "/assets/37f705c3a9bf70acf2b57b5052914cbdd64cd4ba.png";
 
@@ -27,7 +28,7 @@ const BookmarkIcon = ({ isBookmarked, onClick }) => {
   return (
     <button 
       onClick={onClick}
-      className="p-1 rounded-full hover:bg-black/10 transition-colors"
+      className="cursor-pointer p-1 rounded-full hover:bg-black/10 transition-colors"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path 
@@ -43,7 +44,9 @@ const BookmarkIcon = ({ isBookmarked, onClick }) => {
 
 const FarmCard = ({ farm }) => {
   const navigate = useNavigate();
-  const [isBookmarked, setIsBookmarked] = useState(farm.isBookmarked || false);
+  
+  // 서버에서 받은 bookmarked 상태 사용
+  const [isBookmarked, setIsBookmarked] = useState(farm.bookmarked);
 
   const handleCardClick = () => {
     navigate(`/plant/${farm.id}`, { state: { farm } });
@@ -54,11 +57,26 @@ const FarmCard = ({ farm }) => {
     navigate(`/plant/${farm.id}`, { state: { farm } });
   };
 
-  const handleBookmarkClick = (e) => {
+  const handleBookmarkClick = async (e) => {
     e.stopPropagation();
-    checkLoginAndExecute(() => {
-      setIsBookmarked(!isBookmarked);
-      // 여기에 실제 북마크 API 호출 로직 추가
+    checkLoginAndExecute(async () => {
+      const newBookmarkStatus = !isBookmarked;
+      
+      try {
+        if (isBookmarked) {
+          // 이미 북마크 상태면 삭제
+          await removeBookmark(farm.id);
+        } else {
+          // 북마크 추가
+          await toggleBookmark(farm.id);
+        }
+        
+        // 서버 API 성공 시 상태 업데이트
+        setIsBookmarked(newBookmarkStatus);
+      } catch (error) {
+        console.error('북마크 처리 실패:', error.message);
+        alert(error.message);
+      }
     });
   };
 

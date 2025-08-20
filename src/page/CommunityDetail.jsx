@@ -4,21 +4,60 @@ import ChatbotIcon from '../components/common/ChatbotIcon';
 import CommunityComment from '../components/common/CommunityComment';
 import { mockCertificationPosts, mockTipPosts } from '../data/mockCommunity';
 import { fetchPostDetail, fetchComments, createComment } from '../apis/community';
+import profileImage from '../assets/profile.png';
+import { toggleLike, removeLike, isPostLiked } from '../apis/like';
+import { emitLikeChange, useStorageListener } from '../utils/storageEvents';
 
 const CommunityDetail = () => {
   const { id } = useParams();
-  const [isLiked, setIsLiked] = useState(false);
+  
+  // 로컬 스토리지에서 좋아요 상태 확인 후 초기화
+  const [isLiked, setIsLiked] = useState(() => {
+    return isPostLiked(id);
+  });
+  
   const [postData, setPostData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
-  // Assets from Figma design
-  const imgEllipse82 = "http://localhost:3845/assets/03eab3ed8c78bad7cdec7c3357374c5806558d02.png";
-  const imgRectangle161125945 = "http://localhost:3845/assets/99ed4a5b97b53e3180927bfe5bd3f23c7540750f.png";
-  const imgIconStroke = "http://localhost:3845/assets/fcf78ba651ba6c64f9aef73aba247eaf75c7443b.svg";
+  // 로컬 스토리지에 좋아요 상태 저장
+  const saveLocalLike = (postId, liked) => {
+    try {
+      const likes = localStorage.getItem('postLikes');
+      let likeList = likes ? JSON.parse(likes) : [];
+      const postIdStr = String(postId);
+      
+      if (liked) {
+        if (!likeList.includes(postIdStr)) {
+          likeList.push(postIdStr);
+        }
+      } else {
+        likeList = likeList.filter(id => id !== postIdStr);
+      }
+      
+      localStorage.setItem('postLikes', JSON.stringify(likeList));
+      emitLikeChange(postId, liked);
+    } catch (error) {
+      console.error('로컬 좋아요 저장 실패:', error);
+    }
+  };
 
+  // 다른 컴포넌트에서 좋아요 상태 변경 감지
+  useEffect(() => {
+    const cleanup = useStorageListener((data) => {
+      if (data.type === 'like' && data.data.postId === parseInt(id)) {
+        setIsLiked(data.data.isLiked);
+      }
+    });
+    
+    return cleanup;
+  }, [id]);
+
+  // Assets from Figma design
+  const imgEllipse82 = profileImage;
+  const imgRectangle161125945 = "http://localhost:3845/assets/99ed4a5b97b53e3180927bfe5bd3f23c7540750f.png";
   useEffect(() => {
     const loadPostDetail = async () => {
       try {
@@ -57,19 +96,23 @@ const CommunityDetail = () => {
       }
     };
 
-    const loadComments = async () => {
+    const loadComments = async (sortOrder = 'asc') => {
       try {
-        const commentsResponse = await fetchComments(id);
-        const commentsArray = commentsResponse.comments || [];
-        const transformedComments = Array.isArray(commentsArray) ? 
-          commentsArray.map(comment => ({
-            id: comment.userId,
-            username: comment.authorNickname || '사용자',
-            timeAgo: formatTimeAgo(comment.createdAt),
-            content: comment.content,
-            isAuthor: false // This would need to be determined based on current user
-          })) : [];
+        const commentsResponse = await fetchComments(id, sortOrder);
+        console.log('댓글 API 응답:', commentsResponse);
         
+        // API 응답이 직접 배열을 반환
+        const commentsArray = Array.isArray(commentsResponse) ? commentsResponse : [];
+        const transformedComments = commentsArray.map((comment, index) => ({
+          id: `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 고유 ID 생성
+          userId: comment.userId,
+          username: comment.authorNickname || '사용자',
+          timeAgo: formatTimeAgo(comment.createdAt),
+          content: comment.content,
+          isAuthor: false // This would need to be determined based on current user
+        }));
+        
+        console.log('변환된 댓글:', transformedComments);
         setComments(transformedComments);
       } catch (error) {
         console.error('댓글 로드 실패:', error);
@@ -104,8 +147,34 @@ const CommunityDetail = () => {
 
   const currentPost = postData || defaultPostData;
 
-  const handleLikeToggle = () => {
-    setIsLiked(!isLiked);
+  const handleLikeToggle = async () => {
+    const isLoggedIn = !!localStorage.getItem('accessToken');
+    if (!isLoggedIn) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    const newLikeStatus = !isLiked;
+
+    try {
+      if (isLiked) {
+        // 이미 좋아요 상태면 삭제
+        await removeLike(id);
+      } else {
+        // 좋아요 추가
+        await toggleLike(id);
+      }
+    } catch (error) {
+      console.warn('서버 좋아요 API 에러, 로컬 저장소로 대체:', error.message);
+    }
+
+    // 서버 API 성공/실패 상관없이 로컬 상태 업데이트
+    setIsLiked(newLikeStatus);
+    saveLocalLike(id, newLikeStatus);
+  };
+
+  const handleSortChange = async (sortOrder) => {
+    await loadComments(sortOrder);
   };
 
   const handleCommentSubmit = async (commentText) => {
@@ -113,17 +182,17 @@ const CommunityDetail = () => {
       setIsSubmittingComment(true);
       await createComment(id, commentText);
       
-      // Reload comments after successful submission
-      const commentsResponse = await fetchComments(id);
-      const commentsArray = commentsResponse.comments || [];
-      const transformedComments = Array.isArray(commentsArray) ? 
-        commentsArray.map(comment => ({
-          id: comment.userId,
-          username: comment.authorNickname || '사용자',
-          timeAgo: formatTimeAgo(comment.createdAt),
-          content: comment.content,
-          isAuthor: false
-        })) : [];
+      // Reload comments after successful submission - 최신순으로 불러오기
+      const commentsResponse = await fetchComments(id, 'new');
+      const commentsArray = Array.isArray(commentsResponse) ? commentsResponse : [];
+      const transformedComments = commentsArray.map((comment, index) => ({
+        id: `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 고유 ID 생성
+        userId: comment.userId,
+        username: comment.authorNickname || '사용자',
+        timeAgo: formatTimeAgo(comment.createdAt),
+        content: comment.content,
+        isAuthor: false
+      }));
       
       setComments(transformedComments);
       return true;
@@ -137,12 +206,18 @@ const CommunityDetail = () => {
 
 
   const HeartIcon = ({ isLiked }) => {
+    if (isLiked) {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#ff6b6b"/>
+        </svg>
+      );
+    }
+    
     return (
-      <div className="relative size-6">
-        <div className="absolute inset-[8.33%_2.08%_7.7%_2.08%]">
-          <img alt={isLiked ? "좋아요 해제" : "좋아요"} className="block max-w-none size-full" src={imgIconStroke} />
-        </div>
-      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M21.5 8.43164C21.5 7.85228 21.3833 7.27841 21.1572 6.74219C20.9593 6.27284 20.6808 5.83988 20.333 5.46289L20.1797 5.30469C19.7603 4.89232 19.2613 4.56399 18.7109 4.33984C18.1604 4.11569 17.5695 4 16.9727 4C16.3758 4 15.7849 4.11569 15.2344 4.33984C14.7529 4.53592 14.3107 4.81133 13.9268 5.15332L13.7656 5.30469L12 7.04004L10.2344 5.30469C9.38672 4.47167 8.23251 4.00098 7.02637 4.00098C5.82037 4.00109 4.66689 4.47177 3.81934 5.30469C2.97248 6.13704 2.50006 7.26224 2.5 8.43164C2.5 10.5525 3.62994 12.7131 5.51855 14.7734C7.2745 16.689 9.60381 18.4254 11.999 19.8428C16.7975 17.0009 19.5916 13.8351 21.1572 10.1221C21.3834 9.58573 21.5 9.01114 21.5 8.43164ZM23.5 8.43164C23.5 9.27875 23.3305 10.1178 23.001 10.8994C21.1765 15.2264 17.8932 18.7842 12.4961 21.8682L12 22.1514L11.5039 21.8682C8.82209 20.3356 6.10415 18.3725 4.04395 16.125C1.99512 13.8899 0.5 11.2652 0.5 8.43164C0.500061 6.72035 1.19214 5.08259 2.41797 3.87793C3.64315 2.67398 5.30114 2.00109 7.02637 2.00098C8.75177 2.00098 10.4105 2.67384 11.6357 3.87793L11.999 4.23535L12.3633 3.87793C12.97 3.28138 13.6898 2.80925 14.4805 2.4873C15.2711 2.16539 16.1179 2 16.9727 2C17.8274 2 18.6743 2.1654 19.4648 2.4873C20.2555 2.80924 20.9753 3.28139 21.582 3.87793C22.1891 4.47424 22.6714 5.18327 23.001 5.96484C23.3304 6.74633 23.5 7.58468 23.5 8.43164Z" fill="#777777"/>
+      </svg>
     );
   };
 
@@ -230,6 +305,7 @@ const CommunityDetail = () => {
         comments={comments} 
         onCommentSubmit={handleCommentSubmit}
         isSubmitting={isSubmittingComment}
+        onSortChange={handleSortChange}
       />
       
       {/* 챗봇 아이콘 */}

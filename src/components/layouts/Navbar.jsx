@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Searchbar } from '../common/Searchbar';
 import { CoinDisplay } from '../common/CoinDisplay';
 import spacefarm_logo_image from '../../assets/spacefarm_logo_image.png?url';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth, useLogout } from '../../hooks/useAuth';
 
 function LogoIcon() { 
   return (
@@ -31,7 +31,8 @@ function ChatIcon() {
 export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn, coinBalance, logout } = useAuth();
+  const { isLoggedIn, coinBalance } = useAuth();
+  const { mutate: logout } = useLogout();
 
   const handleSearch = (query) => {
     if (location.pathname !== '/home') {
@@ -52,9 +53,12 @@ export const Navbar = () => {
   };
 
   const handleLogoutClick = () => {
-    logout();
-    navigate('/');
-    window.location.reload();
+    logout(null, {
+      onSuccess: () => {
+        navigate('/');
+        window.location.reload();
+      }
+    });
   };
 
   return (

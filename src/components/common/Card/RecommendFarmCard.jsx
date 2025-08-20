@@ -42,7 +42,7 @@ const BookmarkIcon = ({ isBookmarked, onClick }) => {
 
 const RecommendFarmCard = ({ farm}) => {
   const navigate = useNavigate();
-  const [isBookmarked, setIsBookmarked] = useState(farm.isBookmarked || false);
+  const [isBookmarked, setIsBookmarked] = useState(farm.bookmarked);
   
   // 지역 정보 로직
   const getLocationInfo = () => {

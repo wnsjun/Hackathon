@@ -5,6 +5,7 @@ import ChatbotIcon from '../components/common/ChatbotIcon';
 import FarmReview from '../components/common/FarmReview';
 import { fetchFarmById } from '../apis/home';
 import { fetchReviewsByFarmId } from '../apis/reviewApi';
+import { toggleBookmark, removeBookmark } from '../apis/bookmark';
 
 const PlantDetail = () => {
   const { id } = useParams();
@@ -25,7 +26,9 @@ const PlantDetail = () => {
 
         const farmData = await fetchFarmById(id);
         setFarmData(farmData);
-        setIsBookmarked(farmData.isBookmarked || false);
+        
+        // 서버에서 받은 북마크 상태 사용
+        setIsBookmarked(farmData.bookmarked);
 
         try {
           const reviewsData = await fetchReviewsByFarmId(id, 'createdAt_desc');
@@ -46,8 +49,31 @@ const PlantDetail = () => {
     fetchData();
   }, [id]);
 
-  const handleBookmarkToggle = () => {
-    setIsBookmarked(!isBookmarked);
+  const handleBookmarkToggle = async () => {
+    const isLoggedIn = !!localStorage.getItem('accessToken');
+    if (!isLoggedIn) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+
+    const newBookmarkStatus = !isBookmarked;
+
+    try {
+      if (isBookmarked) {
+        // 이미 북마크 상태면 삭제
+        await removeBookmark(id);
+      } else {
+        // 북마크 추가
+        await toggleBookmark(id);
+      }
+      
+      // 서버 API 성공 시 상태 업데이트
+      setIsBookmarked(newBookmarkStatus);
+    } catch (error) {
+      console.error('북마크 처리 실패:', error.message);
+      alert(error.message);
+    }
   };
 
   const handleChatButtonClick = () => {

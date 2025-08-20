@@ -1,12 +1,12 @@
 import { useState } from 'react';
+import profile from '../../assets/profile.png'
 
-const CommunityComment = ({ comments = [], onCommentSubmit, isSubmitting = false }) => {
+const CommunityComment = ({ comments = [], onCommentSubmit, isSubmitting = false, onSortChange }) => {
   const [newComment, setNewComment] = useState('');
   const [sortOrder, setSortOrder] = useState('latest'); // 'register' or 'latest'
 
   // Assets from Figma design
-  const imgEllipse83 = "http://localhost:3845/assets/08bc8f0fb0393f4fa955e7165c21fdf8b107680f.png";
-  const imgVector = "http://localhost:3845/assets/1b193f7832bcdbddc1ce4e049b217cc1f504e158.svg";
+  const imgEllipse83 =profile;
 
   const handleCommentSubmit = async () => {
     if (newComment.trim() && !isSubmitting) {
@@ -25,17 +25,16 @@ const CommunityComment = ({ comments = [], onCommentSubmit, isSubmitting = false
 
   const handleSortChange = (order) => {
     setSortOrder(order);
+    if (onSortChange) {
+      onSortChange(order === 'latest' ? 'new' : 'asc');
+    }
   };
 
   const SendIcon = () => {
     return (
-      <div className="relative size-8">
-        <div className="absolute inset-[12.5%_12.5%_11.16%_11.16%]">
-          <div className="absolute inset-[-3.07%]">
-            <img alt="전송" className="block max-w-none size-full" src={imgVector} />
-          </div>
-        </div>
-      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <path d="M13.3334 18.6667L28.0001 4M13.3334 18.6667L18.0001 28C18.0586 28.1277 18.1525 28.2358 18.2707 28.3117C18.3889 28.3875 18.5263 28.4278 18.6668 28.4278C18.8072 28.4278 18.9446 28.3875 19.0628 28.3117C19.181 28.2358 19.2749 28.1277 19.3334 28L28.0001 4M13.3334 18.6667L4.00009 14C3.87244 13.9415 3.76426 13.8476 3.68842 13.7294C3.61258 13.6112 3.57227 13.4738 3.57227 13.3333C3.57227 13.1929 3.61258 13.0554 3.68842 12.9373C3.76426 12.8191 3.87244 12.7252 4.00009 12.6667L28.0001 4" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
     );
   };
 

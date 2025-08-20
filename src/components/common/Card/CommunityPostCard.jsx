@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkLoginAndExecute } from '../../../utils/auth';
+import profileImage from '../../../assets/profile.png';
+import { toggleLike, removeLike, isPostLiked } from '../../../apis/like';
+import { emitLikeChange, useStorageListener } from '../../../utils/storageEvents';
 
 // 날짜 계산 함수
 const getTimeAgo = (createdAt) => {
@@ -38,7 +41,7 @@ const getTimeAgo = (createdAt) => {
 };
 
 // Assets from Figma
-const imgEllipse83 = "http://localhost:3845/assets/08bc8f0fb0393f4fa955e7165c21fdf8b107680f.png";
+const imgEllipse83 = profileImage;
 
 const ArrowIcon = () => {
   return (
@@ -77,8 +80,48 @@ const HeartButton = ({ isLiked = false, onToggle }) => {
 };
 
 const CommunityPostCard = ({ id, image, username, title, content, initialLiked = false, createdAt }) => {
-  const [isLiked, setIsLiked] = useState(initialLiked);
   const navigate = useNavigate();
+  
+  // 로컬 스토리지에서 좋아요 상태 확인 후 초기화
+  const [isLiked, setIsLiked] = useState(() => {
+    const localLikeStatus = isPostLiked(id);
+    return localLikeStatus || initialLiked || false;
+  });
+
+  // 로컬 스토리지에 좋아요 상태 저장
+  const saveLocalLike = (postId, liked) => {
+    try {
+      const likes = localStorage.getItem('postLikes');
+      let likeList = likes ? JSON.parse(likes) : [];
+      const postIdStr = String(postId);
+      
+      if (liked) {
+        if (!likeList.includes(postIdStr)) {
+          likeList.push(postIdStr);
+        }
+      } else {
+        likeList = likeList.filter(id => id !== postIdStr);
+      }
+      
+      localStorage.setItem('postLikes', JSON.stringify(likeList));
+      
+      // 다른 컴포넌트에 좋아요 상태 변경 알림
+      emitLikeChange(postId, liked);
+    } catch (error) {
+      console.error('로컬 좋아요 저장 실패:', error);
+    }
+  };
+
+  // 다른 컴포넌트에서 좋아요 상태 변경 감지
+  useEffect(() => {
+    const cleanup = useStorageListener((data) => {
+      if (data.type === 'like' && data.data.postId === id) {
+        setIsLiked(data.data.isLiked);
+      }
+    });
+    
+    return cleanup;
+  }, [id]);
 
   const checkLoginAndNavigate = () => {
     const isLoggedIn = !!localStorage.getItem('accessToken');
@@ -90,10 +133,25 @@ const CommunityPostCard = ({ id, image, username, title, content, initialLiked =
     }
   };
 
-  const handleLikeToggle = () => {
-    checkLoginAndExecute(() => {
-      setIsLiked(!isLiked);
-      // 여기에 실제 좋아요 API 호출 로직 추가
+  const handleLikeToggle = async () => {
+    checkLoginAndExecute(async () => {
+      const newLikeStatus = !isLiked;
+      
+      try {
+        if (isLiked) {
+          // 이미 좋아요 상태면 삭제
+          await removeLike(id);
+        } else {
+          // 좋아요 추가
+          await toggleLike(id);
+        }
+      } catch (error) {
+        console.warn('서버 좋아요 API 에러, 로컬 저장소로 대체:', error.message);
+      }
+      
+      // 서버 API 성공/실패 상관없이 로컬 상태 업데이트
+      setIsLiked(newLikeStatus);
+      saveLocalLike(id, newLikeStatus);
     });
   };
 
