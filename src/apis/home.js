@@ -1,4 +1,5 @@
 import instance from './instance';
+import axiosInstance from './axiosInstance';
 import axios from 'axios';
 
 // 로그인 상태 확인 함수
@@ -71,86 +72,33 @@ export const fetchFarmById = async (id) => {
 // 텃밭 매물 등록
 export const createFarm = async (farmData, imageFile) => {
   try {
-    // 현재 로그인 상태 확인
-    const token = localStorage.getItem('accessToken');
-    console.log('현재 로그인 토큰:', token ? 'exists' : 'not found');
+    console.log('텃밭 매물 등록 시작:', farmData);
     
-    // 먼저 JSON으로 시도
-    console.log('JSON으로 요청 시도...');
-    try {
-      const response = await instance.post('/farm', farmData);
-      return response.data;
-    } catch (jsonError) {
-      console.log('JSON 요청 실패, 다른 방법들 시도...');
-      
-      // 방법 1: 이미지 없이 JSON으로 시도
-      console.log('이미지 없이 JSON 재시도...');
-      try {
-        const response = await instance.post('/farm', farmData, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        console.log('이미지 없는 JSON 요청 성공!');
-        return response.data;
-      } catch (noImageError) {
-        console.log('이미지 없는 JSON도 실패, FormData 시도...');
-        
-        // 방법 2: FormData - Content-Type 헤더 제거 (브라우저가 자동 설정)
-        const formData = new FormData();
-        
-        // 데이터 타입 확인 및 변환
-        console.log('전송할 데이터 타입 확인:', {
-          title: typeof farmData.title,
-          price: typeof farmData.price,
-          rentalPeriod: typeof farmData.rentalPeriod,
-          size: typeof farmData.size
-        });
-        
-        // FormData 내용 확인을 위해 로그
-        console.log('전송할 원본 데이터:', farmData);
-        
-        // 서버가 기대하는 형식 시도 1: 이미지 필드가 필수일 수 있음
-        if (!imageFile) {
-          console.log('이미지가 없습니다. 빈 파일을 생성하여 전송 시도...');
-          // 빈 파일 생성
-          const emptyFile = new File([''], 'empty.txt', { type: 'text/plain' });
-          formData.append('image', emptyFile);
-        }
-        
-        // 필드 순서를 바꿔서 시도 (image를 먼저)
-        if (imageFile) {
-          formData.append('image', imageFile);
-        }
-        
-        // 서버가 기대하는 필드명이 다를 수 있음 - 다른 조합 시도
-        formData.append('title', String(farmData.title || ''));
-        formData.append('description', String(farmData.description || ''));
-        formData.append('address', String(farmData.address || ''));
-        formData.append('price', farmData.price); // 숫자로 전송 시도
-        formData.append('rentalPeriod', farmData.rentalPeriod); // 숫자로 전송 시도
-        formData.append('size', farmData.size); // 숫자로 전송 시도
-        formData.append('theme', String(farmData.theme || ''));
-        
-        // FormData 내용 확인
-        console.log('FormData 내용:');
-        for (let [key, value] of formData.entries()) {
-          console.log(`${key}:`, value);
-        }
-        
-        // axios instance 우회해서 직접 호출
-        const token = localStorage.getItem('accessToken');
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/farm`, formData, {
-          headers: {
-            'Authorization': token ? `Bearer ${token}` : undefined,
-            // Content-Type은 설정하지 않음 - 브라우저가 자동으로 multipart/form-data 설정
-          },
-        });
-        return response.data;
-      }
-    }
+    // API 명세에 정확히 맞는 JSON 데이터 (이미지는 일단 제외하고 테스트)
+    const requestData = {
+      title: farmData.title,
+      description: farmData.description,
+      address: farmData.address,
+      price: parseInt(farmData.price),
+      rentalPeriod: parseInt(farmData.rentalPeriod),
+      size: parseInt(farmData.size),
+      theme: farmData.theme
+    };
+    
+    console.log('전송할 JSON:', JSON.stringify(requestData, null, 2));
+    
+    const token = localStorage.getItem('accessToken');
+    console.log('토큰 있음:', !!token);
+    
+    // 다른 성공하는 API들과 같은 axiosInstance 사용
+    const response = await axiosInstance.post('/farm', requestData);
+    
+    console.log('텃밭 등록 성공:', response.data);
+    return response.data;
+    
   } catch (error) {
     console.error('텃밭 매물 등록 실패:', error);
+    console.error('응답 상태:', error.response?.status);
     console.error('응답 데이터:', error.response?.data);
     throw error;
   }
