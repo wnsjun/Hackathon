@@ -1,11 +1,14 @@
+//hooks 폴더의 useMyPage.js의 코드
+
 import { useQuery } from '@tanstack/react-query';
 import {
   getProfile,
   getMyFarms,
-  getRentingFarms,
+  getUsedFarms,
   getBookmarkedFarms,
-  getWrittenPosts,
+  getMyPosts,
   getLikedPosts,
+  getEcoScore,
 } from '../apis/mypage.js';
 
 export const useProfile = () =>
@@ -20,10 +23,10 @@ export const useMyFarms = () =>
     queryFn: getMyFarms,
   });
 
-export const useRentingFarms = () =>
+export const useUsedFarms = () =>
   useQuery({
-    queryKey: ['rentingFarms'],
-    queryFn: getRentingFarms,
+    queryKey: ['usedFarms'],
+    queryFn: getUsedFarms,
   });
 
 export const useBookmarkedFarms = () =>
@@ -32,14 +35,20 @@ export const useBookmarkedFarms = () =>
     queryFn: getBookmarkedFarms,
   });
 
-export const useWrittenPosts = () =>
+export const useMyPosts = () =>
   useQuery({
-    queryKey: ['writtenPosts'],
-    queryFn: getWrittenPosts,
+    queryKey: ['myPosts'],
+    queryFn: getMyPosts,
   });
 
 export const useLikedPosts = () =>
   useQuery({
     queryKey: ['likedPosts'],
     queryFn: getLikedPosts,
+  });
+
+export const useEcoScore = () =>
+  useQuery({
+    queryKey: ['ecoScore'],
+    queryFn: getEcoScore,
   });
