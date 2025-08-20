@@ -1,26 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useParams} from 'react-router-dom';
 import ChatbotIcon from '../components/common/ChatbotIcon';
+import CommunityComment from '../components/common/CommunityComment';
 import { mockCertificationPosts, mockTipPosts } from '../data/mockCommunity';
-import { fetchPostDetail } from '../apis/community';
+import { fetchPostDetail, fetchComments, createComment } from '../apis/community';
 
 const CommunityDetail = () => {
   const { id } = useParams();
-  const [newComment, setNewComment] = useState('');
   const [isLiked, setIsLiked] = useState(false);
-  const [sortOrder, setSortOrder] = useState('register'); // 'register' or 'latest'
   const [postData, setPostData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
   // Assets from Figma design
   const imgEllipse82 = "http://localhost:3845/assets/03eab3ed8c78bad7cdec7c3357374c5806558d02.png";
   const imgRectangle161125945 = "http://localhost:3845/assets/99ed4a5b97b53e3180927bfe5bd3f23c7540750f.png";
-  const imgEllipse83 = "http://localhost:3845/assets/08bc8f0fb0393f4fa955e7165c21fdf8b107680f.png";
   const imgIconStroke = "http://localhost:3845/assets/fcf78ba651ba6c64f9aef73aba247eaf75c7443b.svg";
-  const imgVector = "http://localhost:3845/assets/1b193f7832bcdbddc1ce4e049b217cc1f504e158.svg";
-  const img = "http://localhost:3845/assets/7cf7e64aface95ddfb54c919d250b988a81ec18c.svg";
-  const img1 = "http://localhost:3845/assets/3afd11aeb6e0ae97fee730309097f997072316f4.svg";
 
   useEffect(() => {
     const loadPostDetail = async () => {
@@ -36,17 +33,14 @@ const CommunityDetail = () => {
           username: response.authorNickname,
           image: response.imageUrls?.[0] || imgRectangle161125945,
           timeAgo: formatTimeAgo(response.createdAt),
-          comments: response.comments?.map(comment => ({
-            id: comment.userId,
-            username: comment.authorNickname,
-            timeAgo: formatTimeAgo(comment.createdAt),
-            content: comment.content,
-            isAuthor: comment.authorNickname === response.authorNickname
-          })) || [],
           likeCount: response.likeCount || 0
         };
         
         setPostData(transformedPost);
+        
+        // Load comments separately
+        await loadComments();
+        
       } catch (error) {
         console.error('게시글 상세 로드 실패:', error);
         setError('게시글을 불러올 수 없습니다.');
@@ -56,9 +50,30 @@ const CommunityDetail = () => {
         const mockPost = allPosts.find(post => post.id === parseInt(id));
         if (mockPost) {
           setPostData(mockPost);
+          setComments(mockPost.comments || []);
         }
       } finally {
         setLoading(false);
+      }
+    };
+
+    const loadComments = async () => {
+      try {
+        const commentsResponse = await fetchComments(id);
+        const commentsArray = commentsResponse.comments || [];
+        const transformedComments = Array.isArray(commentsArray) ? 
+          commentsArray.map(comment => ({
+            id: comment.userId,
+            username: comment.authorNickname || '사용자',
+            timeAgo: formatTimeAgo(comment.createdAt),
+            content: comment.content,
+            isAuthor: false // This would need to be determined based on current user
+          })) : [];
+        
+        setComments(transformedComments);
+      } catch (error) {
+        console.error('댓글 로드 실패:', error);
+        setComments([]);
       }
     };
 
@@ -84,32 +99,40 @@ const CommunityDetail = () => {
     timeAgo: '방금 전',
     title: '게시글을 찾을 수 없습니다',
     content: '요청하신 게시글을 찾을 수 없습니다.',
-    image: imgRectangle161125945,
-    comments: []
+    image: imgRectangle161125945
   };
 
   const currentPost = postData || defaultPostData;
-  
-  // comments가 배열인지 확인하고, 아니면 빈 배열로 설정
-  const safeComments = Array.isArray(currentPost.comments) ? currentPost.comments : [];
 
   const handleLikeToggle = () => {
     setIsLiked(!isLiked);
   };
 
-  const handleCommentSubmit = () => {
-    if (newComment.trim()) {
-      console.log('새 댓글:', newComment);
-      setNewComment('');
+  const handleCommentSubmit = async (commentText) => {
+    try {
+      setIsSubmittingComment(true);
+      await createComment(id, commentText);
+      
+      // Reload comments after successful submission
+      const commentsResponse = await fetchComments(id);
+      const commentsArray = commentsResponse.comments || [];
+      const transformedComments = Array.isArray(commentsArray) ? 
+        commentsArray.map(comment => ({
+          id: comment.userId,
+          username: comment.authorNickname || '사용자',
+          timeAgo: formatTimeAgo(comment.createdAt),
+          content: comment.content,
+          isAuthor: false
+        })) : [];
+      
+      setComments(transformedComments);
+      return true;
+    } catch (error) {
+      console.error('댓글 작성 실패:', error);
+      return false;
+    } finally {
+      setIsSubmittingComment(false);
     }
-  };
-
-  const handleCommentChange = (e) => {
-    setNewComment(e.target.value);
-  };
-
-  const handleSortChange = (order) => {
-    setSortOrder(order);
   };
 
 
@@ -118,18 +141,6 @@ const CommunityDetail = () => {
       <div className="relative size-6">
         <div className="absolute inset-[8.33%_2.08%_7.7%_2.08%]">
           <img alt={isLiked ? "좋아요 해제" : "좋아요"} className="block max-w-none size-full" src={imgIconStroke} />
-        </div>
-      </div>
-    );
-  };
-
-  const SendIcon = () => {
-    return (
-      <div className="relative size-8">
-        <div className="absolute inset-[12.5%_12.5%_11.16%_11.16%]">
-          <div className="absolute inset-[-3.07%]">
-            <img alt="전송" className="block max-w-none size-full" src={imgVector} />
-          </div>
         </div>
       </div>
     );
@@ -215,92 +226,11 @@ const CommunityDetail = () => {
       </div>
 
       {/* Comments Section */}
-      <div className="absolute top-40 w-[333px] h-[496px] flex flex-col justify-between" style={{ left: "calc(66.667% - 13px)" }}>
-        <div className="flex flex-col gap-2 items-end w-full">
-          {/* Sort Options */}
-          <div className="flex flex-row gap-4 items-center w-[333px]">
-            <div 
-              className="flex flex-row gap-1 items-center cursor-pointer"
-              onClick={() => handleSortChange('latest')}
-            >
-              <div className="relative size-1">
-                <img alt="최신순" className="block max-w-none size-full" src={img} />
-              </div>
-              <div className={`font-normal text-sm tracking-[-0.42px] ${
-                sortOrder === 'latest' ? 'text-neutral-900' : 'text-[#bbbbbb]'
-              }`}>
-                최신순
-              </div>
-            </div>
-            <div 
-              className="flex flex-row gap-1 items-center cursor-pointer"
-              onClick={() => handleSortChange('register')}
-            >
-              <div className="relative size-1">
-                <img alt="등록순" className="block max-w-none size-full" src={img1} />
-              </div>
-              <div className={`font-normal text-sm tracking-[-0.42px] ${
-                sortOrder === 'register' ? 'text-neutral-900' : 'text-[#bbbbbb]'
-              }`}>
-                등록순
-              </div>
-            </div>
-          </div>
-
-          {/* Comments List */}
-          <div className="bg-white flex flex-col gap-2 rounded-tl-lg rounded-tr-lg w-[333px]">
-            <div className="flex flex-col w-full">
-              {safeComments.map((comment) => (
-                <div key={comment.id} className="bg-white flex flex-col gap-2 items-end px-0 py-4 w-full">
-                  <div className="flex flex-row items-center justify-between w-full">
-                    <div className="flex flex-row gap-2 items-center">
-                      <div className="size-8">
-                        <img alt="" className="block max-w-none size-full" height="32" src={imgEllipse83} width="32" />
-                      </div>
-                      <div className="flex flex-row gap-2 items-end">
-                        <div className="font-semibold text-base text-neutral-900 tracking-[-0.48px]">
-                          {comment.username}
-                        </div>
-                        <div className="flex flex-row gap-1 items-center text-sm tracking-[-0.42px]">
-                          {comment.isAuthor && (
-                            <>
-                              <div className="text-[#1aa752]">작성자</div>
-                              <div className="text-[#bbbbbb]">·</div>
-                            </>
-                          )}
-                          <div className="text-[#bbbbbb]">{comment.timeAgo}</div>
-                        </div>
-                      </div>
-                    </div>
-                    {comment.isAuthor && (
-                      <div className="text-[#777777] text-sm tracking-[-0.42px] cursor-pointer">
-                        삭제
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-base text-neutral-900 tracking-[-0.48px] leading-[1.5] w-[293px]">
-                    {comment.content}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Comment Input */}
-        <div className="flex flex-row items-center justify-between pl-8 pr-6 py-0 h-14 rounded-full border border-[#1aa752] w-full">
-          <input
-            type="text"
-            value={newComment}
-            onChange={handleCommentChange}
-            placeholder="댓글을 입력하세요."
-            className="flex-1 bg-transparent text-base text-[#bbbbbb] tracking-[-0.48px] border-none outline-none"
-          />
-          <div className="cursor-pointer" onClick={handleCommentSubmit}>
-            <SendIcon />
-          </div>
-        </div>
-      </div>
+      <CommunityComment 
+        comments={comments} 
+        onCommentSubmit={handleCommentSubmit}
+        isSubmitting={isSubmittingComment}
+      />
       
       {/* 챗봇 아이콘 */}
       <ChatbotIcon />

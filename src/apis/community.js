@@ -29,3 +29,25 @@ export const fetchPostDetail = async (postId) => {
     throw error;
   }
 };
+
+export const fetchComments = async (postId) => {
+  try {
+    const response = await axiosInstance.get(`/comment/${postId}`);
+    return response.data;
+  } catch (error) {
+    console.error('댓글 조회 실패:', error);
+    throw error;
+  }
+};
+
+export const createComment = async (postId, content) => {
+  try {
+    const response = await axiosInstance.post(`/comment/${postId}`, {
+      content
+    });
+    return response.data;
+  } catch (error) {
+    console.error('댓글 작성 실패:', error);
+    throw error;
+  }
+};

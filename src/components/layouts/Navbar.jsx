@@ -31,7 +31,7 @@ function ChatIcon() {
 export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn, coinBalance } = useAuth();
+  const { isLoggedIn, coinBalance, logout } = useAuth();
 
   const handleSearch = (query) => {
     if (location.pathname !== '/home') {
@@ -49,6 +49,12 @@ export const Navbar = () => {
       window.dispatchEvent(new CustomEvent('resetHomeFilters'));
     }
     navigate('/home');
+  };
+
+  const handleLogoutClick = () => {
+    logout();
+    navigate('/');
+    window.location.reload();
   };
 
   return (
@@ -103,6 +109,12 @@ export const Navbar = () => {
               <Link to="/mypage" className="overflow-clip relative shrink-0 size-8">
                 <UserIcon isLoggedIn={isLoggedIn} />
               </Link>
+              <button
+                onClick={handleLogoutClick}
+                className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[16px] text-left text-nowrap tracking-[-0.48px] hover:text-gray-600 transition-colors"
+              >
+                <p className="font-bold block leading-[1.5] whitespace-pre">로그아웃</p>
+              </button>
             </>
           ) : (
             <div className="box-border content-stretch flex flex-row gap-8 items-center justify-start p-0 relative shrink-0">
