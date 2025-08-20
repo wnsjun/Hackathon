@@ -196,7 +196,17 @@ const ChatPage = ({ userId }) => {
     const files = Array.from(e.target.files || []);
     if (!files.length || !selected) return;
     try {
-      await uploadImages({ chatRoomId: selected.chatroomId, files });
+      const saved = await uploadImages({
+        chatRoomId: selected.chatroomId,
+        files,
+      });
+      if (saved) {
+        setMessages((prev) => [...prev, saved]);
+        setTimeout(
+          () => endRef.current?.scrollIntoView({ behavior: 'smooth' }),
+          0
+        );
+      }
     } catch (err) {
       console.error('이미지 전송 실패:', err);
       alert('이미지 전송 실패');
@@ -255,7 +265,7 @@ const ChatPage = ({ userId }) => {
               <div ref={topSentinelRef} />
               {messages.map((msg) => (
                 <ChatMessage
-                  key={msg.id || msg.createdAt}
+                  key={msg.messageId || msg.id || msg.createdAt}
                   msg={msg}
                   isMine={msg.senderId === userId}
                 />
