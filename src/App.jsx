@@ -17,6 +17,7 @@ import MyAllFarms from './page/MyAllFarms';
 import MyAllCommunity from './page/MyAllCommunity';
 import CreditPage from './page/CreditPage';
 import CoinChargePage from './page/CoinChargePage';
+import HomeSearchResult from './page/HomeSearchResult';
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
+          <Route path="search" element={<HomeSearchResult />} />
           <Route path="addfarm" element={<AddFarm />} />
           <Route path="farm/:id" element={<PlantDetail />} />
           <Route path="plant/:id" element={<PlantDetail />} />

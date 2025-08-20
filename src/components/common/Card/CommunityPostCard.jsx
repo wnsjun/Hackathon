@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkLoginAndExecute } from '../../../utils/auth';
 import profileImage from '../../../assets/profile.png';
-import { toggleLike, removeLike, isPostLiked } from '../../../apis/like';
-import { emitLikeChange, useStorageListener } from '../../../utils/storageEvents';
+import { toggleLike, removeLike } from '../../../apis/like';
 
 // 날짜 계산 함수
 const getTimeAgo = (createdAt) => {
@@ -71,7 +70,7 @@ const HeartButton = ({ isLiked = false, onToggle }) => {
       className="absolute top-3 right-3 w-8 h-8 cursor-pointer bg-white bg-opacity-80 rounded-full flex items-center justify-center shadow-sm hover:bg-opacity-100 transition-all"
       onClick={(e) => {
         e.stopPropagation();
-        onToggle && onToggle();
+        onToggle && onToggle(e);
       }}
     >
       <HeartIcon filled={isLiked} />
@@ -82,46 +81,8 @@ const HeartButton = ({ isLiked = false, onToggle }) => {
 const CommunityPostCard = ({ id, image, username, title, content, initialLiked = false, createdAt }) => {
   const navigate = useNavigate();
   
-  // 로컬 스토리지에서 좋아요 상태 확인 후 초기화
-  const [isLiked, setIsLiked] = useState(() => {
-    const localLikeStatus = isPostLiked(id);
-    return localLikeStatus || initialLiked || false;
-  });
-
-  // 로컬 스토리지에 좋아요 상태 저장
-  const saveLocalLike = (postId, liked) => {
-    try {
-      const likes = localStorage.getItem('postLikes');
-      let likeList = likes ? JSON.parse(likes) : [];
-      const postIdStr = String(postId);
-      
-      if (liked) {
-        if (!likeList.includes(postIdStr)) {
-          likeList.push(postIdStr);
-        }
-      } else {
-        likeList = likeList.filter(id => id !== postIdStr);
-      }
-      
-      localStorage.setItem('postLikes', JSON.stringify(likeList));
-      
-      // 다른 컴포넌트에 좋아요 상태 변경 알림
-      emitLikeChange(postId, liked);
-    } catch (error) {
-      console.error('로컬 좋아요 저장 실패:', error);
-    }
-  };
-
-  // 다른 컴포넌트에서 좋아요 상태 변경 감지
-  useEffect(() => {
-    const cleanup = useStorageListener((data) => {
-      if (data.type === 'like' && data.data.postId === id) {
-        setIsLiked(data.data.isLiked);
-      }
-    });
-    
-    return cleanup;
-  }, [id]);
+  // 서버에서 받은 좋아요 상태로 초기화
+  const [isLiked, setIsLiked] = useState(initialLiked);
 
   const checkLoginAndNavigate = () => {
     const isLoggedIn = !!localStorage.getItem('accessToken');
@@ -133,7 +94,8 @@ const CommunityPostCard = ({ id, image, username, title, content, initialLiked =
     }
   };
 
-  const handleLikeToggle = async () => {
+  const handleLikeToggle = async (e) => {
+    e.stopPropagation();
     checkLoginAndExecute(async () => {
       const newLikeStatus = !isLiked;
       
@@ -145,13 +107,13 @@ const CommunityPostCard = ({ id, image, username, title, content, initialLiked =
           // 좋아요 추가
           await toggleLike(id);
         }
+        
+        // 서버 API 성공 시 상태 업데이트
+        setIsLiked(newLikeStatus);
       } catch (error) {
-        console.warn('서버 좋아요 API 에러, 로컬 저장소로 대체:', error.message);
+        console.error('좋아요 처리 실패:', error.message);
+        alert(error.message);
       }
-      
-      // 서버 API 성공/실패 상관없이 로컬 상태 업데이트
-      setIsLiked(newLikeStatus);
-      saveLocalLike(id, newLikeStatus);
     });
   };
 

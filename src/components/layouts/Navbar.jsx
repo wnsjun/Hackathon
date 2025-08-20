@@ -35,13 +35,10 @@ export const Navbar = () => {
   const { mutate: logout } = useLogout();
 
   const handleSearch = (query) => {
-    if (location.pathname !== '/home') {
-      navigate(`/home?query=${encodeURIComponent(query)}`);
+    if (location.pathname === '/community') {
+      navigate(`/community?search=${encodeURIComponent(query)}`);
     } else {
-      navigate({
-        pathname: '/home',
-        search: `?query=${encodeURIComponent(query)}`,
-      });
+      navigate(`/search?title=${encodeURIComponent(query)}`);
     }
   };
 
