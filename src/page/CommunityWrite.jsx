@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
+import { createPost } from '../apis/community';
 
 const imgGroup137 = "/assets/f332ac80ce1bb25afbf288fde0eb65b12ba2ab2c.svg";
 const img2 = "/assets/4c6f992d46ed8ac3206b03f54022654255248123.svg";
@@ -16,36 +17,68 @@ export const CommunityWrite = () => {
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [images, setImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getPageTitle = () => {
     return postType === 'tips' ? '재배 팁 작성' : '인증 피드 작성';
   };
 
   const isFormValid = () => {
-    return title.trim() !== '' && content.trim() !== '' && image !== null;
+    return title.trim() !== '' && content.trim() !== '' && images.length > 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isFormValid()) {
+    if (!isFormValid() || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      // category 결정: tips -> TIP, 그 외 -> FEED
+      const category = postType === 'tips' ? 'TIP' : 'FEED';
+      
+      const postData = {
+        title: title.trim(),
+        content: content.trim(),
+        category: category
+      };
+
+      console.log('게시글 데이터:', postData);
+      console.log('이미지 개수:', images.length);
+
+      const response = await createPost(postData, images);
+      console.log('게시글 작성 성공:', response);
+
       alert(`${getPageTitle()} 완료!`);
       navigate('/community');
+    } catch (error) {
+      console.error('게시글 작성 실패:', error);
+      alert('게시글 작성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImage(file);
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setImages(prevImages => [...prevImages, ...files]);
       
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImagePreview(event.target.result);
-      };
-      reader.readAsDataURL(file);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setImagePreviews(prevPreviews => [...prevPreviews, event.target.result]);
+        };
+        reader.readAsDataURL(file);
+      });
     }
+  };
+
+  const removeImage = (index) => {
+    setImages(prevImages => prevImages.filter((_, i) => i !== index));
+    setImagePreviews(prevPreviews => prevPreviews.filter((_, i) => i !== index));
   };
 
   const CameraIcon = () => (
@@ -86,13 +119,15 @@ export const CommunityWrite = () => {
               <button
                 onClick={handleSubmit}
                 className={`px-7 py-3 rounded-[100px] flex items-center gap-2 transition-colors ${
-                  isFormValid()
+                  isFormValid() && !isSubmitting
                     ? 'bg-[#1aa752] text-white' 
                     : 'bg-[#f7f7f7] text-[#bbbbbb] cursor-not-allowed'
                 }`}
-                disabled={!isFormValid()}
+                disabled={!isFormValid() || isSubmitting}
               >
-                <span className="text-[24px] tracking-[-0.48px]">등록</span>
+                <span className="text-[24px] tracking-[-0.48px]">
+                  {isSubmitting ? '등록 중...' : '등록'}
+                </span>
                 <PlusIcon />
               </button>
             </div>
@@ -101,29 +136,55 @@ export const CommunityWrite = () => {
           {/* Content */}
           <div className="flex flex-col gap-12 w-[739px]">
             {/* Image Upload */}
-            <div 
-              className="bg-[#f7f7f7] h-[588px] rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden" 
-              onClick={() => document.getElementById('imageUpload').click()}
-            >
-              {imagePreview ? (
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
-                  className="w-full h-full object-cover rounded-2xl"
-                />
+            <div className="bg-[#f7f7f7] min-h-[588px] rounded-2xl p-4">
+              {imagePreviews.length > 0 ? (
+                <div className="grid grid-cols-2 gap-4 h-full">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img 
+                        src={preview} 
+                        alt={`Preview ${index + 1}`} 
+                        className="w-full h-[280px] object-cover rounded-lg"
+                      />
+                      <button
+                        onClick={() => removeImage(index)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {imagePreviews.length < 4 && (
+                    <div 
+                      className="border-2 border-dashed border-[#bbbbbb] rounded-lg flex flex-col items-center justify-center cursor-pointer h-[280px] hover:border-[#1aa752] transition-colors"
+                      onClick={() => document.getElementById('imageUpload').click()}
+                    >
+                      <div className="w-8 h-8">
+                        <CameraIcon />
+                      </div>
+                      <p className="text-[14px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
+                        + 사진 추가
+                      </p>
+                    </div>
+                  )}
+                </div>
               ) : (
-                <div className="flex flex-col items-center gap-2">
+                <div 
+                  className="h-[588px] flex flex-col items-center justify-center cursor-pointer"
+                  onClick={() => document.getElementById('imageUpload').click()}
+                >
                   <div className="w-8 h-8">
                     <CameraIcon />
                   </div>
                   <p className="text-[14px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
-                    사진을 선택해주세요.
+                    사진을 선택해주세요. (최대 4장)
                   </p>
                 </div>
               )}
               <input
                 type="file"
                 accept="image/*"
+                multiple
                 onChange={handleImageChange}
                 className="hidden"
                 id="imageUpload"

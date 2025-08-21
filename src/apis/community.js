@@ -59,3 +59,47 @@ export const createComment = async (postId, content) => {
     throw error;
   }
 };
+
+export const createPost = async (postData, imageFiles) => {
+  try {
+    console.log('게시글 작성 시작:', postData);
+    
+    // FormData 생성 (채팅 API와 동일한 방식)
+    const formData = new FormData();
+    
+    // DTO 필드들을 개별적으로 추가
+    formData.append('title', postData.title);
+    formData.append('content', postData.content);
+    formData.append('category', postData.category);
+    
+    // 이미지 파일들 추가
+    if (imageFiles && imageFiles.length > 0) {
+      imageFiles.forEach((file) => {
+        formData.append('images', file);
+      });
+    }
+    
+    console.log('전송 데이터:', {
+      title: postData.title,
+      content: postData.content,
+      category: postData.category
+    });
+    console.log('이미지 파일 개수:', imageFiles ? imageFiles.length : 0);
+    
+    // FormData 전송 (채팅 API와 동일한 헤더 설정)
+    const response = await axiosInstance.post('/posts', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    console.log('게시글 작성 성공:', response.data);
+    return response.data;
+    
+  } catch (error) {
+    console.error('게시글 작성 실패:', error);
+    console.error('응답 상태:', error.response?.status);
+    console.error('응답 데이터:', error.response?.data);
+    throw error;
+  }
+};
