@@ -3,7 +3,7 @@ import { useParams} from 'react-router-dom';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import CommunityComment from '../components/common/CommunityComment';
 import { mockCertificationPosts, mockTipPosts } from '../data/mockCommunity';
-import { fetchPostDetail, fetchComments, createComment } from '../apis/community';
+import { fetchPostDetail, fetchComments, createComment, deleteComment } from '../apis/community';
 import profileImage from '../assets/profile.png';
 import { toggleLike, removeLike } from '../apis/like';
 
@@ -30,8 +30,14 @@ const CommunityDetail = () => {
       
       // API 응답이 직접 배열을 반환
       const commentsArray = Array.isArray(commentsResponse) ? commentsResponse : [];
+      
+      // 첫 번째 댓글의 구조 확인
+      if (commentsArray.length > 0) {
+        console.log('첫 번째 댓글 구조:', commentsArray[0]);
+      }
+      
       const transformedComments = commentsArray.map((comment, index) => ({
-        id: `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 고유 ID 생성
+        id: comment.id || comment.commentId || `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 실제 댓글 ID 사용
         userId: comment.userId,
         username: comment.authorNickname || '사용자',
         timeAgo: formatTimeAgo(comment.createdAt),
@@ -151,7 +157,7 @@ const CommunityDetail = () => {
       const commentsResponse = await fetchComments(id, 'desc');
       const commentsArray = Array.isArray(commentsResponse) ? commentsResponse : [];
       const transformedComments = commentsArray.map((comment, index) => ({
-        id: `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 고유 ID 생성
+        id: comment.id || comment.commentId || `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 실제 댓글 ID 사용
         userId: comment.userId,
         username: comment.authorNickname || '사용자',
         timeAgo: formatTimeAgo(comment.createdAt),
@@ -169,6 +175,28 @@ const CommunityDetail = () => {
     }
   };
 
+  const handleCommentDelete = async (commentId) => {
+    try {
+      await deleteComment(commentId);
+      
+      // 댓글 삭제 후 댓글 목록 새로고침
+      const commentsResponse = await fetchComments(id, 'desc');
+      const commentsArray = Array.isArray(commentsResponse) ? commentsResponse : [];
+      const transformedComments = commentsArray.map((comment, index) => ({
+        id: comment.id || comment.commentId || `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 실제 댓글 ID 사용
+        userId: comment.userId,
+        username: comment.authorNickname || '사용자',
+        timeAgo: formatTimeAgo(comment.createdAt),
+        content: comment.content,
+        isAuthor: false
+      }));
+      
+      setComments(transformedComments);
+    } catch (error) {
+      console.error('댓글 삭제 실패:', error);
+      alert('댓글 삭제에 실패했습니다.');
+    }
+  };
 
   const HeartIcon = ({ isLiked }) => {
     if (isLiked) {
@@ -271,6 +299,7 @@ const CommunityDetail = () => {
         onCommentSubmit={handleCommentSubmit}
         isSubmitting={isSubmittingComment}
         onSortChange={loadComments}
+        onCommentDelete={handleCommentDelete}
       />
       
       {/* 챗봇 아이콘 */}

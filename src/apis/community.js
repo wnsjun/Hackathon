@@ -64,13 +64,18 @@ export const createPost = async (postData, imageFiles) => {
   try {
     console.log('게시글 작성 시작:', postData);
     
-    // FormData 생성 (채팅 API와 동일한 방식)
+    // FormData 생성
     const formData = new FormData();
     
-    // DTO 필드들을 개별적으로 추가
-    formData.append('title', postData.title);
-    formData.append('content', postData.content);
-    formData.append('category', postData.category);
+    // DTO 객체 생성 (백엔드 요구사항에 맞게)
+    const postDto = {
+      title: postData.title,
+      content: postData.content,
+      category: postData.category
+    };
+    
+    // application/json 타입을 명시하여 Blob으로 감싸야 함
+    formData.append('dto', new Blob([JSON.stringify(postDto)], { type: 'application/json' }));
     
     // 이미지 파일들 추가
     if (imageFiles && imageFiles.length > 0) {
@@ -79,11 +84,7 @@ export const createPost = async (postData, imageFiles) => {
       });
     }
     
-    console.log('전송 데이터:', {
-      title: postData.title,
-      content: postData.content,
-      category: postData.category
-    });
+    console.log('전송 데이터:', JSON.stringify(postDto, null, 2));
     console.log('이미지 파일 개수:', imageFiles ? imageFiles.length : 0);
     
     // FormData 전송 (채팅 API와 동일한 헤더 설정)
@@ -98,6 +99,20 @@ export const createPost = async (postData, imageFiles) => {
     
   } catch (error) {
     console.error('게시글 작성 실패:', error);
+    console.error('응답 상태:', error.response?.status);
+    console.error('응답 데이터:', error.response?.data);
+    throw error;
+  }
+};
+
+// 댓글 삭제
+export const deleteComment = async (commentId) => {
+  try {
+    const response = await axiosInstance.delete(`/comment/${commentId}`);
+    console.log('댓글 삭제 성공:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('댓글 삭제 실패:', error);
     console.error('응답 상태:', error.response?.status);
     console.error('응답 데이터:', error.response?.data);
     throw error;

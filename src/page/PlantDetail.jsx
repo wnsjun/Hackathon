@@ -6,6 +6,7 @@ import FarmReview from '../components/common/FarmReview';
 import { fetchFarmById } from '../apis/home';
 import { fetchReviewsByFarmId } from '../apis/reviewApi';
 import { toggleBookmark, removeBookmark } from '../apis/bookmark';
+import profile from '../assets/profile.png';
 
 const PlantDetail = () => {
   const { id } = useParams();
@@ -140,11 +141,11 @@ const PlantDetail = () => {
             <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0">
               <div className="box-border content-stretch flex flex-row gap-3 items-center justify-center p-0 relative shrink-0">
                 <div className="relative shrink-0 size-12">
-                  <div className="w-12 h-12 bg-[#f7f7f7] rounded-full flex items-center justify-center">
-                    <span className="text-[20px] font-semibold text-[#777777]">
-                      {farmData.user?.nickname?.charAt(0) || '농'}
-                    </span>
-                  </div>
+                  <img 
+                    src={profile} 
+                    alt="profile" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
                 </div>
                 <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
                   <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.user?.nickname || '윤성'}</p>

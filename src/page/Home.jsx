@@ -117,33 +117,42 @@ const Home = () => {
     };
   }, []);
 
-  const filteredFarms = (Array.isArray(farms) ? farms : []).filter((farm) => {
-    // API DTO 구조: { id, title, price, rentalPeriod, address, isAvailable }
-    
-    // 위치 필터링
-    const matchesLocation = appliedFilters.location.length === 0 || 
-      appliedFilters.location.some(loc => farm.address?.includes(loc.split(' ')[0]));
-    
-    // 평수 필터링 (mockFarms와 호환성을 위해 area 속성도 확인)
-    const farmArea = farm.area || farm.size;
-    const matchesArea = farmArea >= appliedFilters.area.minArea && 
-      farmArea <= appliedFilters.area.maxArea;
-    
-    // 가격 필터링
-    const farmPrice = farm.price;
-    const matchesPrice = farmPrice >= appliedFilters.price.minPrice && 
-      farmPrice <= appliedFilters.price.maxPrice;
-    
-    // 테마 필터링 (mockFarms와 호환성을 위해)
-    const farmTheme = farm.theme;
-    const matchesTheme = appliedFilters.theme.length === 0 || 
-      appliedFilters.theme.includes(farmTheme);
-    
-    // 사용 가능한 매물만 표시 (API에서 제공하는 경우)
-    const isAvailable = farm.isAvailable !== false;
-    
-    return matchesLocation && matchesArea && matchesPrice && matchesTheme && isAvailable;
-  });
+  const filteredFarms = (Array.isArray(farms) ? farms : [])
+    .filter((farm) => {
+      // API DTO 구조: { id, title, price, rentalPeriod, address, isAvailable }
+      
+      // 위치 필터링
+      const matchesLocation = appliedFilters.location.length === 0 || 
+        appliedFilters.location.some(loc => farm.address?.includes(loc.split(' ')[0]));
+      
+      // 평수 필터링 (mockFarms와 호환성을 위해 area 속성도 확인)
+      const farmArea = farm.area || farm.size;
+      const matchesArea = farmArea >= appliedFilters.area.minArea && 
+        farmArea <= appliedFilters.area.maxArea;
+      
+      // 가격 필터링
+      const farmPrice = farm.price;
+      const matchesPrice = farmPrice >= appliedFilters.price.minPrice && 
+        farmPrice <= appliedFilters.price.maxPrice;
+      
+      // 테마 필터링 (mockFarms와 호환성을 위해)
+      const farmTheme = farm.theme;
+      const matchesTheme = appliedFilters.theme.length === 0 || 
+        appliedFilters.theme.includes(farmTheme);
+      
+      // 사용 가능한 매물만 표시 (API에서 제공하는 경우)
+      const isAvailable = farm.isAvailable !== false;
+      
+      return matchesLocation && matchesArea && matchesPrice && matchesTheme && isAvailable;
+    })
+    .sort((a, b) => {
+      // createdAt 기준 최신순 정렬
+      if (a.createdAt && b.createdAt) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      // createdAt이 없으면 id 기준으로 정렬
+      return (b.id || 0) - (a.id || 0);
+    });
 
   const handleFilterDropdownChange = (filterType) => {
     setOpenFilter(openFilter === filterType ? null : filterType);

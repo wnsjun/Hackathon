@@ -74,27 +74,11 @@ export const createFarm = async (farmData, imageFiles) => {
   try {
     console.log('텃밭 매물 등록 시작:', farmData);
     
-    // FormData 생성 (채팅 API와 동일한 방식)
+    // FormData 생성
     const formData = new FormData();
     
-    // DTO 필드들을 개별적으로 추가
-    formData.append('title', farmData.title);
-    formData.append('description', farmData.description);
-    formData.append('address', farmData.address);
-    formData.append('price', parseInt(farmData.price));
-    formData.append('rentalPeriod', parseInt(farmData.rentalPeriod));
-    formData.append('size', parseInt(farmData.size));
-    formData.append('theme', farmData.theme);
-    
-    // 이미지 파일들 추가
-    if (imageFiles && imageFiles.length > 0) {
-      imageFiles.forEach((file, index) => {
-        formData.append('images', file);
-      });
-    }
-    
-    // DTO 객체 (로깅용)
-    const dto = {
+    // DTO 객체 생성 (백엔드 요구사항에 맞게)
+    const farmDto = {
       title: farmData.title,
       description: farmData.description,
       address: farmData.address,
@@ -104,7 +88,17 @@ export const createFarm = async (farmData, imageFiles) => {
       theme: farmData.theme
     };
     
-    console.log('전송할 DTO:', JSON.stringify(dto, null, 2));
+    // 이 부분이 중요! application/json 타입을 명시하여 Blob으로 감싸야 함
+    formData.append('dto', new Blob([JSON.stringify(farmDto)], { type: 'application/json' }));
+    
+    // 이미지 파일들 추가
+    if (imageFiles && imageFiles.length > 0) {
+      imageFiles.forEach((file, index) => {
+        formData.append('images', file);
+      });
+    }
+    
+    console.log('전송할 DTO:', JSON.stringify(farmDto, null, 2));
     console.log('이미지 파일 개수:', imageFiles ? imageFiles.length : 0);
     
     const token = localStorage.getItem('accessToken');

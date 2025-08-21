@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import profile from '../../assets/profile.png'
 
-const CommunityComment = ({ comments = [], onCommentSubmit, isSubmitting = false, onSortChange }) => {
+const CommunityComment = ({ comments = [], onCommentSubmit, isSubmitting = false, onSortChange, onCommentDelete }) => {
   const [newComment, setNewComment] = useState('');
   const [sortOrder, setSortOrder] = useState('latest'); // 'register' or 'latest'
+
+  // 현재 로그인한 사용자 정보
+  const currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
+  const currentUserNickname = currentUser.nickname;
 
   // Assets from Figma design
   const imgEllipse83 =profile;
@@ -27,6 +31,12 @@ const CommunityComment = ({ comments = [], onCommentSubmit, isSubmitting = false
     setSortOrder(order);
     if (onSortChange) {
       onSortChange(order === 'latest' ? 'new' : 'asc');
+    }
+  };
+
+  const handleCommentDelete = async (commentId) => {
+    if (onCommentDelete && window.confirm('댓글을 삭제하시겠습니까?')) {
+      await onCommentDelete(commentId);
     }
   };
 
@@ -98,8 +108,11 @@ const CommunityComment = ({ comments = [], onCommentSubmit, isSubmitting = false
                       </div>
                     </div>
                   </div>
-                  {comment.isAuthor && (
-                    <div className="text-[#777777] text-sm tracking-[-0.42px] cursor-pointer">
+                  {(comment.isAuthor || comment.username === currentUserNickname) && (
+                    <div 
+                      className="text-[#777777] text-sm tracking-[-0.42px] cursor-pointer hover:text-red-500"
+                      onClick={() => handleCommentDelete(comment.id)}
+                    >
                       삭제
                     </div>
                   )}

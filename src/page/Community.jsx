@@ -131,7 +131,15 @@ export const Community = () => {
   };
 
   // 검색 중이면 검색 결과를, 아니면 일반 게시글을 표시
-  const postsToShow = isSearching ? searchResults[activeTab] || [] : posts[activeTab] || [];
+  const postsToShow = (isSearching ? searchResults[activeTab] || [] : posts[activeTab] || [])
+    .sort((a, b) => {
+      // createdAt 기준 최신순 정렬
+      if (a.createdAt && b.createdAt) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      // createdAt이 없으면 id 기준으로 정렬
+      return (b.id || 0) - (a.id || 0);
+    });
   
   // 검색 결과가 전체적으로 있는지 확인 (탭 네비게이션 표시 여부 결정)
   const hasAnySearchResults = isSearching && (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { fmtDateTime } from '../../../utils/date';
 
-const ChatRoomList = ({ rooms, selectedId, onSelect, userId }) => {
+const ChatRoomList = ({ rooms, selectedId, onSelect, userId, userNickname }) => {
   if (!rooms?.length) {
     return (
       <p className="text-center mt-20 text-gray-400">채팅방이 없습니다.</p>
@@ -14,9 +14,9 @@ const ChatRoomList = ({ rooms, selectedId, onSelect, userId }) => {
         const isSelected = selectedId === room.chatroomId;
         const nickname =
           room.participantNickname ??
-          (room.consumer?.id === userId
-            ? room.provider?.nickname
-            : room.consumer?.nickname);
+          (room.provider?.nickname === userNickname
+            ? room.consumer?.nickname
+            : room.provider?.nickname);
         const lastAt =
           room.lastMessageCreatedAt ?? room.lastMessageAt ?? room.createdAt;
         const lastMsg = room.lastMessage ?? '메시지가 없습니다.';

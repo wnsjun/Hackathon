@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import plant from '../../../assets/plant.png?url';
 import { checkLoginAndExecute } from '../../../utils/auth';
 
 // Location icon component
@@ -106,7 +105,7 @@ const RecommendFarmCard = ({ farm}) => {
       <div className="relative">
         <div 
           className="w-full h-[284px] bg-cover bg-center rounded-t-2xl"
-          style={{ backgroundImage: `url(${plant})` }}
+          style={{ backgroundImage: `url(${farm.thumbnailUrl})` }}
         />
         {/* 북마크 아이콘 - 사진 오른쪽 아래 */}
         <div className="absolute bottom-3 right-3">
