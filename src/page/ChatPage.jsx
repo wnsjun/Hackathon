@@ -311,12 +311,12 @@
 
 // export default ChatPage;
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import useStompClient from '../hooks/useStompClient';
 import {
   getChatRooms,
   getMessages,
-  markRead,
+  markAsRead,
   uploadImages,
 } from '../apis/chatApi';
 import ChatRoomList from '../components/common/chat/ChatRoomList';
@@ -327,14 +327,43 @@ import profile from '../assets/profile.svg';
 import right from '../assets/right-icon.svg';
 import picture from '../assets/picture-icon.svg';
 
-const ChatPage = ({ userId }) => {
+const ChatPage = () => {
+  // JWT 토큰에서 사용자 ID 추출 함수 (메모이제이션)
+  const getUserIdFromToken = useCallback((token) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      // console.log('JWT payload:', payload);
+      return payload.userId || payload.sub || payload.id;
+    } catch (error) {
+      console.error('JWT 파싱 실패:', error);
+      return null;
+    }
+  }, []);
+
+  // 로컬스토리지에서 사용자 정보 가져오기 (메모이제이션)
+  const { userData, userId } = useMemo(() => {
+    const data = JSON.parse(localStorage.getItem('userData') || '{}');
+    const tokenUserId = data.accessToken ? getUserIdFromToken(data.accessToken) : null;
+    const finalUserId = data.id || tokenUserId || 1;
+    
+    console.log('사용자 정보 디버깅:', {
+      localStorage_userData: data,
+      tokenUserId: tokenUserId,
+      finalUserId: finalUserId
+    });
+    
+    return {
+      userData: data,
+      userId: finalUserId
+    };
+  }, [getUserIdFromToken]);
+  
   const [rooms, setRooms] = useState([]);
   const [selected, setSelected] = useState(null);
   const [messages, setMessages] = useState([]);
   const [page, setPage] = useState(0);
   const [last, setLast] = useState(true);
   const [input, setInput] = useState('');
-  const [stompConnected, setStompConnected] = useState(false);
 
   const listRef = useRef(null);
   const endRef = useRef(null);
@@ -344,17 +373,27 @@ const ChatPage = ({ userId }) => {
   const { connected, subscribeRoom, unsubscribeRoom, sendText, connect } =
     useStompClient();
 
-  /** STOMP 연결 */
+  /** STOMP 연결 - 페이지 진입 시 한 번만 실행 */
   useEffect(() => {
-    if (!stompConnected) {
+    if (!connected) {
+      console.log('STOMP 연결 시작...');
       connect()
-        .then(() => setStompConnected(true))
+        .then(() => {
+          console.log('STOMP 연결 성공');
+        })
         .catch((err) => {
           console.error('STOMP 연결 실패:', err);
-          setTimeout(() => setStompConnected(false), 5000);
         });
     }
-  }, [stompConnected, connect]);
+  }, [connect, connected]);
+
+  /** 컴포넌트 언마운트 시 정리 */
+  useEffect(() => {
+    return () => {
+      console.log('채팅 페이지 정리 중...');
+      // STOMP 연결 정리는 useStompClient에서 처리
+    };
+  }, []);
 
   /** 채팅방 목록 로드 */
   const refreshRooms = useCallback(async () => {
@@ -375,14 +414,16 @@ const ChatPage = ({ userId }) => {
       loadingRef.current = true;
       try {
         const data = await getMessages({ chatRoomId, page: 0, size: 30 });
+        console.log('메시지 로드 응답:', data);
         const sorted = [...(data?.content || [])].sort(
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
+        console.log('정렬된 메시지:', sorted);
         setMessages(sorted);
         setPage(0);
         setLast(data?.last ?? true);
 
-        await markRead({ chatRoomId, userId });
+        await markAsRead(chatRoomId);
         setRooms((prev) =>
           prev.map((r) =>
             r.chatroomId === chatRoomId ? { ...r, unreadCount: 0 } : r
@@ -453,12 +494,26 @@ const ChatPage = ({ userId }) => {
 
   /** 방 선택 시 메시지 로드 + STOMP 구독 */
   useEffect(() => {
-    if (!selected || !connected) return;
-
+    if (!selected) return;
+    
+    console.log('선택된 방:', selected.chatroomId, 'STOMP 연결:', connected);
+    
+    // STOMP 연결 여부와 관계없이 메시지 로드
     loadInitialMessages(selected.chatroomId);
 
+    return () => {
+      // cleanup 필요시 처리
+    };
+  }, [
+    selected,
+    loadInitialMessages,
+  ]);
+  
+  // STOMP 연결 후 구독 처리를 분리
+  useEffect(() => {
+    if (!selected || !connected) return;
+    
     const unsub = subscribeRoom(selected.chatroomId, (incoming) => {
-      // 서버에서 오는 메시지 확인
       console.log('받은 메시지:', incoming);
 
       const msg = {
@@ -469,7 +524,10 @@ const ChatPage = ({ userId }) => {
         messageType: incoming.messageType || 'TEXT',
       };
 
-      setMessages((prev) => [...prev, msg]);
+      // 내가 보낸 메시지가 아닌 경우에만 추가 (중복 방지)
+      if (String(msg.senderId) !== String(userId)) {
+        setMessages((prev) => [...prev, msg]);
+      }
 
       setRooms((prev) =>
         prev.map((r) =>
@@ -491,15 +549,8 @@ const ChatPage = ({ userId }) => {
 
     return () => {
       if (unsub) unsub();
-      else if (selected?.chatroomId) unsubscribeRoom(selected.chatroomId);
     };
-  }, [
-    selected,
-    connected,
-    subscribeRoom,
-    unsubscribeRoom,
-    loadInitialMessages,
-  ]);
+  }, [selected, connected, subscribeRoom]);
 
   /** 초기 목록 로드 */
   useEffect(() => {
@@ -507,31 +558,64 @@ const ChatPage = ({ userId }) => {
   }, [refreshRooms]);
 
   /** 메시지 전송 */
-  const handleSend = () => {
-    if (!input.trim() || !selected) return;
+  const handleSend = useCallback(() => {
+    if (!input.trim() || !selected || !userId) {
+      console.log('전송 실패 - input:', input.trim(), 'selected:', !!selected, 'userId:', userId);
+      return;
+    }
 
+    console.log('메시지 전송 중...', input.trim(), '연결상태:', connected);
+
+    // STOMP 연결 확인
+    if (!connected) {
+      console.warn('STOMP 연결 안됨 - 연결 재시도');
+      connect().then(() => {
+        console.log('재연결 후 메시지 전송 시도');
+      });
+      alert('채팅 서버에 연결 중입니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
+    const messageText = input.trim();
     const newMsg = {
       messageId: Date.now(),
-      message: input.trim(),
+      message: messageText,
       senderId: userId,
+      senderNickname: userData.nickname || '나',
       createdAt: new Date().toISOString(),
       messageType: 'TEXT',
     };
 
-    // 화면에 바로 표시
+    // 화면에 바로 표시 (낙관적 업데이트)
     setMessages((prev) => [...prev, newMsg]);
+    setInput('');
 
     try {
-      sendText(selected.chatroomId, input.trim());
-      setInput('');
+      sendText(selected.chatroomId, messageText);
+      console.log('STOMP 메시지 전송 완료');
+      
+      // 채팅방 목록의 최근 메시지 업데이트
+      setRooms((prev) =>
+        prev.map((r) =>
+          r.chatroomId === selected.chatroomId
+            ? {
+                ...r,
+                lastMessage: messageText,
+                lastMessageAt: newMsg.createdAt,
+              }
+            : r
+        )
+      );
     } catch (e) {
       console.error('메시지 전송 실패:', e);
       alert('메시지 전송 실패');
-      setMessages((prev) => prev.filter((msg) => msg !== newMsg));
+      // 실패 시 화면에서 제거
+      setMessages((prev) => prev.filter((msg) => msg.messageId !== newMsg.messageId));
+      setInput(messageText); // 입력값 복원
     }
 
     setTimeout(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), 0);
-  };
+  }, [input, selected, userId, connected, sendText, userData.nickname]);
 
   /** 이미지 전송 */
   const onPickImages = async (e) => {
@@ -559,6 +643,17 @@ const ChatPage = ({ userId }) => {
       e.target.value = '';
     }
   };
+
+  /** 메시지 렌더링 최적화 */
+  const renderedMessages = useMemo(() => 
+    messages.map((msg) => (
+      <ChatMessage
+        key={msg.messageId || msg.id || msg.createdAt}
+        msg={msg}
+        isMine={String(msg.senderId) === String(userId) || msg.senderId === 1}
+      />
+    )), [messages, userId]
+  );
 
   return (
     <div className="flex flex-1 bg-white h-screen my-20">
@@ -609,13 +704,7 @@ const ChatPage = ({ userId }) => {
 
             <div ref={listRef} className="flex-1 overflow-y-auto mb-4">
               <div ref={topSentinelRef} />
-              {messages.map((msg) => (
-                <ChatMessage
-                  key={msg.messageId || msg.id || msg.createdAt}
-                  msg={msg}
-                  isMine={msg.senderId === userId}
-                />
-              ))}
+              {renderedMessages}
               <div ref={endRef} />
             </div>
 
@@ -625,7 +714,12 @@ const ChatPage = ({ userId }) => {
                 placeholder="메시지를 입력하세요..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
               />
               <label className="flex items-center px-3 bg-gray-200 rounded cursor-pointer">
                 <img src={picture} alt="img" className="w-6 h-6" />

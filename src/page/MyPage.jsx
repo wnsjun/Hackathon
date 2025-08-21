@@ -380,7 +380,9 @@ export const MyPage = () => {
                     image={post.thumbnailUrl}
                     username={post.authorNickname}
                     title={post.title}
-                    likeCount={post.likeCount}
+                    content={post.content}
+                    initialLiked={post.liked}
+                    createdAt={post.createdAt}
                   />
                 </div>
               ))}

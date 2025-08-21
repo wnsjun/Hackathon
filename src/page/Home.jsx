@@ -36,13 +36,20 @@ const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  // 랜덤으로 3개 선택하는 함수
-  const getRandomFarms = (farms, count = 3) => {
+  // 화면 크기에 따라 추천 매물 개수 결정
+  const getRecommendedCount = () => {
+    if (window.innerWidth <= 360) return 2;
+    return 3;
+  };
+
+  // 랜덤으로 선택하는 함수
+  const getRandomFarms = (farms, count = null) => {
     if (!Array.isArray(farms) || farms.length === 0) return [];
-    if (farms.length <= count) return farms;
+    const actualCount = count || getRecommendedCount();
+    if (farms.length <= actualCount) return farms;
     
     const shuffled = [...farms].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+    return shuffled.slice(0, actualCount);
   };
 
   const resetFilters = () => {
@@ -190,6 +197,18 @@ const Home = () => {
     setDisplayedRecommendedFarms(getRandomFarms(recommendedFarms));
   };
 
+  // 화면 크기 변경 감지
+  useEffect(() => {
+    const handleResize = () => {
+      if (recommendedFarms.length > 0) {
+        setDisplayedRecommendedFarms(getRandomFarms(recommendedFarms));
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [recommendedFarms]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="px-6 sm:px-12 lg:px-20 xl:px-32 py-6 pt-32">
@@ -228,7 +247,7 @@ const Home = () => {
               </button>
             </div>
             {Array.isArray(displayedRecommendedFarms) && displayedRecommendedFarms.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+              <div className="grid grid-cols-2 max-[360px]:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
                 {displayedRecommendedFarms.map((farm) => (
                   <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
                 ))}
@@ -357,7 +376,7 @@ const Home = () => {
               <p className="text-gray-400 text-sm">필터 조건을 변경해보세요</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            <div className="grid grid-cols-2 max-[360px]:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
               {filteredFarms.map((farm) => (
                 <FarmCard key={farm.id} farm={farm} isRecommended={false} />
               ))}

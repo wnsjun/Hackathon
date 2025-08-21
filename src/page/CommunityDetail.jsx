@@ -23,6 +23,30 @@ const CommunityDetail = () => {
   // Assets from Figma design
   const imgEllipse82 = profileImage;
   const imgRectangle161125945 = "http://localhost:3845/assets/99ed4a5b97b53e3180927bfe5bd3f23c7540750f.png";
+  const loadComments = async (sortOrder = 'desc') => {
+    try {
+      const commentsResponse = await fetchComments(id, sortOrder);
+      console.log('댓글 API 응답:', commentsResponse);
+      
+      // API 응답이 직접 배열을 반환
+      const commentsArray = Array.isArray(commentsResponse) ? commentsResponse : [];
+      const transformedComments = commentsArray.map((comment, index) => ({
+        id: `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 고유 ID 생성
+        userId: comment.userId,
+        username: comment.authorNickname || '사용자',
+        timeAgo: formatTimeAgo(comment.createdAt),
+        content: comment.content,
+        isAuthor: false // This would need to be determined based on current user
+      }));
+      
+      console.log('변환된 댓글:', transformedComments);
+      setComments(transformedComments);
+    } catch (error) {
+      console.error('댓글 로드 실패:', error);
+      setComments([]);
+    }
+  };
+
   useEffect(() => {
     const loadPostDetail = async () => {
       try {
@@ -46,7 +70,7 @@ const CommunityDetail = () => {
         setPostData(transformedPost);
         
         // Load comments separately
-        await loadComments();
+        await loadComments('desc');
         
       } catch (error) {
         console.error('게시글 상세 로드 실패:', error);
@@ -61,30 +85,6 @@ const CommunityDetail = () => {
         }
       } finally {
         setLoading(false);
-      }
-    };
-
-    const loadComments = async (sortOrder = 'asc') => {
-      try {
-        const commentsResponse = await fetchComments(id, sortOrder);
-        console.log('댓글 API 응답:', commentsResponse);
-        
-        // API 응답이 직접 배열을 반환
-        const commentsArray = Array.isArray(commentsResponse) ? commentsResponse : [];
-        const transformedComments = commentsArray.map((comment, index) => ({
-          id: `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 고유 ID 생성
-          userId: comment.userId,
-          username: comment.authorNickname || '사용자',
-          timeAgo: formatTimeAgo(comment.createdAt),
-          content: comment.content,
-          isAuthor: false // This would need to be determined based on current user
-        }));
-        
-        console.log('변환된 댓글:', transformedComments);
-        setComments(transformedComments);
-      } catch (error) {
-        console.error('댓글 로드 실패:', error);
-        setComments([]);
       }
     };
 
@@ -148,7 +148,7 @@ const CommunityDetail = () => {
       await createComment(id, commentText);
       
       // Reload comments after successful submission - 최신순으로 불러오기
-      const commentsResponse = await fetchComments(id, 'new');
+      const commentsResponse = await fetchComments(id, 'desc');
       const commentsArray = Array.isArray(commentsResponse) ? commentsResponse : [];
       const transformedComments = commentsArray.map((comment, index) => ({
         id: `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 고유 ID 생성
@@ -270,6 +270,7 @@ const CommunityDetail = () => {
         comments={comments} 
         onCommentSubmit={handleCommentSubmit}
         isSubmitting={isSubmittingComment}
+        onSortChange={loadComments}
       />
       
       {/* 챗봇 아이콘 */}

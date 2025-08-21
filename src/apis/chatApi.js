@@ -24,15 +24,18 @@ export const getMessages = async ({ chatRoomId, page = 0, size = 30 }) => {
   }
 };
 
-// 읽음 처리
-export const markRead = async ({ chatRoomId, userId }) => {
-  if (!chatRoomId) return;
+// 메시지 읽음 처리
+export const markAsRead = async (chatRoomId) => {
   try {
-    await axiosInstance.patch(`/chat/room/${chatRoomId}/read`, null, {
-      params: { userId },
-    });
+    const res = await axiosInstance.patch(`/chat/room/${chatRoomId}/read`);
+    console.log('읽음 처리 성공:', res.data);
+    return res.data;
   } catch (err) {
-    console.error('읽음 처리 실패:', err);
+    if (err.code === 'ERR_NETWORK' && err.message === 'Network Error') {
+      console.warn('읽음 처리 CORS 에러 (무시됨):', err.message);
+    } else {
+      console.error('읽음 처리 실패:', err);
+    }
   }
 };
 

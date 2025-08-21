@@ -1,12 +1,14 @@
-import React from 'react';
+import { memo } from 'react';
 
-const ChatMessage = ({ msg, isMine }) => {
+const ChatMessage = memo(({ msg, isMine }) => {
+  console.log('ChatMessage 렌더링:', { msg, isMine });
+  
   return (
     <div className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
       <div
         className={`p-3 rounded-xl max-w-[60%] ${isMine ? 'bg-green-500 text-white' : 'bg-gray-200 text-black'}`}
       >
-        {msg.messageType === 'TEXT' && <p>{msg.message}</p>}
+        {(msg.messageType === 'TEXT' || !msg.messageType) && <p>{msg.message}</p>}
         {msg.messageType === 'IMAGE' &&
           msg.imageUrls?.map((url) => (
             <img
@@ -22,6 +24,8 @@ const ChatMessage = ({ msg, isMine }) => {
       </div>
     </div>
   );
-};
+});
+
+ChatMessage.displayName = 'ChatMessage';
 
 export default ChatMessage;

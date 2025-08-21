@@ -113,7 +113,7 @@ const ChatbotIcon = () => {
 
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-row items-end gap-4">
+    <div className="fixed bottom-6 right-6 z-50 flex-row items-end gap-4 hidden sm:flex">
       {/* 챗봇 팝업창 */}
       {isPopupOpen && (
         <div 

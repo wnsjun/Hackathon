@@ -2,7 +2,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Searchbar } from '../common/Searchbar';
 import { CoinDisplay } from '../common/CoinDisplay';
 import spacefarm_logo_image from '../../assets/spacefarm_logo_image.png?url';
-import { useAuth, useLogout } from '../../hooks/useAuth';
+import { useState } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 
 function LogoIcon() { 
   return (
@@ -32,7 +33,7 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn, coinBalance } = useAuth();
-  const { mutate: logout } = useLogout();
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   const handleSearch = (query) => {
     if (location.pathname === '/community') {
@@ -49,88 +50,201 @@ export const Navbar = () => {
     navigate('/home');
   };
 
-  const handleLogoutClick = () => {
-    logout(null, {
-      onSuccess: () => {
-        navigate('/');
-        window.location.reload();
-      }
-    });
+  const handleSearchIconClick = () => {
+    setIsSearchExpanded(!isSearchExpanded);
+  };
+
+  const handleChatClick = () => {
+    if (!isLoggedIn) {
+      alert('로그인하세요');
+      navigate('/login');
+      return;
+    }
+    navigate('/chat');
+  };
+
+  const handleMyPageClick = () => {
+    if (!isLoggedIn) {
+      alert('로그인하세요');
+      navigate('/login');
+      return;
+    }
+    navigate('/mypage');
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white text-black z-50">
-      <div className="box-border content-stretch flex flex-row items-center justify-between px-40 py-8 relative size-full">
-        {/* Left Section: Logo + Navigation + Search */}
-        <div className="box-border content-stretch flex flex-row gap-8 items-center justify-start p-0 relative shrink-0">
-          {/* Logo Section */}
-          <div className="box-border content-stretch flex flex-row gap-1 items-end justify-center p-0 relative shrink-0">
-            <div onClick={handleHomeClick} className="cursor-pointer">
-              <LogoIcon />
-            </div>
-            <button onClick={handleHomeClick} className="flex flex-col font-['Outfit:Medium',_sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#1aa752] text-[24px] text-left text-nowrap">
-              <p className="block leading-[1.6] whitespace-pre cursor-pointer">SpaceFarm</p>
-            </button>
-          </div>
-
-          {/* Navigation Menu */}
-          <div className="box-border content-stretch flex flex-row items-center justify-start leading-[0] p-0 relative shrink-0">
-            <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
-              <div className="[grid-area:1_/_1] h-12 ml-0 mt-0 w-[97px]" />
-              <div className="[grid-area:1_/_1] flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] ml-[42px] mt-6 not-italic relative text-[#000000] text-[16px] text-left text-nowrap tracking-[-0.48px] translate-y-[-50%]">
-                <button onClick={handleHomeClick} className="cursor-pointer">
-                  <p className="font-bold block leading-[1.5] whitespace-pre">홈</p>
+    <>
+      <nav className="fixed top-0 left-0 right-0 bg-white text-black z-50">
+        {/* Desktop/Tablet View */}
+        <div className="hidden min-[361px]:block">
+          <div className="box-border content-stretch flex flex-row items-center justify-between px-2 sm:px-4 md:px-8 lg:px-16 xl:px-40 py-2 sm:py-4 md:py-6 lg:py-8 relative w-full min-w-0">
+            {/* Left Section: Logo + Navigation + Search */}
+            <div className="box-border content-stretch flex flex-row gap-1 sm:gap-2 md:gap-4 lg:gap-8 items-center justify-start p-0 relative min-w-0 flex-1">
+              {/* Logo Section */}
+              <div className="box-border content-stretch flex flex-row gap-1 items-end justify-center p-0 relative shrink-0">
+                <div onClick={handleHomeClick} className="cursor-pointer">
+                  <LogoIcon />
+                </div>
+                <button onClick={handleHomeClick} className="hidden md:flex flex-col font-['Outfit:Medium',_sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#1aa752] text-[16px] md:text-[20px] lg:text-[24px] text-left text-nowrap">
+                  <p className="block leading-[1.6] whitespace-pre cursor-pointer">SpaceFarm</p>
                 </button>
               </div>
-            </div>
-            <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
-              <div className="[grid-area:1_/_1] h-12 ml-0 mt-0 w-[97px]" />
-              <div className="[grid-area:1_/_1] flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] ml-[22px] mt-6 not-italic relative text-[#000000] text-[16px] text-left text-nowrap tracking-[-0.48px] translate-y-[-50%]">
-                <Link to="/community">
-                  <p className="font-bold block leading-[1.5] whitespace-pre">커뮤니티</p>
+
+              {/* Navigation Menu */}
+              <div className="box-border content-stretch flex flex-row items-center justify-start leading-[0] p-0 relative shrink-0">
+                <button onClick={handleHomeClick} className="cursor-pointer px-2 sm:px-4 py-2">
+                  <p className="font-bold text-[12px] sm:text-[14px] lg:text-[16px] text-[#000000]">홈</p>
+                </button>
+                <Link to="/community" className="px-2 sm:px-4 py-2">
+                  <p className="font-bold text-[12px] sm:text-[14px] lg:text-[16px] text-[#000000]">커뮤니티</p>
                 </Link>
               </div>
-            </div>
-          </div>
 
-          {/* Search Bar */}
-          <div className="box-border content-stretch flex flex-row h-12 items-center justify-between pl-2 pr-4 py-0 relative shrink-0 w-[357px]">
-            <Searchbar onSearch={handleSearch} />
+              {/* Search Bar */}
+              <div className="box-border content-stretch flex flex-row h-8 sm:h-10 lg:h-12 items-center justify-between pl-2 pr-2 py-0 relative flex-1 max-w-[200px] sm:max-w-[250px] lg:max-w-[357px] min-w-[100px]">
+                <Searchbar onSearch={handleSearch} />
+              </div>
+            </div>
+
+            {/* User Actions */}
+            <div className="box-border content-stretch flex flex-row gap-1 sm:gap-2 md:gap-4 lg:gap-8 items-center justify-end p-0 relative shrink-0">
+              {isLoggedIn ? (
+                <>
+                  <CoinDisplay coinBalance={coinBalance} />
+                  <Link to="/chat">
+                    <ChatIcon />
+                  </Link>
+                  <Link to="/mypage" className="overflow-clip relative shrink-0 size-8">
+                    <UserIcon isLoggedIn={isLoggedIn} />
+                  </Link>
+                </>
+              ) : (
+                <div className="box-border content-stretch flex flex-row gap-8 items-center justify-start p-0 relative shrink-0">
+                  <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[16px] text-left text-nowrap tracking-[-0.48px]">
+                    <Link 
+                      to="/login" 
+                      className="font-bold block leading-[1.5] whitespace-pre hover:text-gray-600 transition-colors"
+                    >
+                      로그인
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* User Actions */}
-        <div className="box-border content-stretch flex flex-row gap-8 items-center justify-end p-0 relative shrink-0">
-          {isLoggedIn ? (
-            <>
-              <CoinDisplay coinBalance={coinBalance} />
-              <Link to="/chat">
-                <ChatIcon />
-              </Link>
-              <Link to="/mypage" className="overflow-clip relative shrink-0 size-8">
-                <UserIcon isLoggedIn={isLoggedIn} />
-              </Link>
-              <button
-                onClick={handleLogoutClick}
-                className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[16px] text-left text-nowrap tracking-[-0.48px] hover:text-gray-600 transition-colors"
-              >
-                <p className="font-bold block leading-[1.5] whitespace-pre">로그아웃</p>
+        {/* Mobile View */}
+        <div className="block min-[361px]:hidden">
+          <div className="box-border content-stretch flex flex-row items-center justify-between px-4 py-4 relative size-full">
+            {/* Logo Section */}
+            <div className="box-border content-stretch flex flex-row gap-1 items-end justify-center p-0 relative shrink-0">
+              <div onClick={handleHomeClick} className="cursor-pointer">
+                <LogoIcon />
+              </div>
+              <button onClick={handleHomeClick} className="flex flex-col font-['Outfit:Medium',_sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#1aa752] text-[24px] text-left text-nowrap">
+                <p className="block leading-[1.6] whitespace-pre cursor-pointer">SpaceFarm</p>
               </button>
-            </>
-          ) : (
-            <div className="box-border content-stretch flex flex-row gap-8 items-center justify-start p-0 relative shrink-0">
-              <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[16px] text-left text-nowrap tracking-[-0.48px]">
-                <Link 
-                  to="/login" 
-                  className="font-bold block leading-[1.5] whitespace-pre hover:text-gray-600 transition-colors"
-                >
-                  로그인
-                </Link>
+            </div>
+
+            {/* Search Icon */}
+            <button onClick={handleSearchIconClick} className="flex items-center justify-center shrink-0 size-6">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#1AA752" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Expanded Search Bar */}
+          {isSearchExpanded && (
+            <div className="px-4 pb-4">
+              <div className="box-border content-stretch flex flex-row h-12 items-center justify-between pl-2 pr-4 py-0 relative shrink-0">
+                <Searchbar onSearch={handleSearch} />
               </div>
             </div>
           )}
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Bottom Navigation Bar (Mobile) */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white block min-[361px]:hidden z-50">
+        <div className="box-border content-stretch flex items-end justify-center leading-[0] relative shadow-[0px_-4px_10px_0px_rgba(0,0,0,0.05)] w-full h-24">
+          <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+            <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 rounded-tl-[24px] w-[72px]" />
+            <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-6 mt-2 relative w-6">
+              <button onClick={handleHomeClick} className="relative shrink-0 size-6">
+                <div className="absolute inset-[4.17%_8.33%_8.33%_8.33%]">
+                  <img alt="" className="block max-w-none size-full" src="http://localhost:3845/assets/dcaa209d091358c4af60d7a53207a86b1a40591f.svg" />
+                </div>
+              </button>
+              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#111111] text-[12px] text-center text-nowrap tracking-[-0.36px]">
+                <p className="leading-[1.5] whitespace-pre">홈</p>
+              </div>
+            </div>
+          </div>
+          <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+            <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 w-[72px]" />
+            <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-6 mt-2 relative w-6">
+              <button onClick={handleChatClick} className="relative shrink-0 size-6">
+                <img alt="" className="block max-w-none size-full" src="http://localhost:3845/assets/eed54a842d2604efda4c01fa74a379c93dc5520f.svg" />
+              </button>
+              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#bbbbbb] text-[12px] text-center text-nowrap tracking-[-0.36px]">
+                <p className="leading-[1.5] whitespace-pre">채팅</p>
+              </div>
+            </div>
+          </div>
+          <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+            <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-4 w-[72px]" />
+            <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 h-[71px] items-center justify-start ml-3 mt-0 relative w-12">
+              <div className="relative shrink-0 size-12">
+                <div className="absolute aspect-[322/322] left-0 right-0 top-0">
+                  <div className="absolute inset-[-75%_-83.33%_-91.67%_-83.33%]">
+                    <img alt="" className="block max-w-none size-full" src="http://localhost:3845/assets/e486a419b424f2ef69e2c6150b1216441dac8d57.svg" />
+                  </div>
+                </div>
+                <div className="absolute aspect-[360/360] bg-center bg-cover bg-no-repeat left-[12.5%] right-[12.5%] top-1.5" style={{ backgroundImage: `url('http://localhost:3845/assets/b01d6bc8fb30f9d04593f5add80b407a6cbb08bf.png')` }} />
+              </div>
+              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] min-w-full not-italic relative shrink-0 text-[#bbbbbb] text-[12px] text-center tracking-[-0.36px]" style={{ width: "min-content" }}>
+                <p className="leading-[1.5]">새싹이</p>
+              </div>
+            </div>
+          </div>
+          <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+            <div className="[grid-area:1_/_1] flex h-24 items-center justify-center ml-0 mt-0 relative w-[72px]">
+              <div className="flex-none rotate-[180deg] scale-y-[-100%]">
+                <div className="bg-[#ffffff] h-24 w-[72px]" />
+              </div>
+            </div>
+            <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-4 mt-2 relative w-[41px]">
+              <button onClick={() => navigate('/community')} className="overflow-clip relative shrink-0 size-6">
+                <div className="absolute inset-[12.5%_8.29%_12.5%_8.33%]">
+                  <div className="absolute inset-[-4.17%_-3.75%]">
+                    <img alt="" className="block max-w-none size-full" src="http://localhost:3845/assets/e4116e90c14dbdbb364929e3cf9bc614c7174db3.svg" />
+                  </div>
+                </div>
+              </button>
+              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#bbbbbb] text-[12px] text-center text-nowrap tracking-[-0.36px]">
+                <p className="leading-[1.5] whitespace-pre">커뮤니티</p>
+              </div>
+            </div>
+          </div>
+          <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
+            <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 rounded-tr-[24px] w-[72px]" />
+            <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-[11px] mt-2 relative">
+              <button onClick={handleMyPageClick} className="overflow-clip relative shrink-0 size-6">
+                <div className="absolute inset-[8.333%]">
+                  <div className="absolute inset-[-3.75%]">
+                    <img alt="" className="block max-w-none size-full" src="http://localhost:3845/assets/e273261d696d89e1b3b09e606d07321cc9a6717e.svg" />
+                  </div>
+                </div>
+              </button>
+              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#bbbbbb] text-[12px] text-center text-nowrap tracking-[-0.36px]">
+                <p className="leading-[1.5] whitespace-pre">마이페이지</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </>
   );
 };

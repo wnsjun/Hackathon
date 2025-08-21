@@ -9,23 +9,23 @@ const useStompClient = () => {
   const connect = useCallback(() => {
     return new Promise((resolve, reject) => {
       if (connected) {
+        console.log('[STOMP] 이미 연결됨');
         resolve();
         return;
       }
       if (activatingRef.current) {
+        console.log('[STOMP] 연결 중...');
         resolve();
         return;
       }
+      
+      console.log('[STOMP] 새 연결 시작');
       activatingRef.current = true;
       const token = localStorage.getItem('accessToken');
       const buildWsUrl = () => {
-        const isHttps = window.location.protocol === 'https:';
-        const scheme = isHttps ? 'wss' : 'ws';
-        const isDev = import.meta.env.DEV;
-        const base = isDev
-          ? `${scheme}://${window.location.host}`
-          : 'wss://spacefarm.shop';
-        return `${base}/ws-chat${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+        const wsUrl = `wss://spacefarm.shop/ws-chat${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+        console.log('[STOMP] WebSocket URL:', wsUrl);
+        return wsUrl;
       };
 
       const stompClient = new Client({
@@ -39,7 +39,8 @@ const useStompClient = () => {
         heartbeatOutgoing: 10000,
       });
 
-      stompClient.onConnect = () => {
+      stompClient.onConnect = (frame) => {
+        console.log('[STOMP] 연결 성공!', frame);
         setConnected(true);
         setClient(stompClient);
         activatingRef.current = false;
@@ -47,22 +48,30 @@ const useStompClient = () => {
       };
 
       stompClient.onStompError = (err) => {
-        console.error('STOMP 에러:', err);
+        console.error('[STOMP] STOMP 에러:', err);
         setConnected(false);
+        setClient(null);
         activatingRef.current = false;
         reject(err);
       };
 
       stompClient.onWebSocketClose = (evt) => {
-        console.error('STOMP 소켓 종료:', evt);
+        console.error('[STOMP] 소켓 종료:', evt);
+        setConnected(false);
+        setClient(null);
+        activatingRef.current = false;
       };
       stompClient.onWebSocketError = (evt) => {
-        console.error('STOMP 소켓 에러:', evt);
+        console.error('[STOMP] 소켓 에러:', evt);
+        setConnected(false);
+        setClient(null);
+        activatingRef.current = false;
       };
 
+      console.log('[STOMP] 클라이언트 활성화 시작');
       stompClient.activate();
     });
-  }, []);
+  }, [connected]);
 
   const subscribeRoom = useCallback(
     (chatRoomId, callback) => {
