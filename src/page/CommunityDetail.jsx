@@ -5,16 +5,13 @@ import CommunityComment from '../components/common/CommunityComment';
 import { mockCertificationPosts, mockTipPosts } from '../data/mockCommunity';
 import { fetchPostDetail, fetchComments, createComment } from '../apis/community';
 import profileImage from '../assets/profile.png';
-import { toggleLike, removeLike, isPostLiked } from '../apis/like';
-import { emitLikeChange, useStorageListener } from '../utils/storageEvents';
+import { toggleLike, removeLike } from '../apis/like';
 
 const CommunityDetail = () => {
   const { id } = useParams();
   
-  // 로컬 스토리지에서 좋아요 상태 확인 후 초기화
-  const [isLiked, setIsLiked] = useState(() => {
-    return isPostLiked(id);
-  });
+  // 서버 응답의 liked 상태와 로컬 스토리지 상태 확인 후 초기화
+  const [isLiked, setIsLiked] = useState(false);
   
   const [postData, setPostData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,38 +19,6 @@ const CommunityDetail = () => {
   const [comments, setComments] = useState([]);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
-  // 로컬 스토리지에 좋아요 상태 저장
-  const saveLocalLike = (postId, liked) => {
-    try {
-      const likes = localStorage.getItem('postLikes');
-      let likeList = likes ? JSON.parse(likes) : [];
-      const postIdStr = String(postId);
-      
-      if (liked) {
-        if (!likeList.includes(postIdStr)) {
-          likeList.push(postIdStr);
-        }
-      } else {
-        likeList = likeList.filter(id => id !== postIdStr);
-      }
-      
-      localStorage.setItem('postLikes', JSON.stringify(likeList));
-      emitLikeChange(postId, liked);
-    } catch (error) {
-      console.error('로컬 좋아요 저장 실패:', error);
-    }
-  };
-
-  // 다른 컴포넌트에서 좋아요 상태 변경 감지
-  useEffect(() => {
-    const cleanup = useStorageListener((data) => {
-      if (data.type === 'like' && data.data.postId === parseInt(id)) {
-        setIsLiked(data.data.isLiked);
-      }
-    });
-    
-    return cleanup;
-  }, [id]);
 
   // Assets from Figma design
   const imgEllipse82 = profileImage;
@@ -74,6 +39,9 @@ const CommunityDetail = () => {
           timeAgo: formatTimeAgo(response.createdAt),
           likeCount: response.likeCount || 0
         };
+        
+        // 서버에서 받은 liked 상태로 초기화
+        setIsLiked(response.liked || false);
         
         setPostData(transformedPost);
         
@@ -164,18 +132,15 @@ const CommunityDetail = () => {
         // 좋아요 추가
         await toggleLike(id);
       }
+      
+      // 서버 API 성공 시 상태 업데이트
+      setIsLiked(newLikeStatus);
     } catch (error) {
-      console.warn('서버 좋아요 API 에러, 로컬 저장소로 대체:', error.message);
+      console.error('좋아요 처리 실패:', error.message);
+      alert(error.message);
     }
-
-    // 서버 API 성공/실패 상관없이 로컬 상태 업데이트
-    setIsLiked(newLikeStatus);
-    saveLocalLike(id, newLikeStatus);
   };
 
-  const handleSortChange = async (sortOrder) => {
-    await loadComments(sortOrder);
-  };
 
   const handleCommentSubmit = async (commentText) => {
     try {
@@ -305,7 +270,6 @@ const CommunityDetail = () => {
         comments={comments} 
         onCommentSubmit={handleCommentSubmit}
         isSubmitting={isSubmittingComment}
-        onSortChange={handleSortChange}
       />
       
       {/* 챗봇 아이콘 */}

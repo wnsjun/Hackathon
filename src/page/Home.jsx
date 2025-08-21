@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import FarmCard from '../components/common/Card/FarmCard';
 import RecommendFarmCard from '../components/common/Card/RecommendFarmCard';
 import Button from '../components/common/Button';
@@ -12,9 +12,6 @@ import AreaFilter from '../components/common/Filter/AreaFilter';
 import PriceFilter from '../components/common/Filter/PriceFilter';
 import ThemeFilter from '../components/common/Filter/ThemeFilter';
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
 
 const Home = () => {
   const [farms, setFarms] = useState([]);
@@ -37,8 +34,6 @@ const Home = () => {
   });
   const [nickname, setNickname] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const query = useQuery();
-  const searchQuery = query.get('query') || '';
   const navigate = useNavigate();
 
   // 랜덤으로 3개 선택하는 함수
@@ -118,11 +113,6 @@ const Home = () => {
   const filteredFarms = (Array.isArray(farms) ? farms : []).filter((farm) => {
     // API DTO 구조: { id, title, price, rentalPeriod, address, isAvailable }
     
-    // 검색어 필터링 (제목과 주소에서 검색)
-    const matchesSearch = !searchQuery || 
-      farm.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      farm.address?.toLowerCase().includes(searchQuery.toLowerCase());
-    
     // 위치 필터링
     const matchesLocation = appliedFilters.location.length === 0 || 
       appliedFilters.location.some(loc => farm.address?.includes(loc.split(' ')[0]));
@@ -145,7 +135,7 @@ const Home = () => {
     // 사용 가능한 매물만 표시 (API에서 제공하는 경우)
     const isAvailable = farm.isAvailable !== false;
     
-    return matchesSearch && matchesLocation && matchesArea && matchesPrice && matchesTheme && isAvailable;
+    return matchesLocation && matchesArea && matchesPrice && matchesTheme && isAvailable;
   });
 
   const handleFilterDropdownChange = (filterType) => {

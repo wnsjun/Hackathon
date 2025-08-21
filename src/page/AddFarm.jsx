@@ -25,8 +25,7 @@ const AddFarm = () => {
           farmName.trim() !== '' && 
           description.trim() !== '' && 
           area > 0 && 
-          selectedTheme !== '' && 
-          image !== null;
+          selectedTheme !== '';
   };
 
   const handleSubmit = async (e) => {
