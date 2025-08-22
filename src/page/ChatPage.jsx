@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStompClient from '../hooks/useStompClient';
 import {
@@ -14,10 +20,11 @@ import ChatIcon from '../assets/chaticon.svg';
 import profile from '../assets/profile.svg';
 import right from '../assets/right-icon.svg';
 import picture from '../assets/picture-icon.svg';
+import vector from '../assets/Vector.svg';
 
 const ChatPage = () => {
   const navigate = useNavigate();
-  
+
   // JWT 토큰에서 사용자 ID 추출 함수 (메모이제이션)
   const getUserIdFromToken = useCallback((token) => {
     try {
@@ -33,24 +40,26 @@ const ChatPage = () => {
   // 로컬스토리지에서 사용자 정보 가져오기 (메모이제이션)
   const { userData, userId, userNickname } = useMemo(() => {
     const data = JSON.parse(localStorage.getItem('userData') || '{}');
-    const tokenUserId = data.accessToken ? getUserIdFromToken(data.accessToken) : null;
+    const tokenUserId = data.accessToken
+      ? getUserIdFromToken(data.accessToken)
+      : null;
     const finalUserId = data.id || tokenUserId || 1;
     const finalNickname = data.nickname || '';
-    
+
     console.log('사용자 정보 디버깅:', {
       localStorage_userData: data,
       tokenUserId: tokenUserId,
       finalUserId: finalUserId,
-      finalNickname: finalNickname
+      finalNickname: finalNickname,
     });
-    
+
     return {
       userData: data,
       userId: finalUserId,
-      userNickname: finalNickname
+      userNickname: finalNickname,
     };
   }, [getUserIdFromToken]);
-  
+
   const [rooms, setRooms] = useState([]);
   const [selected, setSelected] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -112,7 +121,10 @@ const ChatPage = () => {
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
         console.log('정렬된 메시지:', sorted);
-        console.log('이미지 메시지 체크:', sorted.filter(msg => msg.imageUrls && msg.imageUrls.length > 0));
+        console.log(
+          '이미지 메시지 체크:',
+          sorted.filter((msg) => msg.imageUrls && msg.imageUrls.length > 0)
+        );
         setMessages(sorted);
         setPage(0);
         setLast(data?.last ?? true);
@@ -189,24 +201,21 @@ const ChatPage = () => {
   /** 방 선택 시 메시지 로드 + STOMP 구독 */
   useEffect(() => {
     if (!selected) return;
-    
+
     console.log('선택된 방:', selected.chatroomId, 'STOMP 연결:', connected);
-    
+
     // STOMP 연결 여부와 관계없이 메시지 로드
     loadInitialMessages(selected.chatroomId);
 
     return () => {
       // cleanup 필요시 처리
     };
-  }, [
-    selected,
-    loadInitialMessages,
-  ]);
-  
+  }, [selected, loadInitialMessages]);
+
   // STOMP 연결 후 구독 처리를 분리
   useEffect(() => {
     if (!selected || !connected) return;
-    
+
     const unsub = subscribeRoom(selected.chatroomId, (incoming) => {
       console.log('받은 메시지:', incoming);
 
@@ -256,7 +265,14 @@ const ChatPage = () => {
   /** 메시지 전송 */
   const handleSend = useCallback(() => {
     if (!input.trim() || !selected || !userId) {
-      console.log('전송 실패 - input:', input.trim(), 'selected:', !!selected, 'userId:', userId);
+      console.log(
+        '전송 실패 - input:',
+        input.trim(),
+        'selected:',
+        !!selected,
+        'userId:',
+        userId
+      );
       return;
     }
 
@@ -289,7 +305,7 @@ const ChatPage = () => {
     try {
       sendText(selected.chatroomId, messageText);
       console.log('STOMP 메시지 전송 완료');
-      
+
       // 채팅방 목록의 최근 메시지 업데이트
       setRooms((prev) =>
         prev.map((r) =>
@@ -306,7 +322,9 @@ const ChatPage = () => {
       console.error('메시지 전송 실패:', e);
       alert('메시지 전송 실패');
       // 실패 시 화면에서 제거
-      setMessages((prev) => prev.filter((msg) => msg.messageId !== newMsg.messageId));
+      setMessages((prev) =>
+        prev.filter((msg) => msg.messageId !== newMsg.messageId)
+      );
       setInput(messageText); // 입력값 복원
     }
 
@@ -341,14 +359,16 @@ const ChatPage = () => {
   };
 
   /** 메시지 렌더링 최적화 */
-  const renderedMessages = useMemo(() => 
-    messages.map((msg, index) => (
-      <ChatMessage
-        key={`${msg.messageId || msg.id || msg.createdAt}-${index}`}
-        msg={msg}
-        isMine={msg.senderNickname === userNickname}
-      />
-    )), [messages, userNickname]
+  const renderedMessages = useMemo(
+    () =>
+      messages.map((msg, index) => (
+        <ChatMessage
+          key={`${msg.messageId || msg.id || msg.createdAt}-${index}`}
+          msg={msg}
+          isMine={msg.senderNickname === userNickname}
+        />
+      )),
+    [messages, userNickname]
   );
 
   return (
@@ -387,18 +407,20 @@ const ChatPage = () => {
                 alt="profile"
                 className="w-12 h-12 rounded-full object-cover"
               />
-              <span className="font-bold text-lg">
+              <span className="text-black font-pretendard text-[24px] font-semibold leading-[36px] tracking-[-0.48px]">
                 {selected.provider?.nickname === userNickname
                   ? selected.consumer?.nickname
                   : selected.provider?.nickname}
               </span>
 
-              <button 
+              <button
                 onClick={() => navigate('/credit')}
-                className="ml-auto flex items-center bg-green-500 text-white px-3 py-1 rounded font-semibold"
+                className="ml-auto flex flex-row justify-center items-center gap-[10px] px-[28px] pr-[24px] py-[12px] rounded-full bg-[#1AA752]"
               >
-                결제하기
-                <img src={right} alt="right" className="ml-2 w-3 h-3" />
+                <span className="text-white font-pretendard text-[24px] font-normal leading-[36px] tracking-[-0.48px]">
+                  결제하기
+                </span>
+                <img src={right} alt="right" className="w-8 h-8" />
               </button>
             </div>
 
@@ -408,10 +430,16 @@ const ChatPage = () => {
               <div ref={endRef} />
             </div>
 
-            <div className="flex gap-2">
+            {/* 채팅 입력 바 */}
+            <div className="flex h-[64px] px-[32px] pr-[24px] justify-between items-center rounded-full border border-[#1AA752]">
+              {/* placeholder 텍스트 */}
               <input
-                className="flex-1 p-3 border rounded-lg focus:outline-none"
-                placeholder="메시지를 입력하세요..."
+                type="text"
+                className="flex-1 bg-transparent outline-none 
+             placeholder:text-[#BBB] placeholder:font-pretendard 
+             placeholder:text-[20px] placeholder:font-normal 
+             placeholder:leading-[30px] placeholder:tracking-[-0.6px]"
+                placeholder="채팅을 입력하세요."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -421,8 +449,10 @@ const ChatPage = () => {
                   }
                 }}
               />
-              <label className="flex items-center px-3 bg-gray-200 rounded cursor-pointer">
-                <img src={picture} alt="img" className="w-6 h-6" />
+
+              {/* 이미지 버튼 */}
+              <label className="flex items-center ml-3 cursor-pointer">
+                <img src={picture} alt="img" className="w-8 h-8" />
                 <input
                   type="file"
                   multiple
@@ -431,12 +461,14 @@ const ChatPage = () => {
                   onChange={onPickImages}
                 />
               </label>
-              <button
-                className="px-4 py-2 bg-green-500 text-white rounded"
+
+              {/* 전송 버튼 */}
+              <label
+                className="ml-3 text-[#1AA752] font-semibold"
                 onClick={handleSend}
               >
-                전송
-              </button>
+                <img src={vector} alt="img" className="w-8 h-8" />
+              </label>
             </div>
           </>
         ) : (
