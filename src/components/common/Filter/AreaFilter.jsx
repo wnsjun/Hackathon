@@ -64,7 +64,7 @@ const AreaFilter = ({ isOpen, onClose, onApplyFilter }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-0 mt-2 z-50">
+    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 z-50">
       <div
         ref={sliderRef}
         className="bg-white box-border flex flex-col gap-2 items-start justify-center pb-5 pt-4 px-6 rounded-lg relative"

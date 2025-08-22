@@ -6,6 +6,7 @@ import FarmReview from '../components/common/FarmReview';
 import { fetchFarmById } from '../apis/home';
 import { fetchReviewsByFarmId } from '../apis/reviewApi';
 import { toggleBookmark, removeBookmark } from '../apis/bookmark';
+import { createOrGetRoom } from '../apis/chatApi';
 import profile from '../assets/profile.png';
 
 const PlantDetail = () => {
@@ -16,6 +17,19 @@ const PlantDetail = () => {
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [isBookmarked, setIsBookmarked] = useState(false);
+
+  const getTimeDifference = (createdAt) => {
+    const now = new Date();
+    const created = new Date(createdAt);
+    const diffTime = Math.abs(now - created);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+      const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+      return diffHours === 0 ? '방금 전' : `${diffHours}시간 전`;
+    }
+    return `${diffDays}일 전`;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -148,11 +162,11 @@ const PlantDetail = () => {
                   />
                 </div>
                 <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.user?.nickname || '윤성'}</p>
+                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.owner?.nickname}</p>
                 </div>
               </div>
               <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left text-nowrap tracking-[-0.48px]">
-                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">1일 전</p>
+                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData?.createdAt ? getTimeDifference(farmData.createdAt) : '1일 전'}</p>
               </div>
             </div>
           </div>

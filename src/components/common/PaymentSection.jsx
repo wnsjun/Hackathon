@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCoin } from '../../contexts/CoinContext';
 
 const PaymentSection = ({ farmData }) => {
   const [ecoPoints, setEcoPoints] = useState(0);
   const navigate = useNavigate();
+  const { coinBalance } = useCoin();
 
   const FarmCoinIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
@@ -145,7 +147,7 @@ const PaymentSection = ({ farmData }) => {
                 </div>
               </div>
               <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[32px] text-left text-nowrap tracking-[-0.64px]">
-                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">50,000</p>
+                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{coinBalance?.toLocaleString()}</p>
               </div>
             </div>
             <div className="box-border content-stretch flex flex-row items-center justify-center p-0 relative shrink-0 cursor-pointer" onClick={handleChargeClick}>

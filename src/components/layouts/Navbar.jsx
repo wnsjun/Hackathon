@@ -3,6 +3,7 @@ import { Searchbar } from '../common/Searchbar';
 import { CoinDisplay } from '../common/CoinDisplay';
 import spacefarm_logo_image from '../../assets/spacefarm_logo_image.png?url';
 import chatIcon from '../../assets/chaticon.svg';
+import ChatbotIcon from '../common/ChatbotIcon';
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useCoin } from '../../contexts/CoinContext';
@@ -172,29 +173,29 @@ export const Navbar = () => {
       </nav>
 
       {/* Bottom Navigation Bar (Mobile) */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white block sm:hidden z-50">
+      <nav className="fixed bottom-[-10px] left-0 right-0 bg-white block sm:hidden z-50">
         <div className="box-border content-stretch flex items-end justify-center leading-[0] relative shadow-[0px_-4px_10px_0px_rgba(0,0,0,0.05)] w-full h-24">
           <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
             <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 rounded-tl-[24px] w-[72px]" />
             <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-6 mt-2 relative w-6">
-              <button onClick={handleHomeClick} className="relative shrink-0 size-6">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BBB" strokeWidth="2">
+              <button onClick={handleHomeClick} className="relative shrink-0 size-6 cursor-pointer ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={location.pathname === '/home' ? '#111111' : '#BBB'} strokeWidth="2">
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                   <polyline points="9,22 9,12 15,12 15,22"/>
                 </svg>
               </button>
-              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#111111] text-[12px] text-center text-nowrap tracking-[-0.36px]">
+              <div className={`font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[12px] text-center text-nowrap tracking-[-0.36px] ${location.pathname === '/home' ? 'text-[#111111]' : 'text-[#bbbbbb]'}`}>
                 <p className="leading-[1.5] whitespace-pre">홈</p>
               </div>
             </div>
           </div>
           <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
             <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 w-[72px]" />
-            <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-6 mt-2 relative w-6">
+            <div className=" [grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-6 mt-2 relative w-6">
               <button onClick={handleChatClick} className="relative shrink-0 size-6">
-                <img alt="" className="block max-w-none size-full" src={chatIcon} />
+                <img alt="" className="cursor-pointer block max-w-none size-full" src={chatIcon} />
               </button>
-              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#bbbbbb] text-[12px] text-center text-nowrap tracking-[-0.36px]">
+              <div className={`font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[12px] text-center text-nowrap tracking-[-0.36px] ${location.pathname === '/chat' ? 'text-[#111111]' : 'text-[#bbbbbb]'}`}>
                 <p className="leading-[1.5] whitespace-pre">채팅</p>
               </div>
             </div>
@@ -202,17 +203,7 @@ export const Navbar = () => {
           <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
             <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-4 w-[72px]" />
             <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 h-[71px] items-center justify-start ml-3 mt-0 relative w-12">
-              <div className="relative shrink-0 size-12">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BBB" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21,15 16,10 5,21"/>
-                </svg>
-                <div className="absolute aspect-[360/360] bg-center bg-cover bg-no-repeat left-[12.5%] right-[12.5%] top-1.5" style={{ backgroundImage: `url('http://localhost:3845/assets/b01d6bc8fb30f9d04593f5add80b407a6cbb08bf.png')` }} />
-              </div>
-              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] min-w-full not-italic relative shrink-0 text-[#bbbbbb] text-[12px] text-center tracking-[-0.36px]" style={{ width: "min-content" }}>
-                <p className="leading-[1.5]">새싹이</p>
-              </div>
+              <ChatbotIcon isMobile={true} />
             </div>
           </div>
           <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
@@ -222,12 +213,12 @@ export const Navbar = () => {
               </div>
             </div>
             <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-4 mt-2 relative w-[41px]">
-              <button onClick={() => navigate('/community')} className="overflow-clip relative shrink-0 size-6">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BBB" strokeWidth="2">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
+              <button onClick={() => navigate('/community')} className=" cursor-pointer  overflow-clip relative shrink-0 size-6">
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+                <path d="M6.81471 12.864L4.35271 13.524C3.71263 13.6956 3.16686 14.1143 2.83534 14.6881C2.50382 15.2618 2.41367 15.9438 2.58471 16.584L2.97271 18.034C3.10871 18.5415 3.34333 19.0172 3.6632 19.4339C3.98306 19.8507 4.38189 20.2004 4.83692 20.463C5.29194 20.7256 5.79424 20.896 6.31512 20.9645C6.83601 21.0329 7.36528 20.9981 7.87271 20.862L7.90671 20.852M17.1067 20.854L17.1387 20.862C18.1632 21.1363 19.2548 20.9925 20.1733 20.4621C21.0918 19.9318 21.762 19.0584 22.0367 18.034L22.4247 16.584C22.5957 15.9438 22.5056 15.2618 22.1741 14.6881C21.8426 14.1143 21.2968 13.6956 20.6567 13.524L18.2007 12.864M9.00671 6.5C9.00671 6.04037 9.09724 5.58525 9.27313 5.16061C9.44902 4.73597 9.70683 4.35013 10.0318 4.02513C10.3568 3.70012 10.7427 3.44231 11.1673 3.26642C11.592 3.09053 12.0471 3 12.5067 3C12.9663 3 13.4215 3.09053 13.8461 3.26642C14.2707 3.44231 14.6566 3.70012 14.9816 4.02513C15.3066 4.35013 15.5644 4.73597 15.7403 5.16061C15.9162 5.58525 16.0067 6.04037 16.0067 6.5C16.0067 7.42826 15.638 8.3185 14.9816 8.97487C14.3252 9.63125 13.435 10 12.5067 10C11.5785 10 10.6882 9.63125 10.0318 8.97487C9.37546 8.3185 9.00671 7.42826 9.00671 6.5ZM5.00671 11C5.66975 11 6.30564 10.7366 6.77448 10.2678C7.24332 9.79893 7.50671 9.16304 7.50671 8.5C7.50671 7.83696 7.24332 7.20107 6.77448 6.73223C6.30564 6.26339 5.66975 6 5.00671 6C4.34367 6 3.70779 6.26339 3.23894 6.73223C2.7701 7.20107 2.50671 7.83696 2.50671 8.5C2.50671 9.16304 2.7701 9.79893 3.23894 10.2678C3.70779 10.7366 4.34367 11 5.00671 11ZM22.5067 8.5C22.5067 9.16304 22.2433 9.79893 21.7745 10.2678C21.3056 10.7366 20.6698 11 20.0067 11C19.3437 11 18.7078 10.7366 18.2389 10.2678C17.7701 9.79893 17.5067 9.16304 17.5067 8.5C17.5067 7.83696 17.7701 7.20107 18.2389 6.73223C18.7078 6.26339 19.3437 6 20.0067 6C20.6698 6 21.3056 6.26339 21.7745 6.73223C22.2433 7.20107 22.5067 7.83696 22.5067 8.5ZM11.0067 12C9.62671 12 8.50671 13.12 8.50671 14.5V17C8.50671 18.0609 8.92814 19.0783 9.67828 19.8284C10.4284 20.5786 11.4458 21 12.5067 21C13.5676 21 14.585 20.5786 15.3351 19.8284C16.0853 19.0783 16.5067 18.0609 16.5067 17V14.5C16.5067 13.12 15.3867 12 14.0067 12H11.0067Z" stroke={location.pathname === '/community' ? '#111111' : '#BBBBBB'} strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
               </button>
-              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#bbbbbb] text-[12px] text-center text-nowrap tracking-[-0.36px]">
+              <div className={`font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[12px] text-center text-nowrap tracking-[-0.36px] ${location.pathname === '/community' ? 'text-[#111111]' : 'text-[#bbbbbb]'}`}>
                 <p className="leading-[1.5] whitespace-pre">커뮤니티</p>
               </div>
             </div>
@@ -235,12 +226,12 @@ export const Navbar = () => {
           <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
             <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 rounded-tr-[24px] w-[72px]" />
             <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-[11px] mt-2 relative">
-              <button onClick={handleMyPageClick} className="overflow-clip relative shrink-0 size-6">
+              <button onClick={handleMyPageClick} className="cursor-pointer overflow-clip relative shrink-0 size-6">
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
-                <path d="M12.5 12C15.2625 12 17.5 9.7625 17.5 7C17.5 4.2375 15.2625 2 12.5 2C9.7375 2 7.5 4.2375 7.5 7C7.5 9.7625 9.7375 12 12.5 12ZM12.5 14.5C9.1625 14.5 2.5 16.175 2.5 19.5V22H22.5V19.5C22.5 16.175 15.8375 14.5 12.5 14.5Z" stroke="#BBBBBB" strokeWidth="1.5"/>
+                <path d="M12.5 12C15.2625 12 17.5 9.7625 17.5 7C17.5 4.2375 15.2625 2 12.5 2C9.7375 2 7.5 4.2375 7.5 7C7.5 9.7625 9.7375 12 12.5 12ZM12.5 14.5C9.1625 14.5 2.5 16.175 2.5 19.5V22H22.5V19.5C22.5 16.175 15.8375 14.5 12.5 14.5Z" stroke={location.pathname === '/mypage' ? '#111111' : '#BBBBBB'} strokeWidth="1.5"/>
               </svg>
               </button>
-              <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#bbbbbb] text-[12px] text-center text-nowrap tracking-[-0.36px]">
+              <div className={`font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[12px] text-center text-nowrap tracking-[-0.36px] ${location.pathname === '/mypage' ? 'text-[#111111]' : 'text-[#bbbbbb]'}`}>
                 <p className="leading-[1.5] whitespace-pre">마이페이지</p>
               </div>
             </div>

@@ -220,7 +220,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="px-6 sm:px-12 lg:px-20 xl:px-32 py-6 pt-32">
+      <div className="px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 py-6 pt-32">
         {/* 배너 섹션 */}
         <div className="mb-8">
         <img
@@ -256,7 +256,7 @@ const Home = () => {
               </button>
             </div>
             {Array.isArray(displayedRecommendedFarms) && displayedRecommendedFarms.length > 0 ? (
-              <div className="grid grid-cols-2 max-[360px]:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {displayedRecommendedFarms.map((farm) => (
                   <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
                 ))}
@@ -288,12 +288,12 @@ const Home = () => {
           </div>
 
           {/* 필터 버튼들 */}
-          <div className="flex flex-wrap gap-3 mb-8">
+          <div className="flex flex-wrap gap-2 sm:gap-3 mb-8">
             {Object.entries(filters).map(([key, value]) => (
               <div key={key} className="relative">
                 <button
                   onClick={() => handleFilterDropdownChange(key)}
-                  className={`cursor-pointer px-4 py-2 border rounded-lg text-sm flex items-center gap-2 transition-colors bg-white ${
+                  className={`cursor-pointer px-3 py-2 border rounded-lg text-xs sm:text-sm flex items-center gap-1 sm:gap-2 transition-colors bg-white ${
                     openFilter === key 
                       ? 'border-green-400 text-green-600' 
                       : 'border-gray-300 text-gray-700 hover:border-green-400 hover:text-green-600'
@@ -385,7 +385,7 @@ const Home = () => {
               <p className="text-gray-400 text-sm">필터 조건을 변경해보세요</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 max-[360px]:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredFarms.map((farm) => (
                 <FarmCard key={farm.id} farm={farm} isRecommended={false} />
               ))}

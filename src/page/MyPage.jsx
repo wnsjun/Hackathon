@@ -6,8 +6,7 @@ import setting from '../assets/setting.svg';
 import RentingFarmCard from '../components/common/Card/RentingFarmCard';
 import FarmCard from '../components/common/Card/FarmCard';
 import CommunityPostCard from '../components/common/Card/CommunityPostCard';
-import { CoinAmount } from '../components/common/CoinDisplay';
-import FarmCoin from '../assets/FarmCoin.svg';
+import { useCoin } from '../contexts/CoinContext';
 
 import {
   useProfile,
@@ -26,7 +25,7 @@ export const MyPage = () => {
   const [farmToggle, setFarmToggle] = useState('my');
   const [communityToggle, setCommunityToggle] = useState('written');
 
-  const { coinBalance } = useAuth(); //코인 잔액
+  const { coinBalance } = useCoin(); //코인 잔액
 
   // 디버깅을 위한 토큰 상태 확인
   useEffect(() => {
@@ -144,30 +143,37 @@ export const MyPage = () => {
               onClick={() => navigate('/setting')}
             />
           </div>
-          <div
-            className="flex flex-col items-end gap-2 pt-4 pr-6 pb-6 pl-6 
-             rounded-2xl border border-[#39BB6D] 
-             bg-[rgba(26,167,82,0.05)] ml-auto mt-auto mr-40 mb-12"
-          >
-            <div className="flex felx-row pl-6 pt-4 pr-6">
-              <img src={FarmCoin} alt="FarmCoin" className="pr-2" />
-              <span
-                className="text-[#1AA752] font-medium text-[24px] leading-[38.4px] font-outfit pr-[45px]"
-                style={{ fontStyle: 'normal' }}
-              >
-                FarmCoin
-              </span>
-              {/* 코인 표시 */}
-              <CoinAmount coinBalance={coinBalance} />
+          <div className="bg-[rgba(26,167,82,0.05)] box-border content-stretch flex flex-col gap-2 items-end justify-start pb-6 pt-4 px-6 relative rounded-2xl shrink-0 border border-[#39bb6d] ml-auto mt-auto mr-40 mb-12 w-[320px]">
+            <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
+              <div className="box-border content-stretch flex flex-row gap-2 items-center justify-start p-0 relative shrink-0">
+                <div className="relative shrink-0 size-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <path d="M12.8007 27.0677V17.105C9.94415 17.105 6.07622 16.5561 4.93359 9.73438C7.40928 9.99574 11.3486 10.8635 13.8298 14.7527C14.7275 12.8708 17.8616 9.73438 22.8891 9.73438C22.4811 13.2629 19.4939 17.105 15.054 17.105" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12.6669 27.0881C6.02755 26.4199 0.844727 20.8148 0.844727 13.9993C0.844727 6.73369 6.73467 0.84375 14.0003 0.84375C21.2659 0.84375 27.1558 6.73369 27.1558 13.9993C27.1558 19.1568 24.188 23.6211 19.8669 25.7775" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <div className="flex flex-col font-['Outfit:Medium',_sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#1aa752] text-[24px] text-left text-nowrap">
+                  <p className="block leading-[1.6] whitespace-pre">FarmCoin</p>
+                </div>
+              </div>
+              <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[32px] text-left text-nowrap tracking-[-0.64px]">
+                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{coinBalance?.toLocaleString() || '0'}</p>
+              </div>
             </div>
-            <button
-              className="flex flex-row pr-6 pt-2 cursor-pointer text-[#777] font-['Pretendard'] font-semibold text-[16px] leading-[24px] tracking-[-0.48px]"
-              style={{ fontStyle: 'normal' }}
-              onClick={() => navigate('/coin-charge')}
-            >
-              충전하기
-              <ArrowIcon />
-            </button>
+            <div className="box-border content-stretch flex flex-row items-center justify-center p-0 relative shrink-0 cursor-pointer" onClick={() => navigate('/coin-charge')}>
+              <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left text-nowrap tracking-[-0.48px]">
+                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">충전하기</p>
+              </div>
+              <div className="flex items-center justify-center relative shrink-0">
+                <div className="flex-none">
+                  <div className="relative size-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+                      <path d="M9 14.0508L15.5 8.00149L9 1.95219" stroke="#777777" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
