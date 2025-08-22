@@ -199,6 +199,8 @@ const MyAllCommunity = () => {
               username={post.authorNickname}
               title={post.title}
               likeCount={post.likeCount}
+              initialLiked={post.liked} // <- 전달
+              createdAt={post.createdAt}
             />
           </div>
         ))}
