@@ -176,6 +176,10 @@ const CommunityDetail = () => {
   };
 
   const handleCommentDelete = async (commentId) => {
+    if (!confirm('댓글을 삭제하시겠습니까?')) {
+      return;
+    }
+
     try {
       await deleteComment(commentId);
       
@@ -192,9 +196,18 @@ const CommunityDetail = () => {
       }));
       
       setComments(transformedComments);
+      alert('댓글이 삭제되었습니다.');
     } catch (error) {
       console.error('댓글 삭제 실패:', error);
-      alert('댓글 삭제에 실패했습니다.');
+      if (error.response?.status === 500) {
+        alert('서버 오류로 댓글 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      } else if (error.response?.status === 403) {
+        alert('댓글을 삭제할 권한이 없습니다.');
+      } else if (error.response?.status === 404) {
+        alert('삭제하려는 댓글을 찾을 수 없습니다.');
+      } else {
+        alert('댓글 삭제에 실패했습니다. 다시 시도해주세요.');
+      }
     }
   };
 

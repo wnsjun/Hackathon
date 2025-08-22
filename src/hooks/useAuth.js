@@ -68,9 +68,24 @@ export const useAuth = () => {
     localStorage.removeItem('farmBookmarks');
   };
 
-  // For now, using a default coin balance
-  // This should be fetched from an API in the future
-  const coinBalance = isLoggedIn ? 50000 : 0;
+  // userData에서 money 값을 coinBalance로 사용
+  const getCoinBalance = () => {
+    if (!isLoggedIn) return 0;
+    
+    try {
+      const userData = localStorage.getItem('userData');
+      if (userData) {
+        const userInfo = JSON.parse(userData);
+        return userInfo.money || 0;
+      }
+    } catch (error) {
+      console.error('Error parsing userData:', error);
+    }
+    
+    return 0;
+  };
+
+  const coinBalance = getCoinBalance();
 
   return { isLoggedIn, logout, coinBalance };
 };

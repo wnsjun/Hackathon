@@ -112,6 +112,7 @@ const ChatPage = () => {
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
         console.log('정렬된 메시지:', sorted);
+        console.log('이미지 메시지 체크:', sorted.filter(msg => msg.imageUrls && msg.imageUrls.length > 0));
         setMessages(sorted);
         setPage(0);
         setLast(data?.last ?? true);
@@ -213,8 +214,10 @@ const ChatPage = () => {
         messageId: incoming.messageId || incoming.id || Date.now(),
         message: incoming.message || incoming.text || '',
         senderId: incoming.senderId || incoming.userId,
+        senderNickname: incoming.senderNickname || '',
         createdAt: incoming.createdAt || new Date().toISOString(),
         messageType: incoming.messageType || 'TEXT',
+        imageUrls: incoming.imageUrls || null,
       };
 
       // 내가 보낸 메시지가 아닌 경우에만 추가 (중복 방지)
@@ -339,9 +342,9 @@ const ChatPage = () => {
 
   /** 메시지 렌더링 최적화 */
   const renderedMessages = useMemo(() => 
-    messages.map((msg) => (
+    messages.map((msg, index) => (
       <ChatMessage
-        key={msg.messageId || msg.id || msg.createdAt}
+        key={`${msg.messageId || msg.id || msg.createdAt}-${index}`}
         msg={msg}
         isMine={msg.senderNickname === userNickname}
       />
