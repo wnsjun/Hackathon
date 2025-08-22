@@ -1,5 +1,3 @@
-// src/page/MyPage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/mypage.module.css';
@@ -8,6 +6,8 @@ import setting from '../assets/setting.svg';
 import RentingFarmCard from '../components/common/Card/RentingFarmCard';
 import FarmCard from '../components/common/Card/FarmCard';
 import CommunityPostCard from '../components/common/Card/CommunityPostCard';
+import { CoinAmount } from '../components/common/CoinDisplay';
+import FarmCoin from '../assets/FarmCoin.svg';
 
 import {
   useProfile,
@@ -19,10 +19,14 @@ import {
   useEcoScore,
 } from '../hooks/useMyPage';
 
+import { useAuth } from '../hooks/useAuth';
+
 export const MyPage = () => {
   const navigate = useNavigate();
   const [farmToggle, setFarmToggle] = useState('my');
   const [communityToggle, setCommunityToggle] = useState('written');
+
+  const { coinBalance } = useAuth(); //코인 잔액
 
   // 디버깅을 위한 토큰 상태 확인
   useEffect(() => {
@@ -136,9 +140,34 @@ export const MyPage = () => {
             <img
               src={setting}
               alt="설정"
-              className="mr-40 w-6 h-6 cursor-pointer"
+              className="mr-34 w-6 h-6 cursor-pointer"
               onClick={() => navigate('/setting')}
             />
+          </div>
+          <div
+            className="flex flex-col items-end gap-2 pt-4 pr-6 pb-6 pl-6 
+             rounded-2xl border border-[#39BB6D] 
+             bg-[rgba(26,167,82,0.05)] ml-auto mt-auto mr-40 mb-12"
+          >
+            <div className="flex felx-row pl-6 pt-4 pr-6">
+              <img src={FarmCoin} alt="FarmCoin" className="pr-2" />
+              <span
+                className="text-[#1AA752] font-medium text-[24px] leading-[38.4px] font-outfit pr-[45px]"
+                style={{ fontStyle: 'normal' }}
+              >
+                FarmCoin
+              </span>
+              {/* 코인 표시 */}
+              <CoinAmount coinBalance={coinBalance} />
+            </div>
+            <button
+              className="flex flex-row pr-6 pt-2 cursor-pointer text-[#777] font-['Pretendard'] font-semibold text-[16px] leading-[24px] tracking-[-0.48px]"
+              style={{ fontStyle: 'normal' }}
+              onClick={() => navigate('/coin-charge')}
+            >
+              충전하기
+              <ArrowIcon />
+            </button>
           </div>
         </div>
       </div>
