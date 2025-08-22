@@ -386,7 +386,11 @@ export const MyPage = () => {
                     lineHeight: '150%',
                     letterSpacing: '-0.48px',
                   }}
-                  onClick={() => navigate('/my-all-community')}
+                  onClick={() =>
+                    navigate('/my-all-community', {
+                      state: { initialTab: communityToggle },
+                    })
+                  }
                 >
                   전체보기 <ArrowIcon />
                 </button>
