@@ -3,9 +3,9 @@ import { Searchbar } from '../common/Searchbar';
 import { CoinDisplay } from '../common/CoinDisplay';
 import spacefarm_logo_image from '../../assets/spacefarm_logo_image.png?url';
 import chatIcon from '../../assets/chaticon.svg';
-import profileIcon from '../../assets/profile.svg';
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useCoin } from '../../contexts/CoinContext';
 
 function LogoIcon() { 
   return (
@@ -34,7 +34,8 @@ function ChatIcon() {
 export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn, coinBalance } = useAuth();
+  const { isLoggedIn } = useAuth();
+  const { coinBalance } = useCoin();
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   const handleSearch = (query) => {
@@ -78,7 +79,7 @@ export const Navbar = () => {
     <>
       <nav className="fixed top-0 left-0 right-0 bg-white text-black z-50">
         {/* Desktop/Tablet View */}
-        <div className="hidden min-[361px]:block">
+        <div className="hidden sm:block">
           <div className="box-border content-stretch flex flex-row items-center justify-between px-2 sm:px-4 md:px-8 lg:px-16 xl:px-40 py-2 sm:py-4 md:py-6 lg:py-8 relative w-full min-w-0">
             {/* Left Section: Logo + Navigation + Search */}
             <div className="box-border content-stretch flex flex-row gap-1 sm:gap-2 md:gap-4 lg:gap-8 items-center justify-start p-0 relative min-w-0 flex-1">
@@ -139,7 +140,7 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile View */}
-        <div className="block min-[361px]:hidden">
+        <div className="block sm:hidden">
           <div className="box-border content-stretch flex flex-row items-center justify-between px-4 py-4 relative size-full">
             {/* Logo Section */}
             <div className="box-border content-stretch flex flex-row gap-1 items-end justify-center p-0 relative shrink-0">
@@ -171,7 +172,7 @@ export const Navbar = () => {
       </nav>
 
       {/* Bottom Navigation Bar (Mobile) */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white block min-[361px]:hidden z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white block sm:hidden z-50">
         <div className="box-border content-stretch flex items-end justify-center leading-[0] relative shadow-[0px_-4px_10px_0px_rgba(0,0,0,0.05)] w-full h-24">
           <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
             <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 rounded-tl-[24px] w-[72px]" />
@@ -235,10 +236,9 @@ export const Navbar = () => {
             <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 rounded-tr-[24px] w-[72px]" />
             <div className="[grid-area:1_/_1] box-border content-stretch flex flex-col gap-1 items-center justify-start ml-[11px] mt-2 relative">
               <button onClick={handleMyPageClick} className="overflow-clip relative shrink-0 size-6">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BBB" strokeWidth="2">
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+                <path d="M12.5 12C15.2625 12 17.5 9.7625 17.5 7C17.5 4.2375 15.2625 2 12.5 2C9.7375 2 7.5 4.2375 7.5 7C7.5 9.7625 9.7375 12 12.5 12ZM12.5 14.5C9.1625 14.5 2.5 16.175 2.5 19.5V22H22.5V19.5C22.5 16.175 15.8375 14.5 12.5 14.5Z" stroke="#BBBBBB" strokeWidth="1.5"/>
+              </svg>
               </button>
               <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[#bbbbbb] text-[12px] text-center text-nowrap tracking-[-0.36px]">
                 <p className="leading-[1.5] whitespace-pre">마이페이지</p>

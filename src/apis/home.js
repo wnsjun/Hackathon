@@ -101,10 +101,22 @@ export const createFarm = async (farmData, imageFiles) => {
     console.log('전송할 DTO:', JSON.stringify(farmDto, null, 2));
     console.log('이미지 파일 개수:', imageFiles ? imageFiles.length : 0);
     
+    // FormData 내용 로깅
+    console.log('FormData 내용:');
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`${key}:`, `File - ${value.name} (${value.size} bytes)`);
+      } else if (value instanceof Blob) {
+        console.log(`${key}:`, 'Blob -', value.type);
+      } else {
+        console.log(`${key}:`, value);
+      }
+    }
+    
     const token = localStorage.getItem('accessToken');
     console.log('토큰 있음:', !!token);
     
-    // FormData 전송 (채팅 API와 동일한 헤더 설정)
+    // FormData 전송 (CommunityWrite와 동일한 헤더 설정)
     const response = await axiosInstance.post('/farm', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

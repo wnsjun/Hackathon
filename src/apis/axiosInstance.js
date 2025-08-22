@@ -5,6 +5,7 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // CORS 처리를 위해 추가
 });
 
 axiosInstance.interceptors.request.use((config) => {

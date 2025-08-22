@@ -18,35 +18,38 @@ import MyAllCommunity from './page/MyAllCommunity';
 import CreditPage from './page/CreditPage';
 import CoinChargePage from './page/CoinChargePage';
 import HomeSearchResult from './page/HomeSearchResult';
+import { CoinProvider } from './contexts/CoinContext';
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="home" element={<Home />} />
-          <Route path="search" element={<HomeSearchResult />} />
-          <Route path="addfarm" element={<AddFarm />} />
-          <Route path="farm/:id" element={<PlantDetail />} />
-          <Route path="plant/:id" element={<PlantDetail />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/community/write" element={<CommunityWrite />} />
-          <Route path="/community/:id" element={<CommunityDetail />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/setting" element={<SettingPage />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/my-all-farms" element={<MyAllFarms />} />
-          <Route path="/my-all-community" element={<MyAllCommunity />} />
-          <Route path="/addinfo" element={<AddInfo />} />
-          <Route path="/signupinfo" element={<SignupInfo />} />
-          <Route path="/credit" element={<CreditPage/>}/>
-          <Route path="/coin-charge" element={<CoinChargePage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <CoinProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="home" element={<Home />} />
+            <Route path="search" element={<HomeSearchResult />} />
+            <Route path="addfarm" element={<AddFarm />} />
+            <Route path="farm/:id" element={<PlantDetail />} />
+            <Route path="plant/:id" element={<PlantDetail />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/community/write" element={<CommunityWrite />} />
+            <Route path="/community/:id" element={<CommunityDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/setting" element={<SettingPage />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/my-all-farms" element={<MyAllFarms />} />
+            <Route path="/my-all-community" element={<MyAllCommunity />} />
+            <Route path="/addinfo" element={<AddInfo />} />
+            <Route path="/signupinfo" element={<SignupInfo />} />
+            <Route path="/credit" element={<CreditPage/>}/>
+            <Route path="/coin-charge" element={<CoinChargePage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </CoinProvider>
   );
 };
 

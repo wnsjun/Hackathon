@@ -19,6 +19,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { signup1Api, signup2Api, loginApi, logoutApi } from '../apis/authApi';
 import { emitLogoutEvent } from '../utils/storageEvents';
+import { useCoin } from '../contexts/CoinContext';
 
 // 회원가입 1단계
 export const useSignup1 = () => {
@@ -68,26 +69,7 @@ export const useAuth = () => {
     localStorage.removeItem('farmBookmarks');
   };
 
-  // userData에서 money 값을 coinBalance로 사용
-  const getCoinBalance = () => {
-    if (!isLoggedIn) return 0;
-    
-    try {
-      const userData = localStorage.getItem('userData');
-      if (userData) {
-        const userInfo = JSON.parse(userData);
-        return userInfo.money || 0;
-      }
-    } catch (error) {
-      console.error('Error parsing userData:', error);
-    }
-    
-    return 0;
-  };
-
-  const coinBalance = getCoinBalance();
-
-  return { isLoggedIn, logout, coinBalance };
+  return { isLoggedIn, logout };
 };
 
 // 로그아웃
@@ -115,6 +97,8 @@ export const useLogout = () => {
 
 // 로그인
 export const useLogin = () => {
+  const { updateCoinBalance } = useCoin();
+  
   return useMutation({
     mutationFn: loginApi,
     onSuccess: (res) => {
@@ -123,6 +107,10 @@ export const useLogin = () => {
         localStorage.setItem('accessToken', token);
         // 전체 사용자 데이터를 userData로 저장
         localStorage.setItem('userData', JSON.stringify(res));
+        // 로그인 시 코인 잔액 업데이트
+        if (res.money !== undefined) {
+          updateCoinBalance(res.money);
+        }
         alert('로그인 성공!');
       }
     },
