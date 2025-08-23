@@ -393,21 +393,23 @@ const ChatPage = () => {
     } else {
       document.body.classList.remove('hide-mobile-navbar');
     }
-    
+
     return () => {
       document.body.classList.remove('hide-mobile-navbar');
     };
   }, [isMobileView]);
 
   return (
-    <div className="flex flex-col lg:flex-row flex-1 bg-white h-screen pt-20">
+    <div className="flex flex-col pr-40 pl-40 lg:flex-row flex-1 bg-white h-screen pt-20">
       {/* 모바일: 채팅 목록만 보이거나 채팅 상세만 보임 */}
       {/* 데스크톱: 항상 둘 다 보임 */}
-      
+
       {/* 채팅 목록 - 모바일에서는 상세뷰가 아닐 때만, 데스크톱에서는 항상 */}
-      <aside className={`${
-        isMobileView ? 'hidden lg:flex' : 'flex'
-      } w-full lg:w-[331px] flex-col bg-white ${isMobileView ? '' : 'px-4 pt-4 pb-4'} lg:m-12 lg:p-6 lg:h-[774px] flex-shrink-0 overflow-y-auto`}>
+      <aside
+        className={`${
+          isMobileView ? 'hidden lg:flex' : 'flex'
+        } w-full lg:w-[331px] flex-col bg-white ${isMobileView ? '' : 'px-4 pt-4 pb-4'} lg:m-12 lg:p-6 lg:h-[774px] flex-shrink-0 overflow-y-auto`}
+      >
         <div className="flex items-center gap-4 border-b border-gray-200 pb-4 mb-4">
           <img src={ChatIcon} alt="chat" className="w-7 h-6" />
           <h2 className="text-xl lg:text-2xl font-semibold text-gray-700">
@@ -442,21 +444,51 @@ const ChatPage = () => {
             {/* 모바일 헤더 (뒤로가기 버튼 포함) */}
             <div className="lg:hidden fixed top-20 left-0 right-0 bg-white flex items-center justify-between px-4 py-3 border-b border-gray-200 z-40">
               <button onClick={handleBackToList} className="p-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M15 18L9 12L15 6" stroke="#111111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="#111111"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
               <h1 className="text-base font-semibold text-black tracking-[-0.48px]">
                 채팅
               </h1>
               <div className="w-10 h-10 flex items-center justify-center">
-                <button 
+                <button
                   className="p-2"
                   onClick={() => setShowFarmInfo(!showFarmInfo)}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="#BBBBBB" strokeWidth="1.5"/>
-                    <path d="M12 8v4M12 16h.01" stroke="#BBBBBB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="#BBBBBB"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M12 8v4M12 16h.01"
+                      stroke="#BBBBBB"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </button>
               </div>
@@ -486,7 +518,11 @@ const ChatPage = () => {
                 <span className="text-white font-pretendard text-[14px] sm:text-[18px] lg:text-[24px] font-normal leading-[1.5] tracking-[-0.48px] whitespace-nowrap">
                   결제하기
                 </span>
-                <img src={right} alt="right" className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
+                <img
+                  src={right}
+                  alt="right"
+                  className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8"
+                />
               </button>
             </div>
 
@@ -513,18 +549,31 @@ const ChatPage = () => {
                 className="flex items-center gap-1 text-[#1aa752] font-semibold text-base tracking-[-0.48px]"
               >
                 결제하기
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M6 12L10 8L6 4" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                >
+                  <path
+                    d="M6 12L10 8L6 4"
+                    stroke="#1AA752"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             </div>
 
             {/* 채팅 메시지 영역 */}
-            <div ref={listRef} className="flex-1 overflow-y-auto px-5 pt-[120px] lg:pt-0 lg:px-4 lg:mb-4">
+            <div
+              ref={listRef}
+              className="flex-1 overflow-y-auto px-5 pt-[120px] lg:pt-0 lg:px-4 lg:mb-4"
+            >
               <div ref={topSentinelRef} />
-              <div className="flex flex-col gap-4 pt-6">
-                {renderedMessages}
-              </div>
+              <div className="flex flex-col gap-4 pt-6">{renderedMessages}</div>
               <div ref={endRef} />
             </div>
 
@@ -551,8 +600,17 @@ const ChatPage = () => {
 
                 {/* 이미지 버튼 */}
                 <label className="flex items-center ml-2 cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" fill="#1AA752"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z"
+                      fill="#1AA752"
+                    />
                   </svg>
                   <input
                     type="file"
@@ -568,8 +626,17 @@ const ChatPage = () => {
                   className="ml-2 text-[#1AA752] font-semibold cursor-pointer"
                   onClick={handleSend}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M9.912 12H3L2.023 4.135A.662.662 0 0 1 2.5 3.2L21.5 11.5A.75.75 0 0 1 21.5 12.5L2.5 20.8A.662.662 0 0 1 2.023 19.865L3 12Z" fill="#1AA752"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M9.912 12H3L2.023 4.135A.662.662 0 0 1 2.5 3.2L21.5 11.5A.75.75 0 0 1 21.5 12.5L2.5 20.8A.662.662 0 0 1 2.023 19.865L3 12Z"
+                      fill="#1AA752"
+                    />
                   </svg>
                 </button>
               </div>
@@ -577,9 +644,7 @@ const ChatPage = () => {
           </>
         ) : (
           <div className="hidden lg:flex flex-1 items-center justify-center">
-            <p className="text-center text-gray-400">
-              채팅방을 선택해주세요.
-            </p>
+            <p className="text-center text-gray-400">채팅방을 선택해주세요.</p>
           </div>
         )}
       </section>
@@ -593,7 +658,7 @@ const ChatPage = () => {
               현재 대화를 나누고 있는 텃밭이에요.
             </p>
           </div>
-          
+
           {/* 농장 정보 */}
           <div className="px-5 py-4">
             <ChatFarmInfo chatRoomId={selected.chatroomId} />

@@ -38,3 +38,15 @@ export const submitReviewByFarmId = async (farmId, content) => {
     throw error;
   }
 };
+
+export const createReview = async (farmId, content) => {
+  try {
+    const response = await axiosInstance.post(`/reviews/${farmId}`, {
+      content,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('리뷰 생성 실패:', error);
+    throw error;
+  }
+};
