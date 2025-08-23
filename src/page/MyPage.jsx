@@ -117,8 +117,9 @@ export const MyPage = () => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ml-40 mr-40">
       <Navbar />
+
       {/* 프로필 영역 */}
       <div className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32 pb-8">
         <div className="relative">
@@ -212,7 +213,7 @@ export const MyPage = () => {
         </div>
       </div>
 
-      <div className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-8 md:pt-16">
+      <div className=" pt-16 md:pt-16">
         {/* 거래 리뷰 */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
@@ -243,7 +244,7 @@ export const MyPage = () => {
       </div>
 
       {/* 텃밭 탭 & 카드 */}
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col pt-18 gap-2 w-full">
         <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
           텃밭
         </h2>

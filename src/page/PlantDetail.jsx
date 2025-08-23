@@ -4,7 +4,7 @@ import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import FarmReview from '../components/common/FarmReview';
 import { fetchFarmById } from '../apis/home';
-import { fetchReviewsByFarmId } from '../apis/reviewApi';
+import { fetchReviewsByFarmId, createReview } from '../apis/reviewApi';
 import { toggleBookmark, removeBookmark } from '../apis/bookmark';
 import { createChatRoom } from '../apis/chatApi';
 import profile from '../assets/profile.png';
@@ -447,7 +447,7 @@ const PlantDetail = () => {
           <ChatbotIcon />
         </div>
         {/* ✅ 리뷰 모달을 여기 추가 */}
-        <ReviewModal
+        {/* <ReviewModal
           isOpen={isReviewModalOpen}
           onClose={() => setIsReviewModalOpen(false)}
           onSubmit={(reviewText) => {
@@ -456,6 +456,29 @@ const PlantDetail = () => {
               { id: Date.now(), content: reviewText, createdAt: new Date() },
               ...prev,
             ]);
+          }}
+        /> */}
+
+        <ReviewModal
+          isOpen={isReviewModalOpen}
+          onClose={() => setIsReviewModalOpen(false)}
+          onSubmit={async (reviewText) => {
+            try {
+              if (!id) return;
+
+              // 서버에 리뷰 생성
+              const newReview = await createReview(id, reviewText);
+              console.log('리뷰 제출 성공:', newReview);
+
+              // 화면에 바로 반영
+              setReviews((prev) => [newReview, ...prev]);
+
+              // 모달 닫기
+              setIsReviewModalOpen(false);
+            } catch (error) {
+              console.error('리뷰 생성 실패:', error);
+              alert('리뷰 등록에 실패했습니다.');
+            }
           }}
         />
 
