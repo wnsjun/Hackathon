@@ -47,14 +47,20 @@ const Setting = () => {
       try {
         const { data } = await axiosInstance.get('/mypage/profile');
         setName(data.name || '');
-        setContact(data.phone || '');
+        setContact(data.phoneNumber || '');
         setNickname(data.nickname || '');
-        setSelectedDong(data.address?.split(' ')[2] || '');
+        setSelectedDong(data.addressDong || '');
         setAccounts(
-          data.bank
-            ? [{ bank: data.bank, accountNumber: data.accountNumber }]
+          data.accountNumber
+            ? [
+                {
+                  bank: data.bank || '은행 선택',
+                  accountNumber: data.accountNumber,
+                },
+              ]
             : []
         );
+        setSelectedThemes(data.preferredThemes || []);
       } catch (err) {
         console.error('프로필 불러오기 실패', err);
       }
@@ -89,10 +95,12 @@ const Setting = () => {
     try {
       await axiosInstance.patch('/mypage/edit', {
         name,
-        phone: contact,
+        phoneNumber: contact,
         nickname,
         bank: accounts[0]?.bank || null,
         accountNumber: accounts[0]?.accountNumber || null,
+        addressDong: selectedDong || null,
+        preferredThemes: selectedThemes,
       });
       alert('설정이 저장되었습니다!');
       navigate('/mypage');
@@ -208,13 +216,13 @@ const Setting = () => {
               +
             </button>
           </div>
-          <ul className="space-y-1">
-            {accounts.map((acc, index) => (
-              <li key={index} className="text-sm text-gray-700">
-                {acc.bank} {acc.accountNumber}
-              </li>
-            ))}
-          </ul>
+
+          {/* 🔽 서버에서 불러온 계좌번호 표시 */}
+          {accounts.length > 0 && (
+            <div className="mt-2 p-2 border rounded bg-gray-50 text-sm text-gray-800">
+              등록된 계좌: {accounts[0].bank} {accounts[0].accountNumber}
+            </div>
+          )}
         </div>
 
         {/* 관심 동네 */}
