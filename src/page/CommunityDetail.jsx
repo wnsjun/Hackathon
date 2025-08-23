@@ -259,50 +259,98 @@ const CommunityDetail = () => {
   }
 
   return (
-    <div className="bg-white relative min-h-screen font-pretendard pt-32">{/* pt-32 added for navbar space */}
-
-      {/* Main Content */}
-      <div className="absolute left-40 top-32 w-[739px] flex flex-col gap-6">
-        {/* Post Header */}
-        <div className="flex flex-row items-end justify-between w-full">
-          <div className="flex flex-row items-center justify-between w-[1120px]">
-            <div className="flex flex-row gap-4 items-center">
-              <div className="flex flex-row gap-3 items-center">
-                <div className="size-12">
-                  <img alt="" className="block max-w-none size-full" height="48" src={imgEllipse82} width="48" />
+    <div className="bg-white relative min-h-screen font-pretendard pt-20 pb-24 md:pb-12">
+      
+      {/* Unified Responsive Layout */}
+      <div className="px-4 sm:px-6 md:px-12 py-6">
+        <div className="max-w-6xl mx-auto">
+          
+          {/* Desktop Layout */}
+          <div className="hidden lg:flex flex-col gap-6">
+            {/* Post Header */}
+            <div className="flex flex-row items-end justify-between w-full">
+              <div className="flex flex-row items-center justify-between w-full">
+                <div className="flex flex-row gap-4 items-center">
+                  <div className="flex flex-row gap-3 items-center">
+                    <div className="size-12">
+                      <img alt="" className="block max-w-none size-full" height="48" src={imgEllipse82} width="48" />
+                    </div>
+                    <div className="font-semibold text-2xl text-black tracking-[-0.48px]">
+                      {currentPost.username}
+                    </div>
+                  </div>
+                  <div className="font-normal text-xl text-[#777777] tracking-[-0.6px]">
+                    {currentPost.timeAgo}
+                  </div>
                 </div>
-                <div className="font-semibold text-2xl text-black tracking-[-0.48px]">
-                  {currentPost.username}
+                <div className="cursor-pointer" onClick={handleLikeToggle}>
+                  <HeartIcon isLiked={isLiked} />
                 </div>
-              </div>
-              <div className="font-normal text-xl text-[#777777] tracking-[-0.6px]">
-                {currentPost.timeAgo}
               </div>
             </div>
-            <div className="cursor-pointer" onClick={handleLikeToggle}>
-              <HeartIcon isLiked={isLiked} />
+
+            {/* Post Content */}
+            <div className="flex flex-col gap-12 w-full">
+              <div
+                className="bg-center bg-cover bg-no-repeat h-[588px] rounded-2xl w-full max-w-[739px]"
+                style={{ backgroundImage: `url('${currentPost.image}')` }}
+              />
+              <div className="flex flex-col gap-8 w-full max-w-[739px]">
+                <div className="flex flex-row gap-8 items-center w-full">
+                  <div className="font-semibold text-4xl text-[#111111] tracking-[-0.72px] overflow-hidden">
+                    {currentPost.title}
+                  </div>
+                </div>
+                <div className="flex flex-row gap-8 items-end w-full">
+                  <div className="font-normal text-xl text-black tracking-[-0.6px] leading-[1.5] whitespace-pre-line">
+                    {currentPost.content}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Post Content */}
-        <div className="flex flex-col gap-12 w-full">
-          <div
-            className="bg-center bg-cover bg-no-repeat h-[588px] rounded-2xl w-[739px]"
-            style={{ backgroundImage: `url('${currentPost.image}')` }}
-          />
-          <div className="flex flex-col gap-8 w-[739px]">
-            <div className="flex flex-row gap-8 items-center w-full">
-              <div className="font-semibold text-4xl text-[#111111] tracking-[-0.72px] overflow-hidden w-[691px]">
-                {currentPost.title}
+          {/* Mobile Layout */}
+          <div className="lg:hidden">
+            <div className="flex flex-col gap-4">
+              {/* Image at the top */}
+              <div
+                className="bg-center bg-cover bg-no-repeat h-64 rounded-xl w-full"
+                style={{ backgroundImage: `url('${currentPost.image}')` }}
+              />
+              
+              {/* Post Header */}
+              <div className="flex flex-row items-center justify-between w-full">
+                <div className="flex flex-row gap-3 items-center">
+                  <div className="size-10">
+                    <img alt="" className="block max-w-none size-full rounded-full" height="40" src={imgEllipse82} width="40" />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="font-semibold text-lg text-black tracking-[-0.36px]">
+                      {currentPost.username}
+                    </div>
+                    <div className="font-normal text-sm text-[#777777] tracking-[-0.42px]">
+                      {currentPost.timeAgo}
+                    </div>
+                  </div>
+                </div>
+                <div className="cursor-pointer" onClick={handleLikeToggle}>
+                  <HeartIcon isLiked={isLiked} />
+                </div>
               </div>
-            </div>
-            <div className="flex flex-row gap-8 items-end w-full">
-              <div className="font-normal text-xl text-black tracking-[-0.6px] leading-[1.5] w-[739px] whitespace-pre-line">
-                {currentPost.content}
+
+              {/* Title and Content */}
+              <div className="flex flex-col gap-4 w-full">
+                <div className="font-semibold text-2xl text-[#111111] tracking-[-0.48px] break-words">
+                  {currentPost.title}
+                </div>
+                <div className="font-normal text-base text-black tracking-[-0.48px] leading-[1.5] whitespace-pre-line break-words">
+                  {currentPost.content}
+                </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
 

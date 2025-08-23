@@ -195,7 +195,7 @@ export const Navbar = () => {
       </nav>
 
       {/* Bottom Navigation Bar (Mobile) */}
-      <nav className={`fixed bottom-[-10px] left-0 right-0 bg-white sm:hidden z-50 ${shouldHideMobileNavbar ? 'hidden' : 'block'}`}>
+      <nav className={`fixed bottom-0 left-0 right-0 bg-white sm:hidden z-40 ${shouldHideMobileNavbar ? 'hidden' : 'block'}`}>
         <div className="box-border content-stretch flex items-end justify-center leading-[0] relative shadow-[0px_-4px_10px_0px_rgba(0,0,0,0.05)] w-full h-24">
           <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
             <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 rounded-tl-[24px] w-[72px]" />

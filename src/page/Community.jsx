@@ -204,15 +204,18 @@ export const Community = () => {
               </button>
             </div>
             
-            <div className="flex justify-end ml-auto">
-              <Button
+            {/* 모바일에서는 간단한 텍스트 버튼 */}
+            <button 
               onClick={handleWriteClick}
-              variant="farm"
-              className="text-base md:text-lg
-              text-[#1aa752]
-              font-bold
-              text-[16px]"
-              > 작성하기 + </Button>
+              className="md:hidden text-sm font-semibold text-[#1aa752] flex items-center gap-1 ml-auto"
+            >
+              작성하기 
+              <span className="text-[#1aa752] text-lg">+</span>
+            </button>
+            
+            {/* 데스크톱에서는 Button 컴포넌트 */}
+            <div className="hidden md:block ml-auto">
+              <Button onClick={handleWriteClick} variant="farm">작성하기</Button>
             </div>
           </div>
         </div>

@@ -105,7 +105,7 @@ const FarmCard = ({ farm }) => {
         <div className="flex flex-col gap-1 md:gap-2 w-full">
           {/* 제목과 면적 */}
           <div className="flex items-start justify-between w-full">
-            <div className="font-semibold text-lg md:text-2xl text-black tracking-[-0.48px] leading-[1.4] md:leading-[1.5]">
+            <div className="font-semibold text-lg md:text-2xl text-black tracking-[-0.48px] leading-[1.4] md:leading-[1.5] truncate">
               {farm.title }
             </div>
             <div className="font-normal text-xs md:text-sm text-[#777777] tracking-[-0.42px] leading-[1.5] text-right flex items-center justify-center">
