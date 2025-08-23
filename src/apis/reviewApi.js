@@ -26,3 +26,15 @@ export const fetchReviewsByFarmId = async (
     throw error;
   }
 };
+
+export const submitReviewByFarmId = async (farmId, content) => {
+  try {
+    const response = await axiosInstance.post(`/reviews/${farmId}`, {
+      content,
+    });
+    return response.data; // 서버에서 생성된 리뷰 객체 반환
+  } catch (error) {
+    console.error('리뷰 제출 실패:', error);
+    throw error;
+  }
+};
