@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from '../styles/mypage.module.css';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import setting from '../assets/setting.svg';
 import RentingFarmCard from '../components/common/Card/RentingFarmCard';
@@ -75,19 +74,19 @@ export const MyPage = () => {
     likedPostsLoading ||
     ecoScoreLoading
   ) {
-    return <p className="pl-40 pt-20">로딩 중...</p>;
+    return <p className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32">로딩 중...</p>;
   }
 
   if (profileError) {
     return (
-      <p className="pl-40 pt-20 text-red-500">
+      <p className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32 text-red-500">
         데이터를 불러오는 중 오류가 발생했습니다.
       </p>
     );
   }
 
   if (!profile) {
-    return <p className="pl-40 pt-20">로그인이 필요합니다.</p>;
+    return <p className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32">로그인이 필요합니다.</p>;
   }
 
   // Arrow icon component
@@ -109,92 +108,83 @@ export const MyPage = () => {
   );
 
   return (
-    <>
+    <div className="min-h-screen">
       <Navbar />
-    <div>
       {/* 프로필 영역 */}
-      <div className="flex pt-32">
-        <div className="flex pt-12 pl-4 sm:pl-8 md:pl-16 lg:pl-32 xl:pl-40 w-full h-[336px] relative">
-          <img
-            className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 xl:w-60 xl:h-60 rounded-full"
-            src={profile.imageUrl || '/assets/profile.svg'}
-            alt="Profile"
-          />
-          <div className="flex flex-col pl-4 sm:pl-6 md:pl-8 lg:pl-10 xl:pl-[46px] pt-4 sm:pt-6 md:pt-8 lg:pt-10 xl:pt-[43px] items-start">
-            <div className="flex items-center gap-4">
-              <h1 className={styles.nickname}>{profile.nickname}</h1>
-            </div>
-            <p className={styles.location}>{profile.address}</p>
-            <div className="flex items-center gap-x-4 pt-1">
-              <p className={styles.ecoScore}>친환경 점수</p>
-              <p className={styles.ecoScoreValue}>{ecoScore}점</p>
-            </div>
-          </div>
-
+      <div className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32 pb-8">
+        <div className="relative">
           {/* 로그아웃 & 설정 버튼 */}
-          <div className="absolute top-4 right-2 sm:right-4 md:right-6 mt-12 flex items-center gap-3">
+          <div className="absolute top-0 right-0 flex items-center gap-3 mb-4">
             <button
               onClick={handleLogout}
-              className="text-red-500 font-semibold cursor-pointer"
+              className="text-red-500 text-sm md:text-base font-semibold cursor-pointer"
             >
               로그아웃
             </button>
             <img
               src={setting}
               alt="설정"
-              className="mr-34 w-6 h-6 cursor-pointer"
+              className="w-5 h-5 md:w-6 md:h-6 cursor-pointer"
               onClick={() => navigate('/setting')}
             />
           </div>
-          <div className="bg-[rgba(26,167,82,0.05)] box-border content-stretch flex flex-col gap-2 items-end justify-start pb-6 pt-4 px-6 relative rounded-2xl shrink-0 border border-[#39bb6d] ml-auto mt-auto mr-4 sm:mr-8 md:mr-16 lg:mr-32 xl:mr-40 mb-12 w-[240px] sm:w-[280px] md:w-[300px] lg:w-[320px]">
-            <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
-              <div className="box-border content-stretch flex flex-row gap-2 items-center justify-start p-0 relative shrink-0">
-                <div className="relative shrink-0 size-8">
+
+          {/* 프로필 정보 */}
+          <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 pt-12 md:pt-8">
+            <img
+              className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full mx-auto md:mx-0"
+              src={profile.imageUrl || '/assets/profile.svg'}
+              alt="Profile"
+            />
+            <div className="flex flex-col items-center md:items-start text-center md:text-left flex-1">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-2">
+                {profile.nickname}
+              </h1>
+              <p className="text-base md:text-lg text-gray-600 mb-4">
+                {profile.address}
+              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm md:text-base text-gray-700">친환경 점수</p>
+                <p className="text-lg md:text-xl font-semibold text-[#1aa752]">
+                  {ecoScore}점
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* FarmCoin 카드 */}
+          <div className="bg-[rgba(26,167,82,0.05)] border border-[#39bb6d] rounded-2xl p-4 md:p-6 mt-6 md:mt-8 w-full md:max-w-[320px] md:ml-auto">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7">
                   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
                     <path d="M12.8007 27.0677V17.105C9.94415 17.105 6.07622 16.5561 4.93359 9.73438C7.40928 9.99574 11.3486 10.8635 13.8298 14.7527C14.7275 12.8708 17.8616 9.73438 22.8891 9.73438C22.4811 13.2629 19.4939 17.105 15.054 17.105" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M12.6669 27.0881C6.02755 26.4199 0.844727 20.8148 0.844727 13.9993C0.844727 6.73369 6.73467 0.84375 14.0003 0.84375C21.2659 0.84375 27.1558 6.73369 27.1558 13.9993C27.1558 19.1568 24.188 23.6211 19.8669 25.7775" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
-                <div className="flex flex-col font-['Outfit:Medium',_sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#1aa752] text-[24px] text-left text-nowrap">
-                  <p className="block leading-[1.6] whitespace-pre">FarmCoin</p>
-                </div>
+                <h3 className="text-xl md:text-2xl font-medium text-[#1aa752]">FarmCoin</h3>
               </div>
-              <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[32px] text-left text-nowrap tracking-[-0.64px]">
-                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{coinBalance?.toLocaleString() || '0'}</p>
+              <div className="text-2xl md:text-3xl font-semibold text-[#1aa752] tracking-[-0.64px]">
+                {coinBalance?.toLocaleString() || '0'}
               </div>
             </div>
-            <div className="box-border content-stretch flex flex-row items-center justify-center p-0 relative shrink-0 cursor-pointer" onClick={() => navigate('/coin-charge')}>
-              <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left text-nowrap tracking-[-0.48px]">
-                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">충전하기</p>
-              </div>
-              <div className="flex items-center justify-center relative shrink-0">
-                <div className="flex-none">
-                  <div className="relative size-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
-                      <path d="M9 14.0508L15.5 8.00149L9 1.95219" stroke="#777777" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <button 
+              className="flex items-center justify-center gap-1 cursor-pointer w-full"
+              onClick={() => navigate('/coin-charge')}
+            >
+              <span className="text-base font-semibold text-[#777777] tracking-[-0.48px]">충전하기</span>
+              <ArrowIcon />
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="pl-4 pr-4 sm:pl-8 sm:pr-8 md:pl-16 md:pr-16 lg:pl-32 lg:pr-32 xl:pl-40 xl:pr-40 pt-18">
+      <div className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-8 md:pt-16">
         {/* 거래 리뷰 */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className={styles.tradeReviewTitle}>거래 리뷰</h1>
+          <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">거래 리뷰</h2>
           <button
-            className="cursor-pointer flex items-center gap-1"
-            style={{
-              color: '#777777',
-              fontFamily: 'Pretendard',
-              fontSize: '24px',
-              fontWeight: 400,
-              lineHeight: '150%',
-              letterSpacing: '-0.48px',
-            }}
+            className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
             onClick={() => navigate('/my-all-reviews')}
           >
             전체보기 <ArrowIcon />
@@ -203,94 +193,53 @@ export const MyPage = () => {
         <p className="text-gray-500 mb-16">아직 등록된 리뷰가 없습니다.</p>
 
         {/* 텃밭 탭 & 카드 */}
-        <div className="box-border flex flex-col gap-2 items-start w-full">
-          <div className="flex flex-col font-['Pretendard'] font-semibold text-[#000000] text-[32px] tracking-[-0.64px] w-full">
-            <p className="block">텃밭</p>
-          </div>
-          <div className="box-border content-stretch flex flex-row items-end justify-between p-0 relative shrink-0 w-full">
-            <div className="box-border content-stretch flex flex-row items-center justify-start leading-[0] p-0 relative shrink-0">
-              <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
-                <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 relative w-60">
-                  <div
-                    aria-hidden="true"
-                    className={`absolute border-solid inset-0 pointer-events-none ${
-                      farmToggle === 'my'
-                        ? 'border-[#1aa752] border-[0px_0px_4px]'
-                        : 'border-transparent'
-                    }`}
-                  />
-                </div>
+        <div className="flex flex-col gap-2 w-full">
+          <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">텃밭</h2>
+          <div className="flex items-end justify-between w-full">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
+              <div className="relative">
                 <button
-                  className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold h-[38.4px] justify-center leading-[0] ml-[87px] mt-[32.2px] not-italic relative text-[24px] text-left tracking-[-0.48px] translate-y-[-50%] w-[67px] cursor-pointer"
-                  style={{ color: farmToggle === 'my' ? '#000000' : '#bbbbbb' }}
+                  className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
+                    farmToggle === 'my'
+                      ? 'text-black border-[#1aa752]'
+                      : 'text-[#bbbbbb] border-transparent'
+                  }`}
                   onClick={() => setFarmToggle('my')}
                 >
-                  <p className="block leading-[1.5] whitespace-pre">내 텃밭</p>
+                  내 텃밭
                 </button>
               </div>
-              <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
-                <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 w-60">
-                  <div
-                    aria-hidden="true"
-                    className={`absolute border-solid inset-0 pointer-events-none ${
-                      farmToggle === 'renting'
-                        ? 'border-[#1aa752] border-[0px_0px_4px]'
-                        : 'border-transparent'
-                    }`}
-                  />
-                </div>
+              <div className="relative">
                 <button
-                  className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold justify-center leading-[0] ml-14 mt-8 not-italic relative text-[24px] text-left text-nowrap tracking-[-0.48px] translate-y-[-50%] cursor-pointer"
-                  style={{
-                    color: farmToggle === 'renting' ? '#000000' : '#bbbbbb',
-                  }}
+                  className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
+                    farmToggle === 'renting'
+                      ? 'text-black border-[#1aa752]'
+                      : 'text-[#bbbbbb] border-transparent'
+                  }`}
                   onClick={() => setFarmToggle('renting')}
                 >
-                  <p className="block leading-[1.5] whitespace-pre">
-                    대여중인 텃밭
-                  </p>
+                  대여중인 텃밭
                 </button>
               </div>
-              <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
-                <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 w-60">
-                  <div
-                    aria-hidden="true"
-                    className={`absolute border-solid inset-0 pointer-events-none ${
-                      farmToggle === 'bookmark'
-                        ? 'border-[#1aa752] border-[0px_0px_4px]'
-                        : 'border-transparent'
-                    }`}
-                  />
-                </div>
+              <div className="relative">
                 <button
-                  className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold justify-center leading-[0] ml-14 mt-8 not-italic relative text-[24px] text-left text-nowrap tracking-[-0.48px] translate-y-[-50%] cursor-pointer"
-                  style={{
-                    color: farmToggle === 'bookmark' ? '#000000' : '#bbbbbb',
-                  }}
+                  className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
+                    farmToggle === 'bookmark'
+                      ? 'text-black border-[#1aa752]'
+                      : 'text-[#bbbbbb] border-transparent'
+                  }`}
                   onClick={() => setFarmToggle('bookmark')}
                 >
-                  <p className="block leading-[1.5] whitespace-pre">
-                    북마크한 텃밭
-                  </p>
+                  북마크한 텃밭
                 </button>
               </div>
             </div>
-            <div className="box-border content-stretch flex flex-row items-center justify-center p-0 relative shrink-0">
-              <button
-                className="cursor-pointer flex items-center gap-1"
-                style={{
-                  color: '#777777',
-                  fontFamily: 'Pretendard',
-                  fontSize: '24px',
-                  fontWeight: 400,
-                  lineHeight: '150%',
-                  letterSpacing: '-0.48px',
-                }}
-                onClick={() => navigate('/my-all-farms')}
-              >
-                전체보기 <ArrowIcon />
-              </button>
-            </div>
+            <button
+              className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
+              onClick={() => navigate('/my-all-farms')}
+            >
+              전체보기 <ArrowIcon />
+            </button>
           </div>
         </div>
         <div className="h-6"></div>
@@ -316,82 +265,46 @@ export const MyPage = () => {
         </div>
 
         {/* 커뮤니티 */}
-        <div className="pt-18">
-          <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-full">
-            <div className="flex flex-col font-['Pretendard'] font-semibold justify-center leading-[1.5] not-italic relative shrink-0 text-[#000000] text-[32px] text-left tracking-[-0.64px] w-full">
-              <p className="block">커뮤니티</p>
-            </div>
-            <div className="box-border content-stretch flex flex-row items-end justify-between p-0 relative shrink-0 w-full">
-              <div className="box-border content-stretch flex flex-row items-center justify-start leading-[0] p-0 relative shrink-0">
-                <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
-                  <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 relative w-60">
-                    <div
-                      aria-hidden="true"
-                      className={`absolute border-solid inset-0 pointer-events-none ${
-                        communityToggle === 'written'
-                          ? 'border-[#1aa752] border-[0px_0px_4px]'
-                          : 'border-transparent'
-                      }`}
-                    />
-                  </div>
+        <div className="pt-16 md:pt-18">
+          <div className="flex flex-col gap-2 w-full">
+            <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">커뮤니티</h2>
+            <div className="flex items-end justify-between w-full">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
+                <div className="relative">
                   <button
-                    className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold h-[38.4px] justify-center leading-[0] ml-[87px] mt-[32.2px] not-italic relative text-[24px] text-left tracking-[-0.48px] translate-y-[-50%] w-[67px] cursor-pointer"
-                    style={{
-                      color:
-                        communityToggle === 'written' ? '#000000' : '#bbbbbb',
-                    }}
+                    className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
+                      communityToggle === 'written'
+                        ? 'text-black border-[#1aa752]'
+                        : 'text-[#bbbbbb] border-transparent'
+                    }`}
                     onClick={() => setCommunityToggle('written')}
                   >
-                    <p className="block leading-[1.5] whitespace-pre">
-                      작성 글
-                    </p>
+                    작성 글
                   </button>
                 </div>
-                <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
-                  <div className="[grid-area:1_/_1] bg-[#ffffff] h-16 ml-0 mt-0 w-60">
-                    <div
-                      aria-hidden="true"
-                      className={`absolute border-solid inset-0 pointer-events-none ${
-                        communityToggle === 'liked'
-                          ? 'border-[#1aa752] border-[0px_0px_4px]'
-                          : 'border-transparent'
-                      }`}
-                    />
-                  </div>
+                <div className="relative">
                   <button
-                    className="[grid-area:1_/_1] flex flex-col font-['Pretendard'] font-semibold justify-center leading-[0] ml-14 mt-8 not-italic relative text-[24px] text-left text-nowrap tracking-[-0.48px] translate-y-[-50%] cursor-pointer"
-                    style={{
-                      color:
-                        communityToggle === 'liked' ? '#000000' : '#bbbbbb',
-                    }}
+                    className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
+                      communityToggle === 'liked'
+                        ? 'text-black border-[#1aa752]'
+                        : 'text-[#bbbbbb] border-transparent'
+                    }`}
                     onClick={() => setCommunityToggle('liked')}
                   >
-                    <p className="block leading-[1.5] whitespace-pre">
-                      좋아요 누른 글
-                    </p>
+                    좋아요 누른 글
                   </button>
                 </div>
               </div>
-              <div className="box-border content-stretch flex flex-row items-center justify-center p-0 relative shrink-0">
-                <button
-                  className="cursor-pointer flex items-center gap-1"
-                  style={{
-                    color: '#777777',
-                    fontFamily: 'Pretendard',
-                    fontSize: '24px',
-                    fontWeight: 400,
-                    lineHeight: '150%',
-                    letterSpacing: '-0.48px',
-                  }}
-                  onClick={() =>
-                    navigate('/my-all-community', {
-                      state: { initialTab: communityToggle },
-                    })
-                  }
-                >
-                  전체보기 <ArrowIcon />
-                </button>
-              </div>
+              <button
+                className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
+                onClick={() =>
+                  navigate('/my-all-community', {
+                    state: { initialTab: communityToggle },
+                  })
+                }
+              >
+                전체보기 <ArrowIcon />
+              </button>
             </div>
           </div>
           <div className="h-6"></div>
@@ -419,6 +332,5 @@ export const MyPage = () => {
       {/* 챗봇 아이콘 */}
       <ChatbotIcon />
     </div>
-    </>
   );
 };

@@ -101,22 +101,22 @@ const FarmCard = ({ farm }) => {
       </div>
 
       {/* 카드 내용 */}
-      <div className="flex flex-col gap-6 pb-6 pt-4 px-6 w-full">
-        <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-3 md:gap-6 pb-4 md:pb-6 pt-3 md:pt-4 px-4 md:px-6 w-full">
+        <div className="flex flex-col gap-1 md:gap-2 w-full">
           {/* 제목과 면적 */}
           <div className="flex items-start justify-between w-full">
-            <div className="font-semibold text-2xl text-black tracking-[-0.48px] leading-[1.5]">
+            <div className="font-semibold text-lg md:text-2xl text-black tracking-[-0.48px] leading-[1.4] md:leading-[1.5]">
               {farm.title }
             </div>
-            <div className="font-normal text-sm text-[#777777] tracking-[-0.42px] leading-[1.5] text-right w-8 h-[25px] flex items-center justify-center">
+            <div className="font-normal text-xs md:text-sm text-[#777777] tracking-[-0.42px] leading-[1.5] text-right flex items-center justify-center">
               {farm.size || '-'}㎡
             </div>
           </div>
 
           {/* 주소 */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 md:gap-2">
             <LocationIcon />
-            <div className="font-normal text-base text-black tracking-[-0.48px] leading-[1.5]">
+            <div className="font-normal text-sm md:text-base text-black tracking-[-0.48px] leading-[1.5]">
               {farm.address}
             </div>
           </div>
@@ -125,19 +125,19 @@ const FarmCard = ({ farm }) => {
         {/* 하단 가격 및 버튼 섹션 */}
         <div className="flex items-end justify-between w-full">
           {/* 가격 정보 */}
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-1 md:gap-2">
             <div className="flex items-end gap-1">
-              <div className="font-semibold text-2xl text-[#1aa752] tracking-[-0.48px] leading-[1.5]">
+              <div className="font-semibold text-lg md:text-2xl text-[#1aa752] tracking-[-0.48px] leading-[1.5]">
                 {farm.price?.toLocaleString()}
               </div>
-              <div className="font-normal text-xl text-black tracking-[-0.6px] leading-[1.5] h-8 flex items-center w-[18px]">
+              <div className="font-normal text-base md:text-xl text-black tracking-[-0.6px] leading-[1.5] flex items-center">
                 원
               </div>
             </div>
-            <div className="font-normal text-xl text-black tracking-[-0.6px] leading-[1.5] h-[33px] flex items-center w-[7px]">
+            <div className="font-normal text-base md:text-xl text-black tracking-[-0.6px] leading-[1.5] flex items-center">
               /
             </div>
-            <div className="flex items-center gap-1 h-8 text-xl text-black tracking-[-0.6px] leading-[1.5]">
+            <div className="flex items-center gap-1 text-base md:text-xl text-black tracking-[-0.6px] leading-[1.5]">
               <div className="font-semibold">
                 {farm.rentalPeriod}
               </div>
@@ -147,10 +147,10 @@ const FarmCard = ({ farm }) => {
             </div>
           </div>
 
-          {/* 자세히 보기 버튼 */}
+          {/* 자세히 보기 버튼 - 데스크톱에서만 표시 */}
           <button
             onClick={handleDetailClick}
-            className="flex items-center gap-0 font-normal text-base text-[#777777] tracking-[-0.48px] leading-[1.5]"
+            className="hidden md:flex items-center gap-0 font-normal text-base text-[#777777] tracking-[-0.48px] leading-[1.5] cursor-pointer"
           >
             자세히 보기
             <ArrowIcon />

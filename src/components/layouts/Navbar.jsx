@@ -4,7 +4,7 @@ import { CoinDisplay } from '../common/CoinDisplay';
 import spacefarm_logo_image from '../../assets/spacefarm_logo_image.png?url';
 import chatIcon from '../../assets/chaticon.svg';
 import ChatbotIcon from '../common/ChatbotIcon';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useCoin } from '../../contexts/CoinContext';
 
@@ -38,6 +38,18 @@ export const Navbar = () => {
   const { isLoggedIn } = useAuth();
   const { coinBalance } = useCoin();
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [shouldHideMobileNavbar, setShouldHideMobileNavbar] = useState(false);
+
+  // body 클래스 변화 감지
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setShouldHideMobileNavbar(document.body.classList.contains('hide-mobile-navbar'));
+    });
+    
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, []);
 
   const handleSearch = (query) => {
     if (location.pathname === '/community') {
@@ -153,12 +165,22 @@ export const Navbar = () => {
               </button>
             </div>
 
-            {/* Search Icon */}
-            <button onClick={handleSearchIconClick} className="flex items-center justify-center shrink-0 size-6">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#1AA752" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+            {/* Right Section - Coin + Search */}
+            <div className="flex items-center gap-3">
+              {/* Coin Display for Mobile */}
+              {isLoggedIn && (
+                <div onClick={() => navigate('/coin-charge')} className="cursor-pointer">
+                  <CoinDisplay coinBalance={coinBalance} />
+                </div>
+              )}
+              
+              {/* Search Icon */}
+              <button onClick={handleSearchIconClick} className="flex items-center justify-center shrink-0 size-6">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#1AA752" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Expanded Search Bar */}
@@ -173,7 +195,7 @@ export const Navbar = () => {
       </nav>
 
       {/* Bottom Navigation Bar (Mobile) */}
-      <nav className="fixed bottom-[-10px] left-0 right-0 bg-white block sm:hidden z-50">
+      <nav className={`fixed bottom-[-10px] left-0 right-0 bg-white sm:hidden z-50 ${shouldHideMobileNavbar ? 'hidden' : 'block'}`}>
         <div className="box-border content-stretch flex items-end justify-center leading-[0] relative shadow-[0px_-4px_10px_0px_rgba(0,0,0,0.05)] w-full h-24">
           <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0">
             <div className="[grid-area:1_/_1] bg-[#ffffff] h-24 ml-0 mt-0 rounded-tl-[24px] w-[72px]" />

@@ -114,31 +114,31 @@ const RecommendFarmCard = ({ farm}) => {
       </div>
 
       {/* 카드 내용 */}
-      <div className="px-6 pt-4 pb-6">
+      <div className="px-4 md:px-6 pt-3 md:pt-4 pb-4 md:pb-6">
         {/* 상단 섹션 */}
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 md:gap-6">
+          <div className="flex flex-col gap-2 md:gap-4">
             {/* 지역 정보 */}
-            <div className="flex items-start text-base tracking-[-0.48px]">
+            <div className="flex items-start text-sm md:text-base tracking-[-0.48px]">
               <span className="font-semibold text-[#1aa752]">{locationInfo.text}</span>
               <span className="font-normal text-black">{locationInfo.suffix}</span>
             </div>
 
             {/* 제목과 면적 */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1 md:gap-2">
               <div className="flex justify-between items-start">
-                <h3 className="font-semibold text-2xl text-black tracking-[-0.48px] leading-[1.5]">
+                <h3 className="font-semibold text-lg md:text-2xl text-black tracking-[-0.48px] leading-[1.4] md:leading-[1.5]">
                   {farm.title}
                 </h3>
-                <span className="font-normal text-sm text-[#777777] tracking-[-0.42px] leading-[1.5]">
+                <span className="font-normal text-xs md:text-sm text-[#777777] tracking-[-0.42px] leading-[1.5]">
                   {farm.size || '-'}㎡
                 </span>
               </div>
 
               {/* 주소 */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
                 <LocationIcon />
-                <span className="font-normal text-base text-black tracking-[-0.48px] leading-[1.5]">
+                <span className="font-normal text-sm md:text-base text-black tracking-[-0.48px] leading-[1.5]">
                   {farm.address}
                 </span>
               </div>
@@ -148,26 +148,26 @@ const RecommendFarmCard = ({ farm}) => {
           {/* 하단 가격 및 버튼 섹션 */}
           <div className="flex justify-between items-end">
             {/* 가격 정보 */}
-            <div className="flex items-end gap-2">
+            <div className="flex items-end gap-1 md:gap-2">
               <div className="flex items-end gap-1">
-                <span className="font-semibold text-2xl text-[#1aa752] tracking-[-0.48px] leading-[1.5]">
+                <span className="font-semibold text-lg md:text-2xl text-[#1aa752] tracking-[-0.48px] leading-[1.5]">
                   {farm.price?.toLocaleString()}
                 </span>
-                <span className="font-normal text-xl text-black tracking-[-0.6px] leading-[1.5]">원</span>
+                <span className="font-normal text-base md:text-xl text-black tracking-[-0.6px] leading-[1.5]">원</span>
               </div>
-              <span className="font-normal text-xl text-black tracking-[-0.6px] leading-[1.5]">/</span>
-              <div className="flex items-center gap-1 h-8">
-                <span className="font-semibold text-xl text-black tracking-[-0.6px] leading-[1.5]">
+              <span className="font-normal text-base md:text-xl text-black tracking-[-0.6px] leading-[1.5]">/</span>
+              <div className="flex items-center gap-1">
+                <span className="font-semibold text-base md:text-xl text-black tracking-[-0.6px] leading-[1.5]">
                   {farm.rentalPeriod}
                 </span>
-                <span className="font-normal text-xl text-black tracking-[-0.6px] leading-[1.5]">일</span>
+                <span className="font-normal text-base md:text-xl text-black tracking-[-0.6px] leading-[1.5]">일</span>
               </div>
             </div>
 
-            {/* 자세히 보기 버튼 */}
+            {/* 자세히 보기 버튼 - 데스크톱에서만 표시 */}
             <button
               onClick={handleDetailClick}
-              className="flex items-center gap-1 text-base text-[#777777] tracking-[-0.48px] leading-[1.5]"
+              className="hidden md:flex items-center gap-1 text-base text-[#777777] tracking-[-0.48px] leading-[1.5] cursor-pointer"
             >
               <span>자세히 보기</span>
               <ArrowIcon />

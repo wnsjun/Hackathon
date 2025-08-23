@@ -40,7 +40,7 @@ export const Community = () => {
         const transformSearchResults = (results) => (results || []).map(post => ({
           id: post.id,
           title: post.title,
-          content: post.content || '내용 없음',
+          content: post.content,
           username: post.authorNickname,
           image: post.thumbnailUrl,
           likes: post.likeCount,
@@ -78,7 +78,7 @@ export const Community = () => {
         const transformedFeedPosts = (feedPosts || []).map(post => ({
           id: post.id,
           title: post.title,
-          content: post.content || '내용 없음',
+          content: post.content,
           username: post.authorNickname,
           image: post.thumbnailUrl,
           likes: post.likeCount,
@@ -89,7 +89,7 @@ export const Community = () => {
         const transformedTipPosts = (tipPosts || []).map(post => ({
           id: post.id,
           title: post.title,
-          content: post.content || '내용 없음',
+          content: post.content,
           username: post.authorNickname,
           image: post.thumbnailUrl,
           likes: post.likeCount,

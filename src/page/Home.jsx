@@ -36,9 +36,10 @@ const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  // 화면 크기에 따라 추천 매물 개수 결정 (항상 2개로 고정)
+  // 화면 크기에 따라 추천 매물 개수 결정
   const getRecommendedCount = () => {
-    return 2;
+    // md 이상일 때 3개, 미만일 때 2개
+    return window.innerWidth >= 768 ? 3 : 2;
   };
 
   // 랜덤으로 선택하는 함수
@@ -222,23 +223,39 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 py-6 pt-32">
         {/* 배너 섹션 */}
-        <div className="mb-8">
+        <div className="mb-8 relative">
         <img
           src={banner}
           alt="SpaceFarm 텃밭 대여 서비스"
-          className="w-full max-w-[1440px] aspect-[1440/437] flex-shrink-0 object-cover rounded-xl"
+          className="w-full max-w-[1440px] aspect-[1440/437] md:aspect-[1440/437] flex-shrink-0 object-cover rounded-xl"
         />
+        {/* 배너 위 텍스트 오버레이 */}
+        <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8">
+          <div className="flex flex-col gap-2 md:gap-4">
+            <h1 className="text-white text-lg md:text-3xl font-bold md:font-semibold">
+              도시에 심어요, 나만의 작은 밭
+            </h1>
+            <div className="hidden md:block">
+              <p className="text-white text-base font-normal leading-relaxed">
+                버려진 옥상, 마당, 자투리 공간을 나만의 텃밭으로.
+              </p>
+              <p className="text-white text-base font-normal leading-relaxed">
+                공간을 나누고, 초록을 가꾸며 도시 속 자연을 되찾아요.
+              </p>
+            </div>
+          </div>
+        </div>
         </div>
 
         {/* 추천 섹션 - 로그인 상태일 때만 표시 */}
         {isLoggedIn && (
           <div className="mb-10">
           <div className="flex justify-between items-center mb-6">
-            <div className="flex">
-            <h2 className="text-2xl font-bold text-[#1AA752]">
+            <div className="flex items-center">
+              <h2 className="text-xl md:text-2xl font-bold text-[#1AA752]">
                 {nickname}
               </h2>
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 ml-1">
                 님만을 위한 텃밭이에요
               </h2>
             </div>
@@ -246,7 +263,7 @@ const Home = () => {
                 onClick={handleViewAllRecommendationsClick}
                 className="text-sm text-[#777] font-medium flex items-center gap-1 transition-colors cursor-pointer"
               >
-                새로고침
+                <span className="hidden md:inline">새로고침</span>
                 <svg className="w-4 h-4 text-[#777]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M21 3v5h-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -256,7 +273,7 @@ const Home = () => {
               </button>
             </div>
             {Array.isArray(displayedRecommendedFarms) && displayedRecommendedFarms.length > 0 ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                 {displayedRecommendedFarms.map((farm) => (
                   <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
                 ))}
@@ -276,24 +293,32 @@ const Home = () => {
         )}
 
         {/* 텃밭 매물 확인 섹션 */}
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">텃밭 매물 확인</h2>
-            <Button 
+        <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">텃밭 매물 확인</h2>
+            
+            {/* 모바일에서는 간단한 텍스트 버튼 */}
+            <button 
               onClick={handleRegisterFarmClick}
-              variant="farm"
+              className="md:hidden text-sm font-semibold text-[#1aa752] flex items-center gap-1"
             >
-              매물 등록
-            </Button>
+              매물 등록 
+              <span className="text-[#1aa752] text-lg">+</span>
+            </button>
+            
+            {/* 데스크톱에서는 Button 컴포넌트 */}
+            <div className="hidden md:block">
+              <Button onClick={handleRegisterFarmClick} variant="farm">매물 등록</Button>
+            </div>
           </div>
 
           {/* 필터 버튼들 */}
-          <div className="flex flex-wrap gap-2 sm:gap-3 mb-8">
+          <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-8">
             {Object.entries(filters).map(([key, value]) => (
               <div key={key} className="relative">
                 <button
                   onClick={() => handleFilterDropdownChange(key)}
-                  className={`cursor-pointer px-3 py-2 border rounded-lg text-xs sm:text-sm flex items-center gap-1 sm:gap-2 transition-colors bg-white ${
+                  className={`cursor-pointer w-full px-3 py-2 border rounded-lg text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 transition-colors bg-white ${
                     openFilter === key 
                       ? 'border-green-400 text-green-600' 
                       : 'border-gray-300 text-gray-700 hover:border-green-400 hover:text-green-600'
@@ -385,7 +410,7 @@ const Home = () => {
               <p className="text-gray-400 text-sm">필터 조건을 변경해보세요</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {filteredFarms.map((farm) => (
                 <FarmCard key={farm.id} farm={farm} isRecommended={false} />
               ))}

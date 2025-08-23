@@ -59,7 +59,7 @@ export const uploadImages = async ({ chatRoomId, files }) => {
   }
 };
 
-// 채팅방 생성 또는 조회
+// 채팅방 생성 또는 조회 (기존)
 export const createOrGetRoom = async ({ consumerId, providerId, farmId }) => {
   try {
     const res = await axiosInstance.post('/chat/room', {
@@ -70,6 +70,31 @@ export const createOrGetRoom = async ({ consumerId, providerId, farmId }) => {
     return res.data;
   } catch (err) {
     console.error('채팅방 생성/조회 실패:', err);
+    throw err;
+  }
+};
+
+// 채팅방 생성 (새 엔드포인트)
+export const createChatRoom = async ({ providerId, farmId }) => {
+  try {
+    const res = await axiosInstance.post('/chat/room', {
+      providerId,
+      farmId,
+    });
+    return res.data;
+  } catch (err) {
+    console.error('채팅방 생성 실패:', err);
+    throw err;
+  }
+};
+
+// 채팅방 텃밭 정보 조회
+export const getChatRoomFarm = async (chatRoomId) => {
+  try {
+    const res = await axiosInstance.get(`/chat/room/${chatRoomId}/farm`);
+    return res.data;
+  } catch (err) {
+    console.error('채팅방 텃밭 정보 조회 실패:', err);
     throw err;
   }
 };

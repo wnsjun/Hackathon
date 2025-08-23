@@ -15,12 +15,11 @@ import {
 } from '../apis/chatApi';
 import ChatRoomList from '../components/common/chat/ChatRoomList';
 import ChatMessage from '../components/common/chat/ChatMessage';
+import ChatFarmInfo from '../components/common/chat/ChatFarmInfo';
 
 import ChatIcon from '../assets/chaticon.svg';
 import profile from '../assets/profile.svg';
 import right from '../assets/right-icon.svg';
-import picture from '../assets/picture-icon.svg';
-import vector from '../assets/Vector.svg';
 
 const ChatPage = () => {
   const navigate = useNavigate();
@@ -66,6 +65,8 @@ const ChatPage = () => {
   const [page, setPage] = useState(0);
   const [last, setLast] = useState(true);
   const [input, setInput] = useState('');
+  const [isMobileView, setIsMobileView] = useState(false); // 모바일에서 채팅 상세 보기 상태
+  const [showFarmInfo, setShowFarmInfo] = useState(false); // 모바일에서 농장 정보 보기 상태
 
   const listRef = useRef(null);
   const endRef = useRef(null);
@@ -371,12 +372,45 @@ const ChatPage = () => {
     [messages, userNickname]
   );
 
+  // 모바일에서 채팅 선택 시 상세 뷰로 전환
+  const handleChatSelect = (room) => {
+    setSelected(room);
+    // 모바일에서는 채팅 상세 화면으로 전환
+    setIsMobileView(true);
+  };
+
+  // 뒤로가기 버튼 클릭 시
+  const handleBackToList = () => {
+    setIsMobileView(false);
+    setSelected(null);
+    setShowFarmInfo(false); // 농장 정보 모달도 닫기
+  };
+
+  // body에 클래스 추가/제거로 navbar 제어
+  useEffect(() => {
+    if (isMobileView) {
+      document.body.classList.add('hide-mobile-navbar');
+    } else {
+      document.body.classList.remove('hide-mobile-navbar');
+    }
+    
+    return () => {
+      document.body.classList.remove('hide-mobile-navbar');
+    };
+  }, [isMobileView]);
+
   return (
-    <div className="flex flex-col lg:flex-row flex-1 bg-white h-screen my-20 px-2 sm:px-4 lg:px-0">
-      <aside className="w-full lg:w-[331px] h-[200px] lg:h-[774px] bg-white m-2 sm:m-6 lg:m-12 p-4 lg:p-6 flex-shrink-0 overflow-y-auto">
-        <div className="flex items-center gap-4 border-b border-gray-400">
+    <div className="flex flex-col lg:flex-row flex-1 bg-white h-screen pt-20">
+      {/* 모바일: 채팅 목록만 보이거나 채팅 상세만 보임 */}
+      {/* 데스크톱: 항상 둘 다 보임 */}
+      
+      {/* 채팅 목록 - 모바일에서는 상세뷰가 아닐 때만, 데스크톱에서는 항상 */}
+      <aside className={`${
+        isMobileView ? 'hidden lg:flex' : 'flex'
+      } w-full lg:w-[331px] flex-col bg-white ${isMobileView ? '' : 'px-4 pt-4 pb-4'} lg:m-12 lg:p-6 lg:h-[774px] flex-shrink-0 overflow-y-auto`}>
+        <div className="flex items-center gap-4 border-b border-gray-200 pb-4 mb-4">
           <img src={ChatIcon} alt="chat" className="w-7 h-6" />
-          <h2 className="mb-4 text-2xl font-semibold text-gray-700">
+          <h2 className="text-xl lg:text-2xl font-semibold text-gray-700">
             채팅 목록
           </h2>
         </div>
@@ -384,20 +418,52 @@ const ChatPage = () => {
         <ChatRoomList
           rooms={rooms}
           selectedId={selected?.chatroomId}
-          onSelect={setSelected}
+          onSelect={handleChatSelect}
           userId={userId}
           userNickname={userNickname}
         />
+
+        {/* 선택된 채팅방의 텃밭 정보 - 데스크톱에서만 */}
+        {selected?.chatroomId && (
+          <div className="hidden lg:block">
+            <ChatFarmInfo chatRoomId={selected.chatroomId} />
+          </div>
+        )}
       </aside>
 
+      {/* 채팅 상세 화면 */}
       <section
-        /*채팅창*/
-        className="flex flex-col pb-6 m-2 sm:m-6 lg:m-12 p-4 sm:p-6 lg:p-8 bg-white border border-[#BBB] rounded-[24px] sm:rounded-[36px] lg:rounded-[48px] shadow-[0_4px_20px_0_rgba(0,0,0,0.10)] flex-1"
-        style={{ minHeight: '400px' }}
+        className={`${
+          !isMobileView ? 'hidden lg:flex' : 'flex'
+        } flex-col bg-white flex-1 h-screen`}
       >
         {selected ? (
           <>
-            <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6 flex-wrap">
+            {/* 모바일 헤더 (뒤로가기 버튼 포함) */}
+            <div className="lg:hidden fixed top-20 left-0 right-0 bg-white flex items-center justify-between px-4 py-3 border-b border-gray-200 z-40">
+              <button onClick={handleBackToList} className="p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 18L9 12L15 6" stroke="#111111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <h1 className="text-base font-semibold text-black tracking-[-0.48px]">
+                채팅
+              </h1>
+              <div className="w-10 h-10 flex items-center justify-center">
+                <button 
+                  className="p-2"
+                  onClick={() => setShowFarmInfo(!showFarmInfo)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="#BBBBBB" strokeWidth="1.5"/>
+                    <path d="M12 8v4M12 16h.01" stroke="#BBBBBB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* 데스크톱 헤더 */}
+            <div className="hidden lg:flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6 flex-wrap px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8">
               <img
                 src={
                   selected.provider?.nickname === userNickname
@@ -424,59 +490,116 @@ const ChatPage = () => {
               </button>
             </div>
 
-            <div ref={listRef} className="flex-1 overflow-y-auto mb-4">
+            {/* 모바일 채팅 상대방 정보 */}
+            <div className="lg:hidden fixed top-[134px] left-0 right-0 bg-white flex items-center justify-between px-5 py-4 border-b border-gray-100 z-30">
+              <div className="flex items-center gap-2">
+                <img
+                  src={
+                    selected.provider?.nickname === userNickname
+                      ? selected.consumer?.profileImage || profile
+                      : selected.provider?.profileImage || profile
+                  }
+                  alt="profile"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+                <span className="text-black font-semibold text-xl leading-[1.5] tracking-[-0.6px]">
+                  {selected.provider?.nickname === userNickname
+                    ? selected.consumer?.nickname
+                    : selected.provider?.nickname}
+                </span>
+              </div>
+              <button
+                onClick={() => navigate('/credit')}
+                className="flex items-center gap-1 text-[#1aa752] font-semibold text-base tracking-[-0.48px]"
+              >
+                결제하기
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 12L10 8L6 4" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* 채팅 메시지 영역 */}
+            <div ref={listRef} className="flex-1 overflow-y-auto px-5 pt-[120px] lg:pt-0 lg:px-4 lg:mb-4">
               <div ref={topSentinelRef} />
-              {renderedMessages}
+              <div className="flex flex-col gap-4 pt-6">
+                {renderedMessages}
+              </div>
               <div ref={endRef} />
             </div>
 
             {/* 채팅 입력 바 */}
-            <div className="flex h-[48px] sm:h-[56px] lg:h-[64px] px-4 sm:px-6 lg:px-[32px] pr-3 sm:pr-4 lg:pr-[24px] justify-between items-center rounded-full border border-[#1AA752]">
-              {/* placeholder 텍스트 */}
-              <input
-                type="text"
-                className="flex-1 bg-transparent outline-none 
-             placeholder:text-[#BBB] placeholder:font-pretendard 
-             placeholder:text-[14px] sm:placeholder:text-[16px] lg:placeholder:text-[20px] placeholder:font-normal 
-             placeholder:leading-[1.5] placeholder:tracking-[-0.6px]"
-                placeholder="채팅을 입력하세요."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-              />
-
-              {/* 이미지 버튼 */}
-              <label className="flex items-center ml-2 sm:ml-3 cursor-pointer">
-                <img src={picture} alt="img" className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
+            <div className="px-5 py-3 lg:px-4 lg:py-0">
+              <div className="flex h-[48px] sm:h-[56px] lg:h-[64px] px-6 lg:px-[32px] pr-4 lg:pr-[24px] justify-between items-center rounded-full border border-[#1AA752]">
+                {/* placeholder 텍스트 */}
                 <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  onChange={onPickImages}
+                  type="text"
+                  className="flex-1 bg-transparent outline-none 
+                placeholder:text-[#BBB] placeholder:font-pretendard 
+                placeholder:text-[14px] sm:placeholder:text-[16px] lg:placeholder:text-[20px] placeholder:font-normal 
+                placeholder:leading-[1.5] placeholder:tracking-[-0.6px]"
+                  placeholder="채팅을 입력하세요."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
                 />
-              </label>
 
-              {/* 전송 버튼 */}
-              <label
-                className="ml-2 sm:ml-3 text-[#1AA752] font-semibold cursor-pointer"
-                onClick={handleSend}
-              >
-                <img src={vector} alt="img" className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
-              </label>
+                {/* 이미지 버튼 */}
+                <label className="flex items-center ml-2 cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" fill="#1AA752"/>
+                  </svg>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={onPickImages}
+                  />
+                </label>
+
+                {/* 전송 버튼 */}
+                <button
+                  className="ml-2 text-[#1AA752] font-semibold cursor-pointer"
+                  onClick={handleSend}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M9.912 12H3L2.023 4.135A.662.662 0 0 1 2.5 3.2L21.5 11.5A.75.75 0 0 1 21.5 12.5L2.5 20.8A.662.662 0 0 1 2.023 19.865L3 12Z" fill="#1AA752"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           </>
         ) : (
-          <p className="text-center text-gray-400 mt-20">
-            채팅방을 선택해주세요.
-          </p>
+          <div className="hidden lg:flex flex-1 items-center justify-center">
+            <p className="text-center text-gray-400">
+              채팅방을 선택해주세요.
+            </p>
+          </div>
         )}
       </section>
+
+      {/* 모바일 농장 정보 팝업 - 헤더 아래 드롭다운 형태 */}
+      {showFarmInfo && selected?.chatroomId && (
+        <div className="fixed top-[188px] left-0 right-0 bg-white shadow-lg z-50 lg:hidden max-h-[60vh] overflow-y-auto">
+          {/* 안내 텍스트 */}
+          <div className="px-5 py-4 border-b border-gray-100">
+            <p className="text-sm text-gray-600">
+              현재 대화를 나누고 있는 텃밭이에요.
+            </p>
+          </div>
+          
+          {/* 농장 정보 */}
+          <div className="px-5 py-4">
+            <ChatFarmInfo chatRoomId={selected.chatroomId} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

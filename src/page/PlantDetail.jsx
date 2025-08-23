@@ -6,7 +6,7 @@ import FarmReview from '../components/common/FarmReview';
 import { fetchFarmById } from '../apis/home';
 import { fetchReviewsByFarmId } from '../apis/reviewApi';
 import { toggleBookmark, removeBookmark } from '../apis/bookmark';
-import { createOrGetRoom } from '../apis/chatApi';
+import { createChatRoom } from '../apis/chatApi';
 import profile from '../assets/profile.png';
 
 const PlantDetail = () => {
@@ -91,8 +91,46 @@ const PlantDetail = () => {
     }
   };
 
-  const handleChatButtonClick = () => {
-    navigate('/chat');
+  const handleChatButtonClick = async () => {
+    // 로그인 체크
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+
+    // farmData가 없으면 리턴
+    if (!farmData) {
+      alert('매물 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
+    try {
+      // 요청 데이터 확인
+      console.log('farmData:', farmData);
+      console.log('providerId:', farmData.owner?.userId);
+      console.log('farmId:', farmData.id);
+      
+      // 채팅방 생성
+      const response = await createChatRoom({
+        providerId: farmData.owner.userId,
+        farmId: farmData.id
+      });
+      
+      console.log('채팅방 생성 성공:', response);
+      
+      // 생성된 채팅방 ID와 함께 채팅 페이지로 이동
+      navigate('/chat', { 
+        state: { 
+          chatRoomId: response.chatRoomId,
+          farmData: farmData 
+        } 
+      });
+    } catch (error) {
+      console.error('채팅방 생성 실패:', error);
+      alert('채팅방 생성에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
 
