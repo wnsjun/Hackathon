@@ -174,12 +174,12 @@ const AddFarm = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-white min-h-screen pt-32">
-        <div className="max-w-[1440px] mx-auto px-40 py-8">
+      <div className="bg-white min-h-screen pt-20 md:pt-32 pb-24 md:pb-8">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-40 py-4 md:py-8">
           {/* Header */}
-          <div className="flex justify-between items-center mb-12">
-            <h1 className="text-[32px] font-semibold text-black leading-[1.5] tracking-[-0.64px]">텃밭 매물 등록</h1>
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4">
+            <h1 className="text-[24px] md:text-[32px] font-semibold text-black leading-[1.5] tracking-[-0.64px]">텃밭 매물 등록</h1>
+            <div className="hidden md:flex items-center gap-4">
               {isFormValid() && (
                 <div className="flex items-center gap-1 text-[#1aa752]">
                   <span className="text-[16px] font-semibold">친환경 점수 +10</span>
@@ -195,7 +195,224 @@ const AddFarm = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-8">
+          {/* Mobile Layout - md 이하에서만 표시 */}
+          <div className="md:hidden flex flex-col space-y-6">
+            {/* Address - 첫 번째로 위치 */}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <LocationIcon />
+                <label className="text-[16px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">주소</label>
+              </div>
+              <div className="border-b border-[#bbbbbb] pb-3">
+                <input
+                  type="text"
+                  placeholder="주소를 입력하세요."
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full font-semibold text-[16px] text-[#111111] tracking-[-0.6px] bg-transparent outline-none placeholder-[#bbbbbb]"
+                />
+              </div>
+            </div>
+
+            {/* Price and Period - 두 번째로 위치 (한 줄에 배치) */}
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Price */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <WonIcon />
+                    <label className="text-[16px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">가격</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="border-b border-[#bbbbbb] pb-1 flex-1">
+                      <input
+                        type="number"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        className="w-full text-[24px] font-semibold text-[#111111] text-right tracking-[-0.64px] bg-transparent outline-none"
+                      />
+                    </div>
+                    <span className="text-[18px] text-[#111111] tracking-[-0.48px]">원</span>
+                  </div>
+                </div>
+
+                {/* Period */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <DateIcon />
+                    <label className="text-[16px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">대여 기간</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="border-b border-[#bbbbbb] pb-1 flex-1">
+                      <input
+                        type="number"
+                        value={rentalPeriod}
+                        onChange={(e) => setRentalPeriod(e.target.value)}
+                        className="w-full text-[24px] font-semibold text-[#111111] text-right tracking-[-0.64px] bg-transparent outline-none"
+                      />
+                    </div>
+                    <span className="text-[18px] text-[#111111] tracking-[-0.48px]">일</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 면적 - 세 번째로 위치 */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <AreaIcon />
+                <label className="text-[18px] font-semibold text-black leading-[1.5] tracking-[-0.6px]">평수</label>
+              </div>
+              <div className="space-y-2">
+                <div className="relative">
+                  <div className="bg-[#f7f7f7] h-2 rounded-full"></div>
+                  <div className="bg-[#1aa752] h-2 rounded-full absolute top-0 left-0" style={{ width: `${(area / 100) * 100}%` }}></div>
+                  <div className="absolute -top-4 left-0 w-10 h-10" style={{ left: `${(area / 100) * 100}%`, transform: 'translateX(-50%)' }}>
+                    <SliderHandle />
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={area}
+                    onChange={handleAreaChange}
+                    className="absolute top-0 left-0 w-full h-2 opacity-0 cursor-pointer"
+                  />
+                </div>
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[16px] font-semibold text-black tracking-[-0.48px]">{area}</span>
+                    <span className="text-[16px] text-black tracking-[-0.48px]">㎡</span>
+                  </div>
+                </div>
+                <p className="text-[14px] text-[#777777] leading-[1.5] tracking-[-0.42px]">측정이 어려울 경우 대략적인 크기를 입력해주세요.</p>
+              </div>
+            </div>
+
+            {/* 테마 - 네 번째로 위치 */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <ThemeIcon />
+                <label className="text-[18px] font-semibold text-[#111111] leading-[1.5] tracking-[-0.6px]">테마</label>
+              </div>
+              <div className="space-y-2">
+                {themes.map((theme) => (
+                  <div key={theme.id} className="flex items-center justify-between py-3">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle 
+                        checked={selectedTheme === theme.id}
+                        onChange={() => setSelectedTheme(selectedTheme === theme.id ? '' : theme.id)}
+                      />
+                      <span className="text-[14px] font-semibold text-[#111111] tracking-[-0.48px]">{theme.name}</span>
+                    </div>
+                    <span className="text-[12px] text-[#777777] tracking-[-0.42px] text-right flex-1 ml-4">{theme.description}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Image Upload - 다섯 번째로 위치 */}
+            <div className="bg-[#f7f7f7] min-h-[300px] rounded-2xl p-4">
+              {imagePreviews.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4 h-full">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img 
+                        src={preview} 
+                        alt={`Preview ${index + 1}`} 
+                        className="w-full h-[200px] object-cover rounded-lg"
+                      />
+                      <button
+                        onClick={() => removeImage(index)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {imagePreviews.length < 4 && (
+                    <div 
+                      className="border-2 border-dashed border-[#bbbbbb] rounded-lg flex flex-col items-center justify-center cursor-pointer h-[200px] hover:border-[#1aa752] transition-colors"
+                      onClick={() => document.getElementById('imageUpload').click()}
+                    >
+                      <div className="w-8 h-8 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 20" fill="none">
+                          <path d="M19.2002 3.5293H22C23.1045 3.5293 23.9999 4.42478 24 5.5293V18C24 19.1046 23.1046 20 22 20H2C0.895431 20 0 19.1046 0 18V5.5293C6.25466e-05 4.42478 0.895469 3.5293 2 3.5293H4.7998L7.2002 0H16.7998L19.2002 3.5293ZM12 7.05957C9.34912 7.05967 7.2002 9.1667 7.2002 11.7656L7.20605 12.0078C7.3308 14.4136 9.29893 16.3428 11.7529 16.4648L12 16.4717C14.5677 16.4714 16.6651 14.4938 16.7939 12.0078L16.7998 11.7656C16.7998 9.1668 14.6507 7.05983 12 7.05957ZM12 8.55957C13.8504 8.55983 15.2998 10.0231 15.2998 11.7656C15.2994 13.5079 13.8502 14.9714 12 14.9717C10.1496 14.9716 8.70056 13.508 8.7002 11.7656C8.7002 10.023 10.1494 8.55967 12 8.55957ZM10.8008 3.36816C10.3866 3.36816 10.0508 3.70395 10.0508 4.11816C10.051 4.53215 10.3867 4.86816 10.8008 4.86816H13.2012L13.2773 4.86426C13.6552 4.82572 13.9509 4.50616 13.9512 4.11816C13.9512 3.72998 13.6553 3.41067 13.2773 3.37207L13.2012 3.36816H10.8008Z" fill="#777777"/>
+                        </svg>
+                      </div>
+                      <p className="text-[12px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
+                        + 사진 추가
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div 
+                  className="h-[300px] flex flex-col items-center justify-center cursor-pointer"
+                  onClick={() => document.getElementById('imageUpload').click()}
+                >
+                  <div className="w-8 h-8 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 20" fill="none">
+                      <path d="M19.2002 3.5293H22C23.1045 3.5293 23.9999 4.42478 24 5.5293V18C24 19.1046 23.1046 20 22 20H2C0.895431 20 0 19.1046 0 18V5.5293C6.25466e-05 4.42478 0.895469 3.5293 2 3.5293H4.7998L7.2002 0H16.7998L19.2002 3.5293ZM12 7.05957C9.34912 7.05967 7.2002 9.1667 7.2002 11.7656L7.20605 12.0078C7.3308 14.4136 9.29893 16.3428 11.7529 16.4648L12 16.4717C14.5677 16.4714 16.6651 14.4938 16.7939 12.0078L16.7998 11.7656C16.7998 9.1668 14.6507 7.05983 12 7.05957ZM12 8.55957C13.8504 8.55983 15.2998 10.0231 15.2998 11.7656C15.2994 13.5079 13.8502 14.9714 12 14.9717C10.1496 14.9716 8.70056 13.508 8.7002 11.7656C8.7002 10.023 10.1494 8.55967 12 8.55957ZM10.8008 3.36816C10.3866 3.36816 10.0508 3.70395 10.0508 4.11816C10.051 4.53215 10.3867 4.86816 10.8008 4.86816H13.2012L13.2773 4.86426C13.6552 4.82572 13.9509 4.50616 13.9512 4.11816C13.9512 3.72998 13.6553 3.41067 13.2773 3.37207L13.2012 3.36816H10.8008Z" fill="#777777"/>
+                    </svg>
+                  </div>
+                  <p className="text-[12px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
+                    사진을 선택해주세요. (최대 4장)
+                  </p>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="hidden"
+                id="imageUpload"
+              />
+            </div>
+
+            {/* Farm Name and Description - 여섯 번째와 일곱 번째로 위치 */}
+            <div className="space-y-6">
+              <div className="border-b border-[#bbbbbb] pb-2">
+                <input
+                  type="text"
+                  placeholder="텃밭 이름을 입력하세요"
+                  value={farmName}
+                  onChange={(e) => setFarmName(e.target.value)}
+                  className="w-full text-[24px] font-semibold text-[#111111] tracking-[-0.72px] bg-transparent outline-none placeholder-[#bbbbbb]"
+                />
+              </div>
+              <div className="border-b border-[#bbbbbb] pb-2">
+                <textarea
+                  placeholder="텃밭 설명을 입력하세요"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full text-[16px] text-[#111111] tracking-[-0.6px] bg-transparent outline-none placeholder-[#bbbbbb] resize-none h-16"
+                />
+              </div>
+            </div>
+
+            {/* Mobile Submit Button */}
+            <div className="flex flex-col gap-4 mt-8">
+              {isFormValid() && (
+                <div className="flex items-center justify-center gap-1 text-[#1aa752]">
+                  <span className="text-[14px] font-semibold">친환경 점수 +50</span>
+                </div>
+              )}
+              <Button
+                onClick={handleSubmit}
+                variant="farm"
+                disabled={!isFormValid() || isSubmitting}
+                className="w-full h-12 rounded-lg"
+                showIcon={false}
+              >
+                {isSubmitting ? '등록 중...' : '등록하기'}
+              </Button>
+            </div>
+          </div>
+
+          {/* Desktop Layout - md 이상에서만 표시 */}
+          <div className="hidden md:grid grid-cols-3 gap-8">
             {/* Left Column - Main Form */}
             <div className="col-span-2 space-y-8">
               {/* Address */}

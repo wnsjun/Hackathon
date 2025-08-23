@@ -221,7 +221,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 py-6 pt-32">
+      <div className="px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 py-6 pt-24">
         {/* 배너 섹션 */}
         <div className="mb-8 relative">
         <img
@@ -274,7 +274,7 @@ const Home = () => {
             </div>
             {Array.isArray(displayedRecommendedFarms) && displayedRecommendedFarms.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                {displayedRecommendedFarms.map((farm) => (
+                {displayedRecommendedFarms.filter(farm => farm.isAvailable !== false).map((farm) => (
                   <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
                 ))}
               </div>

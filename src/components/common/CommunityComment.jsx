@@ -91,7 +91,7 @@ const CommunityComment = ({ comments = [], onCommentSubmit, isSubmitting = false
                 <div className="flex flex-row items-center justify-between w-full">
                   <div className="flex flex-row gap-2 items-center">
                     <div className="size-8">
-                      <img alt="" className="block max-w-none size-full" height="32" src={imgEllipse83} width="32" />
+                      <img alt="" className="block max-w-none size-full object-cover rounded-full" height="32" src={comment.profileImage || imgEllipse83} width="32" />
                     </div>
                     <div className="flex flex-row gap-2 items-end">
                       <div className="font-semibold text-base text-neutral-900 tracking-[-0.48px]">

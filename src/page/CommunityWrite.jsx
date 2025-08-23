@@ -102,14 +102,14 @@ export const CommunityWrite = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-white min-h-screen pt-32">
-        <div className="max-w-[1440px] mx-auto px-40 py-8">
+      <div className="bg-white min-h-screen pt-20 md:pt-32 pb-24 md:pb-8">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-40 py-4 md:py-8">
           {/* Header */}
-          <div className="flex items-center justify-between mb-12">
-            <h1 className="text-[32px] font-semibold text-black leading-[1.5] tracking-[-0.64px]">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4">
+            <h1 className="text-[24px] md:text-[32px] font-semibold text-black leading-[1.5] tracking-[-0.64px]">
               {getPageTitle()}
             </h1>
-            <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-4">
               {/* Eco Score Display */}
               {isFormValid() && (
                 <div className="flex items-center gap-1 text-[#1aa752]">
@@ -133,8 +133,108 @@ export const CommunityWrite = () => {
             </div>
           </div>
 
-          {/* Content */}
-          <div className="flex flex-col gap-12 w-[739px]">
+          {/* Mobile Layout - md 이하에서만 표시 */}
+          <div className="md:hidden flex flex-col space-y-6">
+            {/* Image Upload - 첫 번째로 위치 */}
+            <div className="bg-[#f7f7f7] min-h-[300px] rounded-2xl p-4">
+              {imagePreviews.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4 h-full">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img 
+                        src={preview} 
+                        alt={`Preview ${index + 1}`} 
+                        className="w-full h-[200px] object-cover rounded-lg"
+                      />
+                      <button
+                        onClick={() => removeImage(index)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {imagePreviews.length < 4 && (
+                    <div 
+                      className="border-2 border-dashed border-[#bbbbbb] rounded-lg flex flex-col items-center justify-center cursor-pointer h-[200px] hover:border-[#1aa752] transition-colors"
+                      onClick={() => document.getElementById('mobileImageUpload').click()}
+                    >
+                      <div className="w-8 h-8">
+                        <CameraIcon />
+                      </div>
+                      <p className="text-[12px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
+                        + 사진 추가
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div 
+                  className="h-[300px] flex flex-col items-center justify-center cursor-pointer"
+                  onClick={() => document.getElementById('mobileImageUpload').click()}
+                >
+                  <div className="w-8 h-8">
+                    <CameraIcon />
+                  </div>
+                  <p className="text-[12px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
+                    사진을 선택해주세요. (최대 4장)
+                  </p>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="hidden"
+                id="mobileImageUpload"
+              />
+            </div>
+
+            {/* Title - 두 번째로 위치 */}
+            <div className="border-b border-[#bbbbbb] pb-2">
+              <input
+                type="text"
+                placeholder="제목을 입력하세요"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full text-[24px] font-semibold text-black tracking-[-0.72px] bg-transparent outline-none placeholder-[#bbbbbb]"
+              />
+            </div>
+
+            {/* Content - 세 번째로 위치 */}
+            <div className="border-b border-[#bbbbbb] pb-2">
+              <textarea
+                placeholder="내용을 입력하세요"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full text-[16px] text-black tracking-[-0.6px] bg-transparent outline-none placeholder-[#bbbbbb] resize-none h-20"
+              />
+            </div>
+
+            {/* Mobile Submit Button - 맨 아래 */}
+            <div className="flex flex-col gap-4 mt-8">
+              {isFormValid() && (
+                <div className="flex items-center justify-center gap-1 text-[#1aa752]">
+                  <span className="text-[14px] font-semibold">친환경 점수 +10</span>
+                </div>
+              )}
+              <button
+                onClick={handleSubmit}
+                disabled={!isFormValid() || isSubmitting}
+                className={`w-full h-12 rounded-lg text-white font-semibold text-[20px] transition-colors ${
+                  isFormValid() && !isSubmitting 
+                    ? 'bg-[#1aa752] hover:bg-green-600 cursor-pointer' 
+                    : 'bg-[#bbbbbb] cursor-not-allowed'
+                }`}
+              >
+                {isSubmitting ? '등록 중...' : '등록하기'}
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Layout - md 이상에서만 표시 */}
+          <div className="hidden md:flex flex-col gap-12 w-[739px]">
             {/* Image Upload */}
             <div className="bg-[#f7f7f7] min-h-[588px] rounded-2xl p-4">
               {imagePreviews.length > 0 ? (

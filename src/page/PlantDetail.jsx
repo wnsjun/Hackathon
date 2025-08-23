@@ -242,7 +242,7 @@ const PlantDetail = () => {
               <div className="flex gap-2 items-center">
                 <div className="flex gap-2 items-center">
                   <div className="relative size-6">
-                    <img alt className="block max-w-none size-full rounded-full" height="24" src={profile} width="24" />
+                    <img alt className="block max-w-none size-full rounded-full object-cover" height="24" src={farmData.owner?.profileImage || profile} width="24" />
                   </div>
                   <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic text-[#000000] text-[16px] text-nowrap tracking-[-0.48px]">
                     <p className="leading-[1.5] whitespace-pre">{farmData.owner?.nickname || '윤성'}</p>
@@ -391,7 +391,7 @@ const PlantDetail = () => {
               <div className="box-border content-stretch flex flex-row gap-3 items-center justify-center p-0 relative shrink-0">
                 <div className="relative shrink-0 size-12">
                   <img
-                    src={profile}
+                    src={farmData.owner?.profileImage || profile}
                     alt="profile"
                     className="w-full h-full rounded-full object-cover"
                   />

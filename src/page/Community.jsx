@@ -45,7 +45,8 @@ export const Community = () => {
           image: post.thumbnailUrl,
           likes: post.likeCount,
           createdAt: post.createdAt,
-          initialLiked: post.liked || false
+          initialLiked: post.liked || false,
+          profileImage: post.profileImage
         }));
 
         setSearchResults({
@@ -83,7 +84,8 @@ export const Community = () => {
           image: post.thumbnailUrl,
           likes: post.likeCount,
           createdAt: post.createdAt,
-          initialLiked: post.liked || false
+          initialLiked: post.liked || false,
+          profileImage: post.profileImage
         }));
 
         const transformedTipPosts = (tipPosts || []).map(post => ({
@@ -94,7 +96,8 @@ export const Community = () => {
           image: post.thumbnailUrl,
           likes: post.likeCount,
           createdAt: post.createdAt,
-          initialLiked: post.liked || false
+          initialLiked: post.liked || false,
+          profileImage: post.profileImage
         }));
 
         if (transformedFeedPosts.length === 0 && transformedTipPosts.length === 0) {
@@ -151,14 +154,14 @@ export const Community = () => {
   );
 
   return (
-    <div className="p-12 mt-24 mb-12">
+    <div className="px-4 sm:px-6 md:px-12 py-6 pt-20 md:pt-32 pb-24 md:pb-12">
       {/* 검색 중이고 결과가 없으면 탭 네비게이션 숨김 */}
       {(!isSearching || hasAnySearchResults) && (
-        <div className="flex justify-between items-center mb-8 max-w-6xl mx-auto">
-          <div className="flex">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 max-w-6xl mx-auto gap-4">
+          <div className="flex w-full md:w-auto">
             <button
               onClick={() => handleTabClick('certification')}
-              className={`cursor-pointer px-6 py-3 mr-4 text-2xl font-semibold border-b-4 transition-colors ${
+              className={`cursor-pointer px-3 md:px-6 py-2 md:py-3 mr-2 md:mr-4 text-lg md:text-2xl font-semibold border-b-2 md:border-b-4 transition-colors flex-1 md:flex-none ${
                 activeTab === 'certification' 
                   ? 'text-black border-[#1aa752]' 
                   : 'text-gray-400 border-transparent'
@@ -168,7 +171,7 @@ export const Community = () => {
             </button>
             <button
               onClick={() => handleTabClick('tips')}
-              className={`cursor-pointer px-6 py-3 text-2xl font-semibold border-b-4 transition-colors ${
+              className={`cursor-pointer px-3 md:px-6 py-2 md:py-3 text-lg md:text-2xl font-semibold border-b-2 md:border-b-4 transition-colors flex-1 md:flex-none ${
                 activeTab === 'tips' 
                   ? 'text-black border-[#1aa752]' 
                   : 'text-gray-400 border-transparent'
@@ -177,23 +180,27 @@ export const Community = () => {
               재배 팁
             </button>
           </div>
-          <Button onClick={handleWriteClick} variant="farm">작성하기</Button>
+          <div className="w-full md:w-auto">
+            <Button onClick={handleWriteClick} variant="farm" className="w-full md:w-auto text-base md:text-lg">
+              작성하기
+            </Button>
+          </div>
         </div>
       )}
 
       {/* 게시글 그리드 */}
       {searchLoading ? (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center animate-spin">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gray-400">
+        <div className="text-center py-12 md:py-16">
+          <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center animate-spin">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-gray-400 md:w-6 md:h-6">
               <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-6.219-8.56"/>
             </svg>
           </div>
-          <p className="text-gray-500 text-lg">검색 중...</p>
+          <p className="text-gray-500 text-base md:text-lg">검색 중...</p>
         </div>
       ) : postsToShow.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="text-gray-500 text-lg">
+        <div className="text-center py-12 md:py-16">
+          <p className="text-gray-500 text-base md:text-lg px-4">
             {isSearching && !hasAnySearchResults
               ? `'${searchQuery}'로 커뮤니티에서 검색한 결과가 없습니다.`
               : isSearching 
@@ -203,7 +210,7 @@ export const Community = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 max-w-6xl mx-auto">
           {postsToShow.map((post) => (
             <CommunityPostCard key={post.id} {...post} />
           ))}
