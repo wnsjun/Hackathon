@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCoin } from '../../contexts/CoinContext';
+import { processPayment } from '../../apis/paymentApi';
 
 const PaymentSection = ({ farmData }) => {
   const [ecoPoints, setEcoPoints] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
-  const { coinBalance } = useCoin();
+  const { coinBalance, updateCoinBalance } = useCoin();
 
   const FarmCoinIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
@@ -27,9 +29,35 @@ const PaymentSection = ({ farmData }) => {
     </svg>
   );
 
-  const handlePayment = () => {
-    // 결제 로직
-    console.log('결제 진행');
+  const handlePayment = async () => {
+    if (isProcessing) return;
+    
+    const totalPaymentAmount = farmData.price - parseInt(ecoPoints || 0);
+    
+    if (coinBalance < totalPaymentAmount) {
+      alert('FarmCoin 잔액이 부족합니다. 충전 후 다시 시도해주세요.');
+      return;
+    }
+    
+    try {
+      setIsProcessing(true);
+      
+      const response = await processPayment(farmData, parseInt(ecoPoints || 0));
+      
+      // 결제 성공 후 코인 잔액 업데이트
+      if (response.coin !== undefined) {
+        updateCoinBalance(response.coin);
+      }
+      
+      alert('결제가 완료되었습니다!');
+      navigate('/mypage');
+      
+    } catch (error) {
+      console.error('결제 처리 중 오류가 발생했습니다:', error);
+      alert('결제 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleChargeClick = () => {
@@ -166,8 +194,13 @@ const PaymentSection = ({ farmData }) => {
 
           {/* Payment Button */}
           <button 
-            className="bg-[#1aa752] box-border content-stretch flex flex-row gap-2.5 h-[62px] items-center justify-center px-5 py-2.5 relative rounded-lg shrink-0 w-full cursor-pointer"
+            className={`${
+              isProcessing 
+                ? 'bg-[#aaaaaa] cursor-not-allowed' 
+                : 'bg-[#1aa752] cursor-pointer'
+            } box-border content-stretch flex flex-row gap-2.5 h-[62px] items-center justify-center px-5 py-2.5 relative rounded-lg shrink-0 w-full`}
             onClick={handlePayment}
+            disabled={isProcessing}
           >
             <div className="relative shrink-0 size-8">
               <FarmCoinIcon2 />
@@ -177,7 +210,9 @@ const PaymentSection = ({ farmData }) => {
                 <p className="block leading-[1.6] text-nowrap whitespace-pre">FarmCoin</p>
               </div>
               <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center not-italic relative shrink-0 tracking-[-0.6px]">
-                <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">으로 결제하기</p>
+                <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">
+                  {isProcessing ? '처리 중...' : '으로 결제하기'}
+                </p>
               </div>
             </div>
           </button>

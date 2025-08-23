@@ -42,14 +42,14 @@ const FarmReview = ({ farmId, reviews = [], loading = false, onReviewsUpdate }) 
 
   return (
     <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 w-[333px]">
-      <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[24px] text-left tracking-[-0.48px] w-full">
-        <p className="block leading-[1.5]">텃밭 리뷰</p>
+      <div className="flex flex-col font-['Pretendard:Bold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[20px] text-left tracking-[-0.48px] w-full">
+        <p className="block leading-[1.5] ">텃밭 리뷰</p>
       </div>
       <div className="box-border content-stretch flex flex-col gap-16 items-start justify-start p-0 relative shrink-0 w-full">
         <div className="box-border content-stretch flex flex-col gap-2 items-end justify-start p-0 relative shrink-0 w-full">
           <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0 w-[333px]">
             <div 
-              className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0 cursor-pointer"
+              className=" box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0 cursor-pointer"
               onClick={() => handleSortChange('latest')}
             >
               <div className="relative shrink-0 size-1">

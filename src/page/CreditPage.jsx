@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import PaymentSection from '../components/common/PaymentSection';
-import { fetchFarmById } from '../apis/home';
+import { getChatRoomFarm } from '../apis/chatApi';
 
 const CreditPage = () => {
-  const { id } = useParams();
+  const { chatRoomId } = useParams(); // URL에서 chatRoomId를 받음
   const navigate = useNavigate();
   const [farmData, setFarmData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,13 +15,29 @@ const CreditPage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // 임시 데이터 사용 (실제로는 결제할 농장 정보를 받아와야 함)
-        if (id) {
-          const farmData = await fetchFarmById(id);
+        if (chatRoomId) {
+          // 채팅방 텃밭 정보 조회 API 사용
+          const response = await getChatRoomFarm(chatRoomId);
+          // API 응답에서 farm 객체를 추출하고 필요한 필드 추가
+          const farmData = {
+            ...response.farm,
+            // thumbnailUrl을 imageUrls 배열로 변환
+            imageUrls: response.farm.thumbnailUrl ? [response.farm.thumbnailUrl] : [],
+            // description이 null인 경우 기본값 설정
+            description: response.farm.description || "텃밭에 대한 설명이 없습니다.",
+            // owner 정보가 없는 경우 기본값 설정 (provider 정보 활용 가능)
+            owner: response.provider || { userId: null, nickname: "농장주" },
+            // 기본값들 설정
+            createdAt: response.createdAt,
+            updatedTime: null,
+            bookmarked: false,
+            isAvailable: true
+          };
           setFarmData(farmData);
         } else {
-          // id가 없는 경우 임시 데이터 사용
+          // chatRoomId가 없는 경우 임시 데이터 사용
           setFarmData({
+            id: 1,
             title: "도심 속 힐링 텃밭",
             description: "도심에서 즐기는 작은 텃밭 체험\n직접 키운 채소를 수확하는 기쁨을 느껴보세요.\n친환경적이고 건강한 농업 체험이 가능합니다.",
             imageUrls: [],
@@ -30,9 +46,14 @@ const CreditPage = () => {
             rentalPeriod: 30,
             size: 10,
             theme: "옥상텃밭",
-            user: {
+            owner: {
+              userId: 1,
               nickname: "농부"
-            }
+            },
+            createdAt: new Date().toISOString(),
+            updatedTime: null,
+            bookmarked: false,
+            isAvailable: true
           });
         }
       } catch (error) {
@@ -43,7 +64,7 @@ const CreditPage = () => {
     };
 
     fetchData();
-  }, [id]);
+  }, [chatRoomId]);
 
   const handleChatButtonClick = () => {
     navigate('/chat');

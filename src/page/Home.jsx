@@ -421,6 +421,9 @@ const Home = () => {
       
       {/* 챗봇 아이콘 */}
       <ChatbotIcon />
+      
+      {/* 하단 여백 */}
+      <div className="h-16"></div>
     </div>
   );
 };
