@@ -26,7 +26,7 @@ const ThemeFilter = ({ isOpen, onClose, onThemeToggle, selectedThemes = [] }) =>
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-0 mt-2 z-50">
+    <div className="absolute top-full right-0 mt-2 z-50">
       <div
         ref={filterRef}
         className="bg-white box-border flex flex-col gap-3 items-start justify-start pb-4 pt-3 px-4 rounded-lg relative"

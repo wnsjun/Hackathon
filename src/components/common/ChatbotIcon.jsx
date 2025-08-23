@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import chatbotIcon from '../../assets/chatboticon.png?url';
 import chatbotClickIcon from '../../assets/chatbotClickicon.png?url';
 
-const ChatbotIcon = () => {
+const ChatbotIcon = ({ isMobile = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const popupRef = useRef(null);
+  const chatbotButtonRef = useRef(null);
   const getCurrentTime = () => {
     const now = new Date();
     const hours = now.getHours();
@@ -96,7 +97,10 @@ const ChatbotIcon = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
+      if (popupRef.current && 
+          !popupRef.current.contains(event.target) && 
+          chatbotButtonRef.current && 
+          !chatbotButtonRef.current.contains(event.target)) {
         setIsPopupOpen(false);
         setIsClicked(false);
       }
@@ -111,6 +115,160 @@ const ChatbotIcon = () => {
     };
   }, [isPopupOpen]);
 
+  useEffect(() => {
+    const handleToggleChatbot = () => {
+      setIsPopupOpen(!isPopupOpen);
+      setIsClicked(!isClicked);
+    };
+
+    window.addEventListener('toggleChatbot', handleToggleChatbot);
+
+    return () => {
+      window.removeEventListener('toggleChatbot', handleToggleChatbot);
+    };
+  }, [isPopupOpen, isClicked]);
+
+
+  if (isMobile) {
+    return (
+      <div className="relative flex flex-col items-center gap-1">
+        {/* 모바일용 팝업창 */}
+        {isPopupOpen && (
+          <div className="fixed inset-4 z-[60] flex items-center justify-center">
+            <div 
+              ref={popupRef}
+              className="bg-white rounded-[24px] shadow-lg flex flex-col relative w-full h-full max-w-[640px] max-h-[640px] min-w-[320px] min-h-[480px]"
+              style={{ 
+                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.12)',
+              }}
+            >
+              {/* 팝업창 헤더 */}
+              <div className="flex flex-row items-center gap-3 p-6 border-b border-gray-100">
+                <img 
+                  src={chatbotIcon}
+                  alt="챗봇 아이콘"
+                  className="w-9 h-9"
+                />
+                <span className="text-black text-2xl font-semibold">새싹이</span>
+              </div>
+
+              {/* 채팅 메시지 영역 */}
+              <div className="flex-1 overflow-y-auto p-6 gap-8 flex flex-col">
+                {messages.map((message) => (
+                  <div key={message.id} className={`flex gap-2 items-end ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    {message.sender === 'user' && (
+                      <div 
+                        className="font-['Pretendard:Regular',_sans-serif] leading-[1.5] not-italic relative shrink-0 text-[#bbbbbb] text-[14px] text-left text-nowrap tracking-[-0.42px]"
+                      >
+                        {message.time}
+                      </div>
+                    )}
+                    <div 
+                      className={`backdrop-blur-[5px] backdrop-filter flex flex-row items-start justify-center pb-5 pt-4 px-7 relative shrink-0 ${
+                        message.sender === 'user' 
+                          ? 'bg-[#1aa752] rounded-bl-[40px] rounded-br-[40px] rounded-tl-[40px]' 
+                          : 'bg-[#f7f7f7] border border-[#bbbbbb] border-solid rounded-bl-[40px] rounded-br-[40px] rounded-tr-[40px]'
+                      }`}
+                    >
+                      <div className="flex flex-col gap-1 items-start justify-start relative shrink-0">
+                        <div 
+                          className={`font-['Pretendard:Regular',_sans-serif] leading-[1.5] not-italic relative shrink-0 text-[16px] text-left tracking-[-0.48px] ${
+                            message.sender === 'user' ? 'text-[#ffffff]' : 'text-[#000000]'
+                          }`}
+                          style={{ whiteSpace: 'pre-wrap' }}
+                        >
+                          {message.text}
+                        </div>
+                      </div>
+                    </div>
+                    {message.sender === 'bot' && (
+                      <div 
+                        className="font-['Pretendard:Regular',_sans-serif] leading-[1.5] not-italic relative shrink-0 text-[#bbbbbb] text-[14px] text-left text-nowrap tracking-[-0.42px]"
+                      >
+                        {message.time}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* 하단 입력 영역 */}
+              <div className="p-6 flex flex-col gap-6">
+                {/* 추천 질문 버튼들 */}
+                <div className="flex flex-row gap-2 ">
+                  <button
+                    onClick={() => handleSuggestedClick("대여 방법을 알려줘")}
+                    className="flex items-center justify-center px-3 py-1.5 rounded-full border border-[#1AA752] flex-1 cursor-pointer"
+                  >
+                    <span className="font-semibold text-[#1AA752] text-[12px] text-nowrap tracking-[-0.36px]">
+                      대여 방법을 알려줘
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => handleSuggestedClick("재배 방법을 알려줘")}
+                    className="flex items-center justify-center px-3 py-1.5 rounded-full border border-[#1AA752] flex-1 cursor-pointer"
+                  >
+                    <span className="font-semibold text-[#1AA752] text-[12px] text-nowrap tracking-[-0.36px]">
+                      재배 방법을 알려줘
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => handleSuggestedClick("기를 작물을 추천해줘")}
+                    className="flex items-center justify-center px-3 py-1.5 rounded-full border border-[#1AA752] flex-1 cursor-pointer"
+                  >
+                    <span className="font-semibold text-[#1AA752] text-[12px] text-nowrap tracking-[-0.36px]">
+                      작물을 추천해줘
+                    </span>
+                  </button>
+                </div>
+
+                {/* 입력창 */}
+                <form onSubmit={handleMessageSubmit} className="relative">
+                  <div className="flex flex-row h-16 items-center justify-between pl-8 pr-6 py-0 rounded-full border border-[#1AA752] w-full">
+                    <input
+                      type="text"
+                      value={inputMessage}
+                      onChange={handleInputChange}
+                      placeholder="채팅을 입력하세요."
+                      className="flex-1 bg-transparent outline-none text-[20px] text-black placeholder-[#BBBBBB] tracking-[-0.6px]"
+                      style={{ fontFamily: 'Pretendard, sans-serif' }}
+                    />
+                    <button
+                      type="submit"
+                      className="overflow-clip relative shrink-0 size-8 flex items-center justify-center"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <path d="M13.3334 18.6667L28.0001 4M13.3334 18.6667L18.0001 28C18.0586 28.1277 18.1525 28.2358 18.2707 28.3117C18.3889 28.3875 18.5263 28.4278 18.6668 28.4278C18.8072 28.4278 18.9446 28.3875 19.0628 28.3117C19.181 28.2358 19.2749 28.1277 19.3334 28L28.0001 4M13.3334 18.6667L4.00009 14C3.87244 13.9415 3.76426 13.8476 3.68842 13.7294C3.61258 13.6112 3.57227 13.4738 3.57227 13.3333C3.57227 13.1929 3.61258 13.0554 3.68842 12.9373C3.76426 12.8191 3.87244 12.7252 4.00009 12.6667L28.0001 4" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 모바일용 새싹이 버튼 */}
+        <div 
+          className="cursor-pointer relative shrink-0 size-12 rounded-full flex items-center justify-center transition-all duration-200"
+          onClick={handleChatbotClick}
+          ref={chatbotButtonRef}
+          style={{
+            backgroundColor: isClicked ? '#1AA752' : 'transparent'
+          }}
+        >
+          <img 
+            src={isClicked ? chatbotClickIcon : chatbotIcon} 
+            alt="새싹이 아이콘" 
+            className="w-full h-full object-cover" 
+          />
+        </div>
+        <div className={`font-['Pretendard:SemiBold',_sans-serif] leading-[0] min-w-full not-italic relative shrink-0 text-[12px] text-center tracking-[-0.36px] ${isClicked ? 'text-[#111111]' : 'text-[#bbbbbb]'}`} style={{ width: "min-content" }}>
+          <p className="leading-[1.5]">새싹이</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex-row items-end gap-4 hidden sm:flex">
@@ -249,6 +407,7 @@ const ChatbotIcon = () => {
       )}
       
       <button
+        ref={chatbotButtonRef}
         onClick={handleChatbotClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}

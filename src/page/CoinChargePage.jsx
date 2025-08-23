@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Navbar } from '../components/layouts/Navbar';
 import { useAuth } from '../hooks/useAuth';
+import { useCoin } from '../contexts/CoinContext';
 import { useCharge, useExchange } from '../hooks/usePayment';
 import tossImage from '../assets/tosspay.png';
 
 const CoinChargePage = () => {
-  const { coinBalance } = useAuth();
+  const { coinBalance } = useCoin();
   const chargeMutation = useCharge();
   const exchangeMutation = useExchange();
   const [chargeAmount, setChargeAmount] = useState('');
@@ -135,7 +136,7 @@ const CoinChargePage = () => {
                   </div>
                 </div>
                 <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[32px] text-left text-nowrap tracking-[-0.64px]">
-                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{coinBalance?.toLocaleString() || '0'}</p>
+                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{coinBalance?.toLocaleString()}</p>
                 </div>
               </div>
             </div>

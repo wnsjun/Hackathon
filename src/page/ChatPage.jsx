@@ -372,8 +372,8 @@ const ChatPage = () => {
   );
 
   return (
-    <div className="flex flex-1 bg-white h-screen my-20">
-      <aside className="w-[331px] h-[774px] bg-white m-12 p-6 flex-shrink-0 overflow-y-auto">
+    <div className="flex flex-col lg:flex-row flex-1 bg-white h-screen my-20 px-2 sm:px-4 lg:px-0">
+      <aside className="w-full lg:w-[331px] h-[200px] lg:h-[774px] bg-white m-2 sm:m-6 lg:m-12 p-4 lg:p-6 flex-shrink-0 overflow-y-auto">
         <div className="flex items-center gap-4 border-b border-gray-400">
           <img src={ChatIcon} alt="chat" className="w-7 h-6" />
           <h2 className="mb-4 text-2xl font-semibold text-gray-700">
@@ -392,12 +392,12 @@ const ChatPage = () => {
 
       <section
         /*채팅창*/
-        className="flex flex-col pb-6 m-12 p-8 bg-white border border-[#BBB] rounded-[48px] shadow-[0_4px_20px_0_rgba(0,0,0,0.10)]"
-        style={{ height: '700px', width: '739px' }}
+        className="flex flex-col pb-6 m-2 sm:m-6 lg:m-12 p-4 sm:p-6 lg:p-8 bg-white border border-[#BBB] rounded-[24px] sm:rounded-[36px] lg:rounded-[48px] shadow-[0_4px_20px_0_rgba(0,0,0,0.10)] flex-1"
+        style={{ minHeight: '400px' }}
       >
         {selected ? (
           <>
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6 flex-wrap">
               <img
                 src={
                   selected.provider?.nickname === userNickname
@@ -405,9 +405,9 @@ const ChatPage = () => {
                     : selected.provider?.profileImage || profile
                 }
                 alt="profile"
-                className="w-12 h-12 rounded-full object-cover"
+                className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full object-cover"
               />
-              <span className="text-black font-pretendard text-[24px] font-semibold leading-[36px] tracking-[-0.48px]">
+              <span className="text-black font-pretendard text-[16px] sm:text-[20px] lg:text-[24px] font-semibold leading-[1.5] tracking-[-0.48px] flex-1 min-w-0">
                 {selected.provider?.nickname === userNickname
                   ? selected.consumer?.nickname
                   : selected.provider?.nickname}
@@ -415,12 +415,12 @@ const ChatPage = () => {
 
               <button
                 onClick={() => navigate('/credit')}
-                className="ml-auto flex flex-row justify-center items-center gap-[10px] px-[28px] pr-[24px] py-[12px] rounded-full bg-[#1AA752]"
+                className="flex flex-row justify-center items-center gap-2 sm:gap-[10px] px-4 sm:px-[20px] lg:px-[28px] pr-3 sm:pr-[18px] lg:pr-[24px] py-2 sm:py-[8px] lg:py-[12px] rounded-full bg-[#1AA752]"
               >
-                <span className="text-white font-pretendard text-[24px] font-normal leading-[36px] tracking-[-0.48px]">
+                <span className="text-white font-pretendard text-[14px] sm:text-[18px] lg:text-[24px] font-normal leading-[1.5] tracking-[-0.48px] whitespace-nowrap">
                   결제하기
                 </span>
-                <img src={right} alt="right" className="w-8 h-8" />
+                <img src={right} alt="right" className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
               </button>
             </div>
 
@@ -431,14 +431,14 @@ const ChatPage = () => {
             </div>
 
             {/* 채팅 입력 바 */}
-            <div className="flex h-[64px] px-[32px] pr-[24px] justify-between items-center rounded-full border border-[#1AA752]">
+            <div className="flex h-[48px] sm:h-[56px] lg:h-[64px] px-4 sm:px-6 lg:px-[32px] pr-3 sm:pr-4 lg:pr-[24px] justify-between items-center rounded-full border border-[#1AA752]">
               {/* placeholder 텍스트 */}
               <input
                 type="text"
                 className="flex-1 bg-transparent outline-none 
              placeholder:text-[#BBB] placeholder:font-pretendard 
-             placeholder:text-[20px] placeholder:font-normal 
-             placeholder:leading-[30px] placeholder:tracking-[-0.6px]"
+             placeholder:text-[14px] sm:placeholder:text-[16px] lg:placeholder:text-[20px] placeholder:font-normal 
+             placeholder:leading-[1.5] placeholder:tracking-[-0.6px]"
                 placeholder="채팅을 입력하세요."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -451,8 +451,8 @@ const ChatPage = () => {
               />
 
               {/* 이미지 버튼 */}
-              <label className="flex items-center ml-3 cursor-pointer">
-                <img src={picture} alt="img" className="w-8 h-8" />
+              <label className="flex items-center ml-2 sm:ml-3 cursor-pointer">
+                <img src={picture} alt="img" className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
                 <input
                   type="file"
                   multiple
@@ -464,10 +464,10 @@ const ChatPage = () => {
 
               {/* 전송 버튼 */}
               <label
-                className="ml-3 text-[#1AA752] font-semibold"
+                className="ml-2 sm:ml-3 text-[#1AA752] font-semibold cursor-pointer"
                 onClick={handleSend}
               >
-                <img src={vector} alt="img" className="w-8 h-8" />
+                <img src={vector} alt="img" className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
               </label>
             </div>
           </>
