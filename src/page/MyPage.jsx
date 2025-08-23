@@ -225,70 +225,137 @@ export const MyPage = () => {
             전체보기 <ArrowIcon />
           </button>
         </div>
-          {profile.reviews && profile.reviews.length > 0 ? (
-    <div className="flex flex-col gap-4">
-      {profile.reviews.slice(0, 3).map((review) => (
-        <ReviewCard
-          key={review.id}
-          profileUrl={review.authorProfileUrl || '/assets/profile.svg'}
-          nickname={review.authorNickname}
-          timeAgo={review.timeAgo}
-          content={review.content}
-        />
-      ))}
-    </div>
-  ) : (
-    <p className="text-gray-500">아직 등록된 리뷰가 없습니다.</p>
-  )}
-</div>
+        {profile.reviews && profile.reviews.length > 0 ? (
+          <div className="flex flex-col gap-4">
+            {profile.reviews.slice(0, 3).map((review) => (
+              <ReviewCard
+                key={review.id}
+                profileUrl={review.authorProfileUrl || '/assets/profile.svg'}
+                nickname={review.authorNickname}
+                timeAgo={review.timeAgo}
+                content={review.content}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">아직 등록된 리뷰가 없습니다.</p>
+        )}
+      </div>
 
-        {/* 텃밭 탭 & 카드 */}
+      {/* 텃밭 탭 & 카드 */}
+      <div className="flex flex-col gap-2 w-full">
+        <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
+          텃밭
+        </h2>
+        <div className="flex items-end justify-between w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
+            <div className="relative">
+              <button
+                className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
+                  farmToggle === 'my'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-[#bbbbbb] border-transparent'
+                }`}
+                onClick={() => setFarmToggle('my')}
+              >
+                내 텃밭
+              </button>
+            </div>
+            <div className="relative">
+              <button
+                className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
+                  farmToggle === 'renting'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-[#bbbbbb] border-transparent'
+                }`}
+                onClick={() => setFarmToggle('renting')}
+              >
+                대여중인 텃밭
+              </button>
+            </div>
+            <div className="relative">
+              <button
+                className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
+                  farmToggle === 'bookmark'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-[#bbbbbb] border-transparent'
+                }`}
+                onClick={() => setFarmToggle('bookmark')}
+              >
+                북마크한 텃밭
+              </button>
+            </div>
+          </div>
+          <button
+            className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
+            onClick={() => navigate('/my-all-farms')}
+          >
+            전체보기 <ArrowIcon />
+          </button>
+        </div>
+      </div>
+      <div className="h-6"></div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16">
+        {farmToggle === 'my'
+          ? myFarms.slice(0, 3).map((farm) => (
+              <div key={farm.id}>
+                <FarmCard farm={farm} />
+              </div>
+            ))
+          : farmToggle === 'renting'
+            ? usedFarms.slice(0, 3).map((farm) => (
+                <div key={farm.id}>
+                  <RentingFarmCard farm={farm} />
+                </div>
+              ))
+            : bookmarkedFarms.slice(0, 3).map((farm) => (
+                <div key={farm.id}>
+                  <FarmCard farm={farm} />
+                </div>
+              ))}
+      </div>
+
+      {/* 커뮤니티 */}
+      <div className="pt-16 md:pt-18">
         <div className="flex flex-col gap-2 w-full">
           <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
-            텃밭
+            커뮤니티
           </h2>
           <div className="flex items-end justify-between w-full">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
               <div className="relative">
                 <button
                   className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
-                    farmToggle === 'my'
+                    communityToggle === 'written'
                       ? 'text-black border-[#1aa752]'
                       : 'text-[#bbbbbb] border-transparent'
                   }`}
-                  onClick={() => setFarmToggle('my')}
+                  onClick={() => setCommunityToggle('written')}
                 >
-                  내 텃밭
+                  작성 글
                 </button>
               </div>
               <div className="relative">
                 <button
                   className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
-                    farmToggle === 'renting'
+                    communityToggle === 'liked'
                       ? 'text-black border-[#1aa752]'
                       : 'text-[#bbbbbb] border-transparent'
                   }`}
-                  onClick={() => setFarmToggle('renting')}
+                  onClick={() => setCommunityToggle('liked')}
                 >
-                  대여중인 텃밭
-                </button>
-              </div>
-              <div className="relative">
-                <button
-                  className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
-                    farmToggle === 'bookmark'
-                      ? 'text-black border-[#1aa752]'
-                      : 'text-[#bbbbbb] border-transparent'
-                  }`}
-                  onClick={() => setFarmToggle('bookmark')}
-                >
-                  북마크한 텃밭
+                  좋아요 누른 글
                 </button>
               </div>
             </div>
             <button
               className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
-              onClick={() => navigate('/my-all-farms')}
+              onClick={() =>
+                navigate('/my-all-community', {
+                  state: { initialTab: communityToggle },
+                })
+              }
             >
               전체보기 <ArrowIcon />
             </button>
@@ -296,90 +363,22 @@ export const MyPage = () => {
         </div>
         <div className="h-6"></div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16">
-          {farmToggle === 'my'
-            ? myFarms.slice(0, 3).map((farm) => (
-                <div key={farm.id}>
-                  <FarmCard farm={farm} />
-                </div>
-              ))
-            : farmToggle === 'renting'
-              ? usedFarms.slice(0, 3).map((farm) => (
-                  <div key={farm.id}>
-                    <RentingFarmCard farm={farm} />
-                  </div>
-                ))
-              : bookmarkedFarms.slice(0, 3).map((farm) => (
-                  <div key={farm.id}>
-                    <FarmCard farm={farm} />
-                  </div>
-                ))}
-        </div>
-
-        {/* 커뮤니티 */}
-        <div className="pt-16 md:pt-18">
-          <div className="flex flex-col gap-2 w-full">
-            <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
-              커뮤니티
-            </h2>
-            <div className="flex items-end justify-between w-full">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
-                <div className="relative">
-                  <button
-                    className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
-                      communityToggle === 'written'
-                        ? 'text-black border-[#1aa752]'
-                        : 'text-[#bbbbbb] border-transparent'
-                    }`}
-                    onClick={() => setCommunityToggle('written')}
-                  >
-                    작성 글
-                  </button>
-                </div>
-                <div className="relative">
-                  <button
-                    className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
-                      communityToggle === 'liked'
-                        ? 'text-black border-[#1aa752]'
-                        : 'text-[#bbbbbb] border-transparent'
-                    }`}
-                    onClick={() => setCommunityToggle('liked')}
-                  >
-                    좋아요 누른 글
-                  </button>
-                </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-24">
+          {(communityToggle === 'written' ? myPosts : likedPosts)
+            .slice(0, 3)
+            .map((post) => (
+              <div key={post.id}>
+                <CommunityPostCard
+                  id={post.id}
+                  image={post.thumbnailUrl}
+                  username={post.authorNickname}
+                  title={post.title}
+                  content={post.content}
+                  initialLiked={post.liked}
+                  createdAt={post.createdAt}
+                />
               </div>
-              <button
-                className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
-                onClick={() =>
-                  navigate('/my-all-community', {
-                    state: { initialTab: communityToggle },
-                  })
-                }
-              >
-                전체보기 <ArrowIcon />
-              </button>
-            </div>
-          </div>
-          <div className="h-6"></div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-24">
-            {(communityToggle === 'written' ? myPosts : likedPosts)
-              .slice(0, 3)
-              .map((post) => (
-                <div key={post.id}>
-                  <CommunityPostCard
-                    id={post.id}
-                    image={post.thumbnailUrl}
-                    username={post.authorNickname}
-                    title={post.title}
-                    content={post.content}
-                    initialLiked={post.liked}
-                    createdAt={post.createdAt}
-                  />
-                </div>
-              ))}
-          </div>
+            ))}
         </div>
       </div>
 
