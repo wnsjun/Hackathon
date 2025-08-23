@@ -7,6 +7,7 @@ import FarmCard from '../components/common/Card/FarmCard';
 import CommunityPostCard from '../components/common/Card/CommunityPostCard';
 import { useCoin } from '../contexts/CoinContext';
 import { Navbar } from '../components/layouts/Navbar';
+import ReviewCard from '../components/common/Card/ReviewCard';
 
 import {
   useProfile,
@@ -74,7 +75,11 @@ export const MyPage = () => {
     likedPostsLoading ||
     ecoScoreLoading
   ) {
-    return <p className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32">로딩 중...</p>;
+    return (
+      <p className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32">
+        로딩 중...
+      </p>
+    );
   }
 
   if (profileError) {
@@ -86,7 +91,11 @@ export const MyPage = () => {
   }
 
   if (!profile) {
-    return <p className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32">로그인이 필요합니다.</p>;
+    return (
+      <p className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32">
+        로그인이 필요합니다.
+      </p>
+    );
   }
 
   // Arrow icon component
@@ -144,35 +153,59 @@ export const MyPage = () => {
                 {profile.address}
               </p>
               <div className="flex items-center gap-2">
-                <p className="text-sm md:text-base text-gray-700">친환경 점수</p>
+                <p className="text-sm md:text-base text-gray-700">
+                  친환경 점수
+                </p>
                 <p className="text-lg md:text-xl font-semibold text-[#1aa752]">
                   {ecoScore}점
                 </p>
               </div>
             </div>
           </div>
-          
+
           {/* FarmCoin 카드 */}
           <div className="bg-[rgba(26,167,82,0.05)] border border-[#39bb6d] rounded-2xl p-4 md:p-6 mt-6 md:mt-8 w-full md:max-w-[320px] md:ml-auto">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <path d="M12.8007 27.0677V17.105C9.94415 17.105 6.07622 16.5561 4.93359 9.73438C7.40928 9.99574 11.3486 10.8635 13.8298 14.7527C14.7275 12.8708 17.8616 9.73438 22.8891 9.73438C22.4811 13.2629 19.4939 17.105 15.054 17.105" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12.6669 27.0881C6.02755 26.4199 0.844727 20.8148 0.844727 13.9993C0.844727 6.73369 6.73467 0.84375 14.0003 0.84375C21.2659 0.84375 27.1558 6.73369 27.1558 13.9993C27.1558 19.1568 24.188 23.6211 19.8669 25.7775" stroke="#1AA752" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 28 28"
+                    fill="none"
+                  >
+                    <path
+                      d="M12.8007 27.0677V17.105C9.94415 17.105 6.07622 16.5561 4.93359 9.73438C7.40928 9.99574 11.3486 10.8635 13.8298 14.7527C14.7275 12.8708 17.8616 9.73438 22.8891 9.73438C22.4811 13.2629 19.4939 17.105 15.054 17.105"
+                      stroke="#1AA752"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M12.6669 27.0881C6.02755 26.4199 0.844727 20.8148 0.844727 13.9993C0.844727 6.73369 6.73467 0.84375 14.0003 0.84375C21.2659 0.84375 27.1558 6.73369 27.1558 13.9993C27.1558 19.1568 24.188 23.6211 19.8669 25.7775"
+                      stroke="#1AA752"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </div>
-                <h3 className="text-xl md:text-2xl font-medium text-[#1aa752]">FarmCoin</h3>
+                <h3 className="text-xl md:text-2xl font-medium text-[#1aa752]">
+                  FarmCoin
+                </h3>
               </div>
               <div className="text-2xl md:text-3xl font-semibold text-[#1aa752] tracking-[-0.64px]">
                 {coinBalance?.toLocaleString() || '0'}
               </div>
             </div>
-            <button 
+            <button
               className="flex items-center justify-center gap-1 cursor-pointer w-full"
               onClick={() => navigate('/coin-charge')}
             >
-              <span className="text-base font-semibold text-[#777777] tracking-[-0.48px]">충전하기</span>
+              <span className="text-base font-semibold text-[#777777] tracking-[-0.48px]">
+                충전하기
+              </span>
               <ArrowIcon />
             </button>
           </div>
@@ -182,7 +215,9 @@ export const MyPage = () => {
       <div className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-8 md:pt-16">
         {/* 거래 리뷰 */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">거래 리뷰</h2>
+          <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
+            거래 리뷰
+          </h2>
           <button
             className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
             onClick={() => navigate('/my-all-reviews')}
@@ -190,53 +225,137 @@ export const MyPage = () => {
             전체보기 <ArrowIcon />
           </button>
         </div>
-        <p className="text-gray-500 mb-16">아직 등록된 리뷰가 없습니다.</p>
+        {profile.reviews && profile.reviews.length > 0 ? (
+          <div className="flex flex-col gap-4">
+            {profile.reviews.slice(0, 3).map((review) => (
+              <ReviewCard
+                key={review.id}
+                profileUrl={review.authorProfileUrl || '/assets/profile.svg'}
+                nickname={review.authorNickname}
+                timeAgo={review.timeAgo}
+                content={review.content}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">아직 등록된 리뷰가 없습니다.</p>
+        )}
+      </div>
 
-        {/* 텃밭 탭 & 카드 */}
+      {/* 텃밭 탭 & 카드 */}
+      <div className="flex flex-col gap-2 w-full">
+        <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
+          텃밭
+        </h2>
+        <div className="flex items-end justify-between w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
+            <div className="relative">
+              <button
+                className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
+                  farmToggle === 'my'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-[#bbbbbb] border-transparent'
+                }`}
+                onClick={() => setFarmToggle('my')}
+              >
+                내 텃밭
+              </button>
+            </div>
+            <div className="relative">
+              <button
+                className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
+                  farmToggle === 'renting'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-[#bbbbbb] border-transparent'
+                }`}
+                onClick={() => setFarmToggle('renting')}
+              >
+                대여중인 텃밭
+              </button>
+            </div>
+            <div className="relative">
+              <button
+                className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
+                  farmToggle === 'bookmark'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-[#bbbbbb] border-transparent'
+                }`}
+                onClick={() => setFarmToggle('bookmark')}
+              >
+                북마크한 텃밭
+              </button>
+            </div>
+          </div>
+          <button
+            className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
+            onClick={() => navigate('/my-all-farms')}
+          >
+            전체보기 <ArrowIcon />
+          </button>
+        </div>
+      </div>
+      <div className="h-6"></div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16">
+        {farmToggle === 'my'
+          ? myFarms.slice(0, 3).map((farm) => (
+              <div key={farm.id}>
+                <FarmCard farm={farm} />
+              </div>
+            ))
+          : farmToggle === 'renting'
+            ? usedFarms.slice(0, 3).map((farm) => (
+                <div key={farm.id}>
+                  <RentingFarmCard farm={farm} />
+                </div>
+              ))
+            : bookmarkedFarms.slice(0, 3).map((farm) => (
+                <div key={farm.id}>
+                  <FarmCard farm={farm} />
+                </div>
+              ))}
+      </div>
+
+      {/* 커뮤니티 */}
+      <div className="pt-16 md:pt-18">
         <div className="flex flex-col gap-2 w-full">
-          <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">텃밭</h2>
+          <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
+            커뮤니티
+          </h2>
           <div className="flex items-end justify-between w-full">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
               <div className="relative">
                 <button
                   className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
-                    farmToggle === 'my'
+                    communityToggle === 'written'
                       ? 'text-black border-[#1aa752]'
                       : 'text-[#bbbbbb] border-transparent'
                   }`}
-                  onClick={() => setFarmToggle('my')}
+                  onClick={() => setCommunityToggle('written')}
                 >
-                  내 텃밭
+                  작성 글
                 </button>
               </div>
               <div className="relative">
                 <button
                   className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
-                    farmToggle === 'renting'
+                    communityToggle === 'liked'
                       ? 'text-black border-[#1aa752]'
                       : 'text-[#bbbbbb] border-transparent'
                   }`}
-                  onClick={() => setFarmToggle('renting')}
+                  onClick={() => setCommunityToggle('liked')}
                 >
-                  대여중인 텃밭
-                </button>
-              </div>
-              <div className="relative">
-                <button
-                  className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
-                    farmToggle === 'bookmark'
-                      ? 'text-black border-[#1aa752]'
-                      : 'text-[#bbbbbb] border-transparent'
-                  }`}
-                  onClick={() => setFarmToggle('bookmark')}
-                >
-                  북마크한 텃밭
+                  좋아요 누른 글
                 </button>
               </div>
             </div>
             <button
               className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
-              onClick={() => navigate('/my-all-farms')}
+              onClick={() =>
+                navigate('/my-all-community', {
+                  state: { initialTab: communityToggle },
+                })
+              }
             >
               전체보기 <ArrowIcon />
             </button>
@@ -244,88 +363,22 @@ export const MyPage = () => {
         </div>
         <div className="h-6"></div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16">
-          {farmToggle === 'my'
-            ? myFarms.slice(0, 3).map((farm) => (
-                <div key={farm.id}>
-                  <FarmCard farm={farm} />
-                </div>
-              ))
-            : farmToggle === 'renting'
-              ? usedFarms.slice(0, 3).map((farm) => (
-                  <div key={farm.id}>
-                    <RentingFarmCard farm={farm} />
-                  </div>
-                ))
-              : bookmarkedFarms.slice(0, 3).map((farm) => (
-                  <div key={farm.id}>
-                    <FarmCard farm={farm} />
-                  </div>
-                ))}
-        </div>
-
-        {/* 커뮤니티 */}
-        <div className="pt-16 md:pt-18">
-          <div className="flex flex-col gap-2 w-full">
-            <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">커뮤니티</h2>
-            <div className="flex items-end justify-between w-full">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
-                <div className="relative">
-                  <button
-                    className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
-                      communityToggle === 'written'
-                        ? 'text-black border-[#1aa752]'
-                        : 'text-[#bbbbbb] border-transparent'
-                    }`}
-                    onClick={() => setCommunityToggle('written')}
-                  >
-                    작성 글
-                  </button>
-                </div>
-                <div className="relative">
-                  <button
-                    className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors whitespace-nowrap ${
-                      communityToggle === 'liked'
-                        ? 'text-black border-[#1aa752]'
-                        : 'text-[#bbbbbb] border-transparent'
-                    }`}
-                    onClick={() => setCommunityToggle('liked')}
-                  >
-                    좋아요 누른 글
-                  </button>
-                </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-24">
+          {(communityToggle === 'written' ? myPosts : likedPosts)
+            .slice(0, 3)
+            .map((post) => (
+              <div key={post.id}>
+                <CommunityPostCard
+                  id={post.id}
+                  image={post.thumbnailUrl}
+                  username={post.authorNickname}
+                  title={post.title}
+                  content={post.content}
+                  initialLiked={post.liked}
+                  createdAt={post.createdAt}
+                />
               </div>
-              <button
-                className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
-                onClick={() =>
-                  navigate('/my-all-community', {
-                    state: { initialTab: communityToggle },
-                  })
-                }
-              >
-                전체보기 <ArrowIcon />
-              </button>
-            </div>
-          </div>
-          <div className="h-6"></div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-24">
-            {(communityToggle === 'written' ? myPosts : likedPosts)
-              .slice(0, 3)
-              .map((post) => (
-                <div key={post.id}>
-                  <CommunityPostCard
-                    id={post.id}
-                    image={post.thumbnailUrl}
-                    username={post.authorNickname}
-                    title={post.title}
-                    content={post.content}
-                    initialLiked={post.liked}
-                    createdAt={post.createdAt}
-                  />
-                </div>
-              ))}
-          </div>
+            ))}
         </div>
       </div>
 

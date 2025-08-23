@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
@@ -8,6 +8,7 @@ import { fetchReviewsByFarmId } from '../apis/reviewApi';
 import { toggleBookmark, removeBookmark } from '../apis/bookmark';
 import { createChatRoom } from '../apis/chatApi';
 import profile from '../assets/profile.png';
+import ReviewModal from '../components/common/ReviewModal';
 
 const PlantDetail = () => {
   const { id } = useParams();
@@ -17,19 +18,29 @@ const PlantDetail = () => {
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const location = useLocation();
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const getTimeDifference = (createdAt) => {
     const now = new Date();
     const created = new Date(createdAt);
     const diffTime = Math.abs(now - created);
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
       return diffHours === 0 ? '방금 전' : `${diffHours}시간 전`;
     }
     return `${diffDays}일 전`;
   };
+
+  // location.state.openReviewModal 이 true면 모달 열기
+  useEffect(() => {
+    if (location.state?.openReviewModal) {
+      setIsReviewModalOpen(true);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.state, location.pathname, navigate]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,7 +52,7 @@ const PlantDetail = () => {
 
         const farmData = await fetchFarmById(id);
         setFarmData(farmData);
-        
+
         // 서버에서 받은 북마크 상태 사용
         setIsBookmarked(farmData.bookmarked);
 
@@ -82,7 +93,7 @@ const PlantDetail = () => {
         // 북마크 추가
         await toggleBookmark(id);
       }
-      
+
       // 서버 API 성공 시 상태 업데이트
       setIsBookmarked(newBookmarkStatus);
     } catch (error) {
@@ -111,21 +122,21 @@ const PlantDetail = () => {
       console.log('farmData:', farmData);
       console.log('providerId:', farmData.owner?.userId);
       console.log('farmId:', farmData.id);
-      
+
       // 채팅방 생성
       const response = await createChatRoom({
         providerId: farmData.owner.userId,
-        farmId: farmData.id
+        farmId: farmData.id,
       });
-      
+
       console.log('채팅방 생성 성공:', response);
-      
+
       // 생성된 채팅방 ID와 함께 채팅 페이지로 이동
-      navigate('/chat', { 
-        state: { 
+      navigate('/chat', {
+        state: {
           chatRoomId: response.chatRoomId,
-          farmData: farmData 
-        } 
+          farmData: farmData,
+        },
       });
     } catch (error) {
       console.error('채팅방 생성 실패:', error);
@@ -133,18 +144,33 @@ const PlantDetail = () => {
     }
   };
 
-
   const LocationIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path d="M12 22C12 22 4 16 4 10C4 5 8 2 12 2C16 2 20 5 20 10C20 16 12 22 12 22ZM12 13C12.7956 13 13.5587 12.6839 14.1213 12.1213C14.6839 11.5587 15 10.7956 15 10C15 9.20435 14.6839 8.44129 14.1213 7.87868C13.5587 7.31607 12.7956 7 12 7C11.2044 7 10.4413 7.31607 9.87868 7.87868C9.31607 8.44129 9 9.20435 9 10C9 10.7956 9.31607 11.5587 9.87868 12.1213C10.4413 12.6839 11.2044 13 12 13Z" stroke="#777777" strokeWidth="1.5"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M12 22C12 22 4 16 4 10C4 5 8 2 12 2C16 2 20 5 20 10C20 16 12 22 12 22ZM12 13C12.7956 13 13.5587 12.6839 14.1213 12.1213C14.6839 11.5587 15 10.7956 15 10C15 9.20435 14.6839 8.44129 14.1213 7.87868C13.5587 7.31607 12.7956 7 12 7C11.2044 7 10.4413 7.31607 9.87868 7.87868C9.31607 8.44129 9 9.20435 9 10C9 10.7956 9.31607 11.5587 9.87868 12.1213C10.4413 12.6839 11.2044 13 12 13Z"
+        stroke="#777777"
+        strokeWidth="1.5"
+      />
     </svg>
   );
 
   const BookmarkIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path 
-        d="M5 2V22L12 19L19 22V2H5Z"  
-        fill={isBookmarked ? "#1aa752" : "none"}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M5 2V22L12 19L19 22V2H5Z"
+        fill={isBookmarked ? '#1aa752' : 'none'}
         stroke="#1aa752"
         strokeWidth="1.5"
       />
@@ -152,8 +178,14 @@ const PlantDetail = () => {
   );
 
   const SendIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="#1aa752"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="#1aa752" />
     </svg>
   );
 
@@ -176,7 +208,9 @@ const PlantDetail = () => {
         <Navbar />
         <div className="bg-white min-h-screen pt-32 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-[20px] text-[#777777]">텃밭 정보를 찾을 수 없습니다.</p>
+            <p className="text-[20px] text-[#777777]">
+              텃밭 정보를 찾을 수 없습니다.
+            </p>
           </div>
         </div>
       </>
@@ -187,24 +221,29 @@ const PlantDetail = () => {
     <>
       <div className="bg-white min-h-screen">
         <div className="relative w-full min-h-screen">
-          
           {/* User info */}
           <div className="absolute box-border content-stretch flex flex-row items-center left-40 p-0 top-36">
             <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0">
               <div className="box-border content-stretch flex flex-row gap-3 items-center justify-center p-0 relative shrink-0">
                 <div className="relative shrink-0 size-12">
-                  <img 
-                    src={profile} 
-                    alt="profile" 
+                  <img
+                    src={profile}
+                    alt="profile"
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>
                 <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.owner?.nickname}</p>
+                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
+                    {farmData.owner?.nickname}
+                  </p>
                 </div>
               </div>
               <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left text-nowrap tracking-[-0.48px]">
-                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData?.createdAt ? getTimeDifference(farmData.createdAt) : '1일 전'}</p>
+                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
+                  {farmData?.createdAt
+                    ? getTimeDifference(farmData.createdAt)
+                    : '1일 전'}
+                </p>
               </div>
             </div>
           </div>
@@ -213,10 +252,11 @@ const PlantDetail = () => {
             {/* Farm image */}
             <div
               className="bg-center bg-cover bg-no-repeat h-[588px] rounded-2xl shrink-0 w-[739px]"
-              style={{ 
-                backgroundImage: farmData.imageUrls && farmData.imageUrls.length > 0 
-                  ? `url('${farmData.imageUrls[0]}')` 
-                  : 'none'
+              style={{
+                backgroundImage:
+                  farmData.imageUrls && farmData.imageUrls.length > 0
+                    ? `url('${farmData.imageUrls[0]}')`
+                    : 'none',
               }}
             >
               {(!farmData.imageUrls || farmData.imageUrls.length === 0) && (
@@ -225,7 +265,7 @@ const PlantDetail = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Farm description */}
             <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#111111] text-left w-full">
               <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0 text-[36px] tracking-[-0.72px] w-full">
@@ -233,15 +273,20 @@ const PlantDetail = () => {
               </div>
               <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[1.5] relative shrink-0 text-[20px] tracking-[-0.6px] w-full">
                 {farmData.description.split('\n').map((line, index) => (
-                  <p key={index} className="block mb-0">{line || '\u00A0'}</p>
+                  <p key={index} className="block mb-0">
+                    {line || '\u00A0'}
+                  </p>
                 ))}
               </div>
             </div>
           </div>
 
           {/* Bookmark - Same line as user info, above right column */}
-          <div className="absolute top-36" style={{ left: "calc(83.333% - 30px)" }}>
-            <div 
+          <div
+            className="absolute top-36"
+            style={{ left: 'calc(83.333% - 30px)' }}
+          >
+            <div
               className="overflow-clip relative shrink-0 size-6 cursor-pointer"
               onClick={handleBookmarkToggle}
             >
@@ -250,7 +295,10 @@ const PlantDetail = () => {
           </div>
 
           {/* Right Column - Info Panel */}
-          <div className="absolute box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 top-56 w-[338px]" style={{ left: "calc(66.667% - 18px)" }}>
+          <div
+            className="absolute box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 top-56 w-[338px]"
+            style={{ left: 'calc(66.667% - 18px)' }}
+          >
             {/* Title */}
             <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[32px] text-left tracking-[-0.64px] w-full">
               <p className="block leading-[1.5]">{farmData.title}</p>
@@ -266,7 +314,9 @@ const PlantDetail = () => {
                     <LocationIcon />
                   </div>
                   <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[20px] text-left tracking-[-0.6px]">
-                    <p className="adjustLetterSpacing block leading-[1.5]">{farmData.address}</p>
+                    <p className="adjustLetterSpacing block leading-[1.5]">
+                      {farmData.address}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -279,10 +329,14 @@ const PlantDetail = () => {
                 <div className="box-border content-stretch flex flex-row gap-2 items-end justify-start p-0 relative shrink-0 w-full">
                   <div className="box-border content-stretch flex flex-row gap-1 items-end justify-start leading-[0] not-italic p-0 relative shrink-0 text-left">
                     <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] h-[31px] justify-center relative shrink-0 text-[#1aa752] text-[32px] tracking-[-0.64px] w-[86px]">
-                      <p className="adjustLetterSpacing block leading-[1.5]">{farmData.price.toLocaleString()}</p>
+                      <p className="adjustLetterSpacing block leading-[1.5]">
+                        {farmData.price.toLocaleString()}
+                      </p>
                     </div>
                     <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-8 justify-center relative shrink-0 text-[#000000] text-[24px] tracking-[-0.48px] w-[18px]">
-                      <p className="adjustLetterSpacing block leading-[1.5]">원</p>
+                      <p className="adjustLetterSpacing block leading-[1.5]">
+                        원
+                      </p>
                     </div>
                   </div>
                   <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-[33px] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[20px] text-left tracking-[-0.6px] w-[7px]">
@@ -290,10 +344,14 @@ const PlantDetail = () => {
                   </div>
                   <div className="box-border content-stretch flex flex-row gap-1 h-8 items-center justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
                     <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0">
-                      <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">{farmData.rentalPeriod}</p>
+                      <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">
+                        {farmData.rentalPeriod}
+                      </p>
                     </div>
                     <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center relative shrink-0">
-                      <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">일</p>
+                      <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">
+                        일
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -309,15 +367,21 @@ const PlantDetail = () => {
                     <div className="box-border content-stretch flex flex-row gap-1 items-start justify-start p-0 relative shrink-0">
                       <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0">
                         <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                          <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.size}</p>
+                          <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
+                            {farmData.size}
+                          </p>
                         </div>
                       </div>
                       <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">㎡</p>
+                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
+                          ㎡
+                        </p>
                       </div>
                     </div>
                     <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                      <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">교실 크기</p>
+                      <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
+                        교실 크기
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -328,7 +392,9 @@ const PlantDetail = () => {
                   <div className="box-border content-stretch flex flex-col gap-1 items-start justify-start p-0 relative shrink-0 w-full">
                     <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0">
                       <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.theme}</p>
+                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
+                          {farmData.theme}
+                        </p>
                       </div>
                     </div>
                     <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
@@ -340,18 +406,19 @@ const PlantDetail = () => {
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* Chat button */}
-          <div 
+          <div
             className="absolute bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] top-[752px] cursor-pointer"
-            style={{ left: "calc(83.333% - 78px)" }}
+            style={{ left: 'calc(83.333% - 78px)' }}
             onClick={handleChatButtonClick}
           >
             <div className="box-border content-stretch flex flex-row items-center justify-start p-0 relative shrink-0">
               <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">채팅하기</p>
+                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
+                  채팅하기
+                </p>
               </div>
               <div className="flex items-center justify-center relative shrink-0">
                 <div className="flex-none rotate-[180deg]">
@@ -364,10 +431,13 @@ const PlantDetail = () => {
           </div>
 
           {/* Reviews section */}
-          <div className="absolute top-[873px]" style={{ left: "calc(66.667% - 13px)" }}>
-            <FarmReview 
+          <div
+            className="absolute top-[873px]"
+            style={{ left: 'calc(66.667% - 13px)' }}
+          >
+            <FarmReview
               farmId={id}
-              reviews={reviews} 
+              reviews={reviews}
               loading={reviewsLoading}
               onReviewsUpdate={setReviews}
             />
@@ -376,7 +446,19 @@ const PlantDetail = () => {
           {/* ChatbotIcon */}
           <ChatbotIcon />
         </div>
-        
+        {/* ✅ 리뷰 모달을 여기 추가 */}
+        <ReviewModal
+          isOpen={isReviewModalOpen}
+          onClose={() => setIsReviewModalOpen(false)}
+          onSubmit={(reviewText) => {
+            console.log('리뷰 제출:', reviewText);
+            setReviews((prev) => [
+              { id: Date.now(), content: reviewText, createdAt: new Date() },
+              ...prev,
+            ]);
+          }}
+        />
+
         {/* Bottom spacing */}
         <div className="h-32"></div>
       </div>
