@@ -104,7 +104,7 @@ const RecommendFarmCard = ({ farm}) => {
       {/* 이미지 섹션 */}
       <div className="relative">
         <div 
-          className="w-full h-[284px] bg-cover bg-center rounded-t-2xl"
+          className="w-full aspect-[4/3] bg-cover bg-center rounded-t-2xl"
           style={{ backgroundImage: `url(${farm.thumbnailUrl})` }}
         />
         {/* 북마크 아이콘 - 사진 오른쪽 아래 */}

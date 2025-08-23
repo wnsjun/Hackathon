@@ -36,10 +36,9 @@ const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  // 화면 크기에 따라 추천 매물 개수 결정
+  // 화면 크기에 따라 추천 매물 개수 결정 (항상 2개로 고정)
   const getRecommendedCount = () => {
-    if (window.innerWidth <= 360) return 2;
-    return 3;
+    return 2;
   };
 
   // 랜덤으로 선택하는 함수
@@ -203,7 +202,8 @@ const Home = () => {
   };
 
   const handleViewAllRecommendationsClick = () => {
-    setDisplayedRecommendedFarms(getRandomFarms(recommendedFarms));
+    const newRecommendations = getRandomFarms(recommendedFarms);
+    setDisplayedRecommendedFarms(newRecommendations);
   };
 
   // 화면 크기 변경 감지
@@ -256,7 +256,7 @@ const Home = () => {
               </button>
             </div>
             {Array.isArray(displayedRecommendedFarms) && displayedRecommendedFarms.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {displayedRecommendedFarms.map((farm) => (
                   <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
                 ))}
@@ -385,7 +385,7 @@ const Home = () => {
               <p className="text-gray-400 text-sm">필터 조건을 변경해보세요</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredFarms.map((farm) => (
                 <FarmCard key={farm.id} farm={farm} isRecommended={false} />
               ))}

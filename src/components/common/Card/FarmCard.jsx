@@ -91,7 +91,7 @@ const FarmCard = ({ farm }) => {
       {/* 이미지 섹션 */}
       <div className="relative">
         <div
-          className="bg-center bg-cover bg-no-repeat h-[284px] rounded-tl-[16px] rounded-tr-[16px] w-full"
+          className="bg-center bg-cover bg-no-repeat aspect-[4/3] rounded-tl-[16px] rounded-tr-[16px] w-full"
           style={{ backgroundImage: `url('${farm.thumbnailUrl || placeholder }')` }}
         />
         {/* 북마크 아이콘 - 사진 오른쪽 아래 */}

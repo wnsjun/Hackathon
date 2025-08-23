@@ -7,6 +7,7 @@ import RentingFarmCard from '../components/common/Card/RentingFarmCard';
 import FarmCard from '../components/common/Card/FarmCard';
 import CommunityPostCard from '../components/common/Card/CommunityPostCard';
 import { useCoin } from '../contexts/CoinContext';
+import { Navbar } from '../components/layouts/Navbar';
 
 import {
   useProfile,
@@ -108,16 +109,18 @@ export const MyPage = () => {
   );
 
   return (
+    <>
+      <Navbar />
     <div>
       {/* 프로필 영역 */}
       <div className="flex pt-32">
-        <div className="flex pt-12 pl-40 w-full h-[336px] relative">
+        <div className="flex pt-12 pl-4 sm:pl-8 md:pl-16 lg:pl-32 xl:pl-40 w-full h-[336px] relative">
           <img
-            className="w-60 h-60 rounded-full"
+            className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 xl:w-60 xl:h-60 rounded-full"
             src={profile.imageUrl || '/assets/profile.svg'}
             alt="Profile"
           />
-          <div className="flex flex-col pl-[46px] pt-[43px] items-start">
+          <div className="flex flex-col pl-4 sm:pl-6 md:pl-8 lg:pl-10 xl:pl-[46px] pt-4 sm:pt-6 md:pt-8 lg:pt-10 xl:pt-[43px] items-start">
             <div className="flex items-center gap-4">
               <h1 className={styles.nickname}>{profile.nickname}</h1>
             </div>
@@ -129,7 +132,7 @@ export const MyPage = () => {
           </div>
 
           {/* 로그아웃 & 설정 버튼 */}
-          <div className="absolute top-4 right-6 mt-12 flex items-center gap-3">
+          <div className="absolute top-4 right-2 sm:right-4 md:right-6 mt-12 flex items-center gap-3">
             <button
               onClick={handleLogout}
               className="text-red-500 font-semibold cursor-pointer"
@@ -143,7 +146,7 @@ export const MyPage = () => {
               onClick={() => navigate('/setting')}
             />
           </div>
-          <div className="bg-[rgba(26,167,82,0.05)] box-border content-stretch flex flex-col gap-2 items-end justify-start pb-6 pt-4 px-6 relative rounded-2xl shrink-0 border border-[#39bb6d] ml-auto mt-auto mr-40 mb-12 w-[320px]">
+          <div className="bg-[rgba(26,167,82,0.05)] box-border content-stretch flex flex-col gap-2 items-end justify-start pb-6 pt-4 px-6 relative rounded-2xl shrink-0 border border-[#39bb6d] ml-auto mt-auto mr-4 sm:mr-8 md:mr-16 lg:mr-32 xl:mr-40 mb-12 w-[240px] sm:w-[280px] md:w-[300px] lg:w-[320px]">
             <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
               <div className="box-border content-stretch flex flex-row gap-2 items-center justify-start p-0 relative shrink-0">
                 <div className="relative shrink-0 size-8">
@@ -178,7 +181,7 @@ export const MyPage = () => {
         </div>
       </div>
 
-      <div className="pl-40 pr-40 pt-18">
+      <div className="pl-4 pr-4 sm:pl-8 sm:pr-8 md:pl-16 md:pr-16 lg:pl-32 lg:pr-32 xl:pl-40 xl:pr-40 pt-18">
         {/* 거래 리뷰 */}
         <div className="flex items-center justify-between mb-6">
           <h1 className={styles.tradeReviewTitle}>거래 리뷰</h1>
@@ -292,33 +295,21 @@ export const MyPage = () => {
         </div>
         <div className="h-6"></div>
 
-        <div className="flex gap-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16">
           {farmToggle === 'my'
             ? myFarms.slice(0, 3).map((farm) => (
-                <div
-                  key={farm.id}
-                  className="flex-none"
-                  style={{ width: 'calc(33.333% - 16px)' }}
-                >
+                <div key={farm.id}>
                   <FarmCard farm={farm} />
                 </div>
               ))
             : farmToggle === 'renting'
               ? usedFarms.slice(0, 3).map((farm) => (
-                  <div
-                    key={farm.id}
-                    className="flex-none"
-                    style={{ width: 'calc(33.333% - 16px)' }}
-                  >
+                  <div key={farm.id}>
                     <RentingFarmCard farm={farm} />
                   </div>
                 ))
               : bookmarkedFarms.slice(0, 3).map((farm) => (
-                  <div
-                    key={farm.id}
-                    className="flex-none"
-                    style={{ width: 'calc(33.333% - 16px)' }}
-                  >
+                  <div key={farm.id}>
                     <FarmCard farm={farm} />
                   </div>
                 ))}
@@ -405,15 +396,11 @@ export const MyPage = () => {
           </div>
           <div className="h-6"></div>
 
-          <div className="flex gap-6 mb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-24">
             {(communityToggle === 'written' ? myPosts : likedPosts)
               .slice(0, 3)
               .map((post) => (
-                <div
-                  key={post.id}
-                  className="flex-none"
-                  style={{ width: 'calc(33.333% - 16px)' }}
-                >
+                <div key={post.id}>
                   <CommunityPostCard
                     id={post.id}
                     image={post.thumbnailUrl}
@@ -432,5 +419,6 @@ export const MyPage = () => {
       {/* 챗봇 아이콘 */}
       <ChatbotIcon />
     </div>
+    </>
   );
 };
