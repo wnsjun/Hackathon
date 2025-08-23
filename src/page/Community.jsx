@@ -17,25 +17,45 @@ export const Community = () => {
   const [searchResults, setSearchResults] = useState({ certification: [], tips: [] });
   const [isSearching, setIsSearching] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [showTab, setShowTab] = useState(true); // 👈 스크롤에 따라 탭 노출 여부 제어
   const navigate = useNavigate();
   const query = useQuery();
   const searchQuery = query.get('search') || '';
 
+  // 스크롤 방향 감지
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      if (window.scrollY < lastScrollY) {
+        // 스크롤 올릴 때 → 보이기
+        setShowTab(true);
+      } else {
+        // 스크롤 내릴 때 → 숨기기
+        setShowTab(false);
+      }
+      lastScrollY = window.scrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const searchPosts = async (searchTerm) => {
     try {
       setSearchLoading(true);
-      
+
       // 전체 커뮤니티에서 검색 (결과 있는지 확인용)
       const allResponse = await instance.get(`/posts/search?title=${encodeURIComponent(searchTerm)}`);
       const hasResults = allResponse.data && allResponse.data.length > 0;
-      
+
       if (hasResults) {
         // 결과가 있으면 각 카테고리별로 검색
         const [tipsResponse, feedResponse] = await Promise.all([
           instance.get(`/posts/search?title=${encodeURIComponent(searchTerm)}&category=TIP`),
           instance.get(`/posts/search?title=${encodeURIComponent(searchTerm)}&category=FEED`)
         ]);
-        
+
         // 검색 결과 데이터 변환
         const transformSearchResults = (results) => (results || []).map(post => ({
           id: post.id,
@@ -55,7 +75,6 @@ export const Community = () => {
         });
         setIsSearching(true);
       } else {
-        // 결과가 없으면 빈 배열로 설정
         setSearchResults({ certification: [], tips: [] });
         setIsSearching(true);
       }
@@ -75,7 +94,7 @@ export const Community = () => {
           fetchFeedPosts(),
           fetchTipPosts()
         ]);
-        
+
         const transformedFeedPosts = (feedPosts || []).map(post => ({
           id: post.id,
           title: post.title,
@@ -136,56 +155,68 @@ export const Community = () => {
     navigate(`/community/write?type=${type}`);
   };
 
-  // 검색 중이면 검색 결과를, 아니면 일반 게시글을 표시
   const postsToShow = (isSearching ? searchResults[activeTab] || [] : posts[activeTab] || [])
     .sort((a, b) => {
-      // createdAt 기준 최신순 정렬
       if (a.createdAt && b.createdAt) {
         return new Date(b.createdAt) - new Date(a.createdAt);
       }
-      // createdAt이 없으면 id 기준으로 정렬
       return (b.id || 0) - (a.id || 0);
     });
-  
-  // 검색 결과가 전체적으로 있는지 확인 (탭 네비게이션 표시 여부 결정)
+
   const hasAnySearchResults = isSearching && (
     (searchResults.certification && searchResults.certification.length > 0) ||
     (searchResults.tips && searchResults.tips.length > 0)
   );
 
   return (
-    <div className="px-4 sm:px-6 md:px-12 py-6 pt-20 md:pt-32 pb-24 md:pb-12">
+    <div className="px-4 sm:px-6 md:px-12 py-6 pt-50 md:pt-32 pb-24 md:pb-12 ">
       {/* 검색 중이고 결과가 없으면 탭 네비게이션 숨김 */}
       {(!isSearching || hasAnySearchResults) && (
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 max-w-6xl mx-auto gap-4">
-          <div className="flex w-full md:w-auto">
-            <button
-              onClick={() => handleTabClick('certification')}
-              className={`cursor-pointer px-3 md:px-6 py-2 md:py-3 mr-2 md:mr-4 text-lg md:text-2xl font-semibold border-b-2 md:border-b-4 transition-colors flex-1 md:flex-none ${
-                activeTab === 'certification' 
-                  ? 'text-black border-[#1aa752]' 
-                  : 'text-gray-400 border-transparent'
-              }`}
-            >
-              인증 피드
-            </button>
-            <button
-              onClick={() => handleTabClick('tips')}
-              className={`cursor-pointer px-3 md:px-6 py-2 md:py-3 text-lg md:text-2xl font-semibold border-b-2 md:border-b-4 transition-colors flex-1 md:flex-none ${
-                activeTab === 'tips' 
-                  ? 'text-black border-[#1aa752]' 
-                  : 'text-gray-400 border-transparent'
-              }`}
-            >
-              재배 팁
-            </button>
-          </div>
-          <div className="w-full md:w-auto">
-            <Button onClick={handleWriteClick} variant="farm" className="w-full md:w-auto text-base md:text-lg">
-              작성하기
-            </Button>
+        <div
+          className={`
+            fixed top-16 left-0 w-full bg-white z-30 px-4 py-3
+            md:static md:bg-transparent md:translate-y-0
+            transform transition-transform duration-300
+            ${showTab ? 'translate-y-0' : '-translate-y-full'}
+          `}
+        >
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center max-w-6xl mx-auto gap-4">
+            <div className="flex w-full md:w-auto">
+              <button
+                onClick={() => handleTabClick('certification')}
+                className={`cursor-pointer px-3 md:px-6 py-2 md:py-3 mr-2 md:mr-4 text-lg md:text-2xl font-semibold border-b-2 md:border-b-4 transition-colors flex-1 md:flex-none ${
+                  activeTab === 'certification'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-gray-400 border-transparent'
+                }`}
+              >
+                인증 피드
+              </button>
+              <button
+                onClick={() => handleTabClick('tips')}
+                className={`cursor-pointer px-3 md:px-6 py-2 md:py-3 text-lg md:text-2xl font-semibold border-b-2 md:border-b-4 transition-colors flex-1 md:flex-none ${
+                  activeTab === 'tips'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-gray-400 border-transparent'
+                }`}
+              >
+                재배 팁
+              </button>
+            </div>
+            
+            <div className="flex justify-end ml-auto">
+              <Button
+              onClick={handleWriteClick}
+              variant="farm"
+              className="text-base md:text-lg
+              text-[#1aa752]
+              font-bold
+              text-[16px]"
+              > 작성하기 + </Button>
+            </div>
           </div>
         </div>
+
       )}
 
       {/* 게시글 그리드 */}
@@ -222,4 +253,3 @@ export const Community = () => {
     </div>
   );
 };
-
