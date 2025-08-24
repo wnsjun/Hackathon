@@ -34,33 +34,35 @@ const Home = () => {
   });
   const [nickname, setNickname] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
 
-  // 화면 크기에 따라 추천 매물 개수 결정
-  const getRecommendedCount = () => {
-    // md 이상일 때 3개, 미만일 때 2개
-    return window.innerWidth >= 768 ? 3 : 2;
-  };
-
   // 랜덤으로 선택하는 함수 - 데스크톱 3개, 모바일 2개 고정
-  const getRandomFarms = (farms, count = null) => {
-    const actualCount = count || getRecommendedCount();
+  const getRandomFarms = (farms, isMobile = false) => {
+    // 데스크톱은 항상 3개, 모바일은 항상 2개
+    const count = isMobile ? 2 : 3;
     
     if (!Array.isArray(farms) || farms.length === 0) {
-      // 데이터가 없을 때도 빈 슬롯을 채우는 대신 빈 배열 반환
       return [];
     }
     
-    if (farms.length >= actualCount) {
+    // 먼저 available이 false가 아닌 매물들만 필터링
+    const availableFarms = farms.filter(farm => farm.available !== false && farm.isAvailable !== false);
+    
+    if (availableFarms.length === 0) {
+      return [];
+    }
+    
+    if (availableFarms.length >= count) {
       // 충분한 데이터가 있으면 랜덤 선택
-      const shuffled = [...farms].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, actualCount);
+      const shuffled = [...availableFarms].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
     } else {
       // 데이터가 부족하면 반복하여 채우기
       const result = [];
-      const shuffled = [...farms].sort(() => 0.5 - Math.random());
+      const shuffled = [...availableFarms].sort(() => 0.5 - Math.random());
       
-      for (let i = 0; i < actualCount; i++) {
+      for (let i = 0; i < count; i++) {
         result.push(shuffled[i % shuffled.length]);
       }
       
@@ -97,12 +99,7 @@ const Home = () => {
 
       const recommendedFarmsData = response.recommendedFarms || [];
       setRecommendedFarms(recommendedFarmsData);
-      // 추천 매물이 있을 때만 표시
-      if (recommendedFarmsData.length > 0) {
-        setDisplayedRecommendedFarms(getRandomFarms(recommendedFarmsData));
-      } else {
-        setDisplayedRecommendedFarms([]);
-      }
+      // 추천 매물 설정은 useEffect에서 처리하도록 변경
     } catch (err) {
       console.error('매물 목록 로딩 실패:', err);
       setError('매물 목록을 불러올 수 없습니다.');
@@ -113,6 +110,14 @@ const Home = () => {
   };
 
   useEffect(() => {
+    // 화면 크기 체크
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // 초기 화면 크기 설정
+    checkIsMobile();
+    
     loadFarms();
     // accessToken으로 로그인 상태 확인
     const loginStatus = !!localStorage.getItem('accessToken');
@@ -224,21 +229,25 @@ const Home = () => {
   };
 
   const handleViewAllRecommendationsClick = () => {
-    const newRecommendations = getRandomFarms(recommendedFarms);
+    // 현재 상태의 isMobile 값을 사용하여 새로운 추천 매물 선택
+    const newRecommendations = getRandomFarms(recommendedFarms, isMobile);
     setDisplayedRecommendedFarms(newRecommendations);
   };
 
-  // 화면 크기 변경 감지
+  // 추천 매물이 로드되거나 화면 크기가 변경될 때 추천 매물 업데이트
   useEffect(() => {
-    const handleResize = () => {
-      if (recommendedFarms.length > 0) {
-        setDisplayedRecommendedFarms(getRandomFarms(recommendedFarms));
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [recommendedFarms]);
+    if (recommendedFarms.length > 0) {
+      console.log('추천매물 업데이트:', { 
+        isMobile, 
+        targetCount: isMobile ? 2 : 3, 
+        totalRecommended: recommendedFarms.length,
+        availableCount: recommendedFarms.filter(farm => farm.available !== false && farm.isAvailable !== false).length
+      });
+      const newRecommendations = getRandomFarms(recommendedFarms, isMobile);
+      console.log('최종 선택된 추천매물:', newRecommendations.length, newRecommendations);
+      setDisplayedRecommendedFarms(newRecommendations);
+    }
+  }, [recommendedFarms, isMobile]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -295,7 +304,7 @@ const Home = () => {
             </div>
             {Array.isArray(displayedRecommendedFarms) && displayedRecommendedFarms.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                {displayedRecommendedFarms.filter(farm => farm.available !== false && farm.isAvailable !== false).map((farm, index) => (
+                {displayedRecommendedFarms.map((farm, index) => (
                   <RecommendFarmCard key={`${farm.id}-${index}`} farm={farm} isRecommended={true} />
                 ))}
               </div>
