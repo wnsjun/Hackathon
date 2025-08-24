@@ -11,6 +11,15 @@ import {
   getEcoScore,
 } from '../apis/mypage.js';
 
+import { fetchMyReviews } from '../apis/reviewApi';
+
+export const useMyReviews = () => {
+  return useQuery({
+    queryKey: ['myReviews'],
+    queryFn: fetchMyReviews,
+  });
+};
+
 export const useProfile = () =>
   useQuery({
     queryKey: ['profile'],
