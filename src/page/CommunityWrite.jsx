@@ -5,7 +5,6 @@ import ChatbotIcon from '../components/common/ChatbotIcon';
 import { createPost } from '../apis/community';
 
 const imgGroup137 = "/assets/f332ac80ce1bb25afbf288fde0eb65b12ba2ab2c.svg";
-const img2 = "/assets/4c6f992d46ed8ac3206b03f54022654255248123.svg";
 
 export const CommunityWrite = () => {
   const navigate = useNavigate();
@@ -89,16 +88,6 @@ export const CommunityWrite = () => {
     </div>
   );
 
-  const PlusIcon = () => (
-    <div className="overflow-clip relative shrink-0 size-6">
-      <div className="absolute inset-[12.5%]">
-        <div className="absolute inset-[-4.167%]">
-          <img alt="plus" className="block max-w-none size-full" src={img2} />
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <>
       <Navbar />
@@ -126,9 +115,8 @@ export const CommunityWrite = () => {
                 disabled={!isFormValid() || isSubmitting}
               >
                 <span className="text-[24px] tracking-[-0.48px]">
-                  {isSubmitting ? '등록 중...' : '등록'}
+                  {isSubmitting ? '등록 중...' : '등록+'}
                 </span>
-                <PlusIcon />
               </button>
             </div>
           </div>
@@ -159,9 +147,7 @@ export const CommunityWrite = () => {
                       className="border-2 border-dashed border-[#bbbbbb] rounded-lg flex flex-col items-center justify-center cursor-pointer h-[200px] hover:border-[#1aa752] transition-colors"
                       onClick={() => document.getElementById('mobileImageUpload').click()}
                     >
-                      <div className="w-8 h-8">
-                        <CameraIcon />
-                      </div>
+      
                       <p className="text-[12px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
                         + 사진 추가
                       </p>
@@ -173,9 +159,7 @@ export const CommunityWrite = () => {
                   className="h-[300px] flex flex-col items-center justify-center cursor-pointer"
                   onClick={() => document.getElementById('mobileImageUpload').click()}
                 >
-                  <div className="w-8 h-8">
-                    <CameraIcon />
-                  </div>
+                  
                   <p className="text-[12px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
                     사진을 선택해주세요. (최대 4장)
                   </p>
@@ -273,9 +257,6 @@ export const CommunityWrite = () => {
                   className="h-[588px] flex flex-col items-center justify-center cursor-pointer"
                   onClick={() => document.getElementById('imageUpload').click()}
                 >
-                  <div className="w-8 h-8">
-                    <CameraIcon />
-                  </div>
                   <p className="text-[14px] text-[#777777] leading-[1.5] tracking-[-0.42px]">
                     사진을 선택해주세요. (최대 4장)
                   </p>
