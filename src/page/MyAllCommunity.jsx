@@ -118,6 +118,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CommunityPostCard from '../components/common/Card/CommunityPostCard';
 import { useMyPosts, useLikedPosts } from '../hooks/useMyPage';
+import profile from '../assets/profile.png';
 
 const MyAllCommunity = () => {
   const navigate = useNavigate();
@@ -201,6 +202,7 @@ const MyAllCommunity = () => {
               likeCount={post.likeCount}
               initialLiked={post.liked}
               createdAt={post.createdAt}
+              profileImage={post.profileImage || profileImg}
             />
           </div>
         ))}
