@@ -45,6 +45,7 @@ const App = () => {
             <Route path="/addinfo" element={<AddInfo />} />
             <Route path="/signupinfo" element={<SignupInfo />} />
             <Route path="/credit" element={<CreditPage/>}/>
+            <Route path="/credit/:chatRoomId" element={<CreditPage/>}/>
             <Route path="/coin-charge" element={<CoinChargePage />} />
           </Route>
         </Routes>

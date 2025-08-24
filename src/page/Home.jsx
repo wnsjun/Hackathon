@@ -42,14 +42,30 @@ const Home = () => {
     return window.innerWidth >= 768 ? 3 : 2;
   };
 
-  // 랜덤으로 선택하는 함수
+  // 랜덤으로 선택하는 함수 - 데스크톱 3개, 모바일 2개 고정
   const getRandomFarms = (farms, count = null) => {
-    if (!Array.isArray(farms) || farms.length === 0) return [];
     const actualCount = count || getRecommendedCount();
-    if (farms.length <= actualCount) return farms;
     
-    const shuffled = [...farms].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, actualCount);
+    if (!Array.isArray(farms) || farms.length === 0) {
+      // 데이터가 없을 때도 빈 슬롯을 채우는 대신 빈 배열 반환
+      return [];
+    }
+    
+    if (farms.length >= actualCount) {
+      // 충분한 데이터가 있으면 랜덤 선택
+      const shuffled = [...farms].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, actualCount);
+    } else {
+      // 데이터가 부족하면 반복하여 채우기
+      const result = [];
+      const shuffled = [...farms].sort(() => 0.5 - Math.random());
+      
+      for (let i = 0; i < actualCount; i++) {
+        result.push(shuffled[i % shuffled.length]);
+      }
+      
+      return result;
+    }
   };
 
   const resetFilters = () => {
@@ -81,7 +97,12 @@ const Home = () => {
 
       const recommendedFarmsData = response.recommendedFarms || [];
       setRecommendedFarms(recommendedFarmsData);
-      setDisplayedRecommendedFarms(getRandomFarms(recommendedFarmsData));
+      // 추천 매물이 있을 때만 표시
+      if (recommendedFarmsData.length > 0) {
+        setDisplayedRecommendedFarms(getRandomFarms(recommendedFarmsData));
+      } else {
+        setDisplayedRecommendedFarms([]);
+      }
     } catch (err) {
       console.error('매물 목록 로딩 실패:', err);
       setError('매물 목록을 불러올 수 없습니다.');
@@ -274,8 +295,8 @@ const Home = () => {
             </div>
             {Array.isArray(displayedRecommendedFarms) && displayedRecommendedFarms.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                {displayedRecommendedFarms.filter(farm => farm.available !== false && farm.isAvailable !== false).map((farm) => (
-                  <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
+                {displayedRecommendedFarms.filter(farm => farm.available !== false && farm.isAvailable !== false).map((farm, index) => (
+                  <RecommendFarmCard key={`${farm.id}-${index}`} farm={farm} isRecommended={true} />
                 ))}
               </div>
             ) : (

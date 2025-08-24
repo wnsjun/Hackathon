@@ -4,11 +4,13 @@ import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import PaymentSection from '../components/common/PaymentSection';
 import { getChatRoomFarm } from '../apis/chatApi';
+import { getEcoScore } from '../apis/mypage';
 
 const CreditPage = () => {
   const { chatRoomId } = useParams(); // URL에서 chatRoomId를 받음
   const navigate = useNavigate();
   const [farmData, setFarmData] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,25 +19,48 @@ const CreditPage = () => {
         setLoading(true);
         if (chatRoomId) {
           // 채팅방 텃밭 정보 조회 API 사용
-          const response = await getChatRoomFarm(chatRoomId);
+          const farmResponse = await getChatRoomFarm(chatRoomId);
+          // 친환경 점수 조회 API 별도 호출
+          const ecoScoreResponse = await getEcoScore();
+          
           // API 응답에서 farm 객체를 추출하고 필요한 필드 추가
           const farmData = {
-            ...response.farm,
-            // thumbnailUrl을 imageUrls 배열로 변환
-            imageUrls: response.farm.thumbnailUrl ? [response.farm.thumbnailUrl] : [],
+            ...farmResponse.farm,
+            // imageUrls가 빈 배열이고 thumbnailUrl이 있으면 사용
+            imageUrls: farmResponse.farm.imageUrls?.length > 0 
+              ? farmResponse.farm.imageUrls 
+              : (farmResponse.farm.thumbnailUrl ? [farmResponse.farm.thumbnailUrl] : []),
             // description이 null인 경우 기본값 설정
-            description: response.farm.description || "텃밭에 대한 설명이 없습니다.",
-            // owner 정보가 없는 경우 기본값 설정 (provider 정보 활용 가능)
-            owner: response.provider || { userId: null, nickname: "농장주" },
+            description: farmResponse.farm.description || "텃밭에 대한 설명이 없습니다.",
+            // owner 정보는 farm 객체의 owner를 우선 사용
+            owner: farmResponse.farm.owner || { 
+              userId: farmResponse.farm.owner?.userId || null, 
+              nickname: farmResponse.farm.owner?.nickname || "농장주" 
+            },
             // 기본값들 설정
-            createdAt: response.createdAt,
-            updatedTime: null,
+            createdAt: farmResponse.farm.createdAt || farmResponse.createdAt,
+            updatedTime: farmResponse.farm.updatedTime || null,
             bookmarked: false,
             isAvailable: true
           };
           setFarmData(farmData);
+          // 사용자 정보 설정 (친환경 점수, 코인 등)
+          setUserData({
+            ecoScore: parseInt(ecoScoreResponse.ecoscore) || 83,
+            coin: parseInt(farmResponse.coin) || 0
+          });
         } else {
           // chatRoomId가 없는 경우 임시 데이터 사용
+          try {
+            const ecoScoreResponse = await getEcoScore();
+            setUserData({
+              ecoScore: parseInt(ecoScoreResponse.ecoscore) || 83,
+              coin: 0
+            });
+          } catch {
+            setUserData({ ecoScore: 83, coin: 0 });
+          }
+          
           setFarmData({
             id: 1,
             title: "도심 속 힐링 텃밭",
@@ -267,7 +292,7 @@ const CreditPage = () => {
 
               {/* Payment Section */}
               <div className="mt-8">
-                <PaymentSection farmData={farmData} />
+                <PaymentSection farmData={farmData} userData={userData} />
               </div>
 
             </div>
@@ -376,7 +401,7 @@ const CreditPage = () => {
 
               {/* Payment Section */}
               <div className="mt-4">
-                <PaymentSection farmData={farmData} />
+                <PaymentSection farmData={farmData} userData={userData} />
               </div>
 
             </div>

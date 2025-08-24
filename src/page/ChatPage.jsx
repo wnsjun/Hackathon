@@ -512,7 +512,7 @@ const ChatPage = () => {
               </span>
 
               <button
-                onClick={() => navigate('/credit')}
+                onClick={() => navigate(`/credit/${selected.chatroomId}`)}
                 className="flex flex-row justify-center items-center gap-2 sm:gap-[10px] px-4 sm:px-[20px] lg:px-[28px] pr-3 sm:pr-[18px] lg:pr-[24px] py-2 sm:py-[8px] lg:py-[12px] rounded-full bg-[#1AA752]"
               >
                 <span className="text-white font-pretendard text-[14px] sm:text-[18px] lg:text-[24px] font-normal leading-[1.5] tracking-[-0.48px] whitespace-nowrap">
@@ -545,7 +545,7 @@ const ChatPage = () => {
                 </span>
               </div>
               <button
-                onClick={() => navigate('/credit')}
+                onClick={() => navigate(`/credit/${selected.chatroomId}`)}
                 className="flex items-center gap-1 text-[#1aa752] font-semibold text-base tracking-[-0.48px]"
               >
                 결제하기
