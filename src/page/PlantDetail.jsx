@@ -392,7 +392,7 @@ const PlantDetail = () => {
           </div>
 
           {/* Farm description - User info 아래 */}
-          <div className="w-full px-8 pt-6">
+          <div className="w-full px-5 pt-6">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center text-[20px] tracking-[-0.6px] w-full">
                 <p className="leading-[1.5]">{farmData.title}</p>
@@ -406,7 +406,7 @@ const PlantDetail = () => {
           </div>
 
           {/* Info Panel (title 제외) - Farm description 아래 */}
-          <div className="w-full px-8 pt-10">
+          <div className="w-full px-5 pt-10">
             <div className="flex flex-col gap-8">
               {/* Address */}
               <div className="flex flex-col gap-1">
@@ -493,7 +493,7 @@ const PlantDetail = () => {
           </div>
 
           {/* Reviews section - Info Panel 아래 */}
-          <div className="w-full px-8 pt-16 ">
+          <div className="w-full px-5 pt-16 ">
             <FarmReview 
               farmId={id}
               reviews={reviews} 
@@ -503,7 +503,7 @@ const PlantDetail = () => {
           </div>
 
           {/* Chat button or Premium UP section - 리뷰 바로 아래 */}
-          <div className="w-full px-8 pt-8 pb-25">
+          <div className="w-full px-5 pt-8 pb-25">
             {isMyFarm ? (
               <div className="flex flex-col gap-1 items-start w-full">
                 <div className="flex flex-col gap-2 items-start w-full">
@@ -658,7 +658,7 @@ const PlantDetail = () => {
             </div>
 
             {/* Farm description */}
-            <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#111111] text-left w-full">
+            <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#111111] text-left w-[739px]">
               <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0 text-[36px] tracking-[-0.72px] w-full">
                 <p className="block leading-[1.5]">{farmData.title}</p>
               </div>

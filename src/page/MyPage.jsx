@@ -235,19 +235,19 @@ export const MyPage = () => {
               북마크
             </button>
           </div>
-          {(farmToggle === 'my'
-            ? myFarms
-            : farmToggle === 'renting'
-              ? usedFarms
-              : bookmarkedFarms
-          ).length > 0 ? (
+          {farmToggle === 'renting' ? (
+            usedFarms.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2">
+                {usedFarms.map((farm) => (
+                  <RentingFarmCard key={farm.id} farm={farm} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 py-6">대여중인 텃밭이 없습니다.</p>
+            )
+          ) : (farmToggle === 'my' ? myFarms : bookmarkedFarms).length > 0 ? (
             <div className="grid grid-cols-2 gap-2">
-              {(farmToggle === 'my'
-                ? myFarms
-                : farmToggle === 'renting'
-                  ? usedFarms
-                  : bookmarkedFarms
-              ).map((farm) => (
+              {(farmToggle === 'my' ? myFarms : bookmarkedFarms).map((farm) => (
                 <FarmCard key={farm.id} farm={farm} />
               ))}
             </div>
