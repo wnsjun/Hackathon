@@ -119,7 +119,7 @@ const RecommendFarmCard = ({ farm}) => {
         <div className="flex flex-col gap-3 md:gap-6">
           <div className="flex flex-col gap-2 md:gap-4">
             {/* 지역 정보 */}
-            <div className="flex items-start text-sm md:text-base tracking-[-0.48px]">
+            <div className="flex items-start text-sm md:text-base tracking-[-0.48px] truncate">
               <span className="font-semibold text-[#1aa752]">{locationInfo.text}</span>
               <span className="font-normal text-black">{locationInfo.suffix}</span>
             </div>
@@ -127,7 +127,7 @@ const RecommendFarmCard = ({ farm}) => {
             {/* 제목과 면적 */}
             <div className="flex flex-col gap-1 md:gap-2">
               <div className="flex justify-between items-start">
-                <h3 className="font-semibold text-lg md:text-2xl text-black tracking-[-0.48px] leading-[1.4] md:leading-[1.5]">
+                <h3 className="font-semibold text-lg md:text-2xl text-black tracking-[-0.48px] leading-[1.4] md:leading-[1.5] truncate">
                   {farm.title}
                 </h3>
                 <span className="font-normal text-xs md:text-sm text-[#777777] tracking-[-0.42px] leading-[1.5]">

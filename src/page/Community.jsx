@@ -17,25 +17,45 @@ export const Community = () => {
   const [searchResults, setSearchResults] = useState({ certification: [], tips: [] });
   const [isSearching, setIsSearching] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [showTab, setShowTab] = useState(true); // 👈 스크롤에 따라 탭 노출 여부 제어
   const navigate = useNavigate();
   const query = useQuery();
   const searchQuery = query.get('search') || '';
 
+  // 스크롤 방향 감지
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      if (window.scrollY < lastScrollY) {
+        // 스크롤 올릴 때 → 보이기
+        setShowTab(true);
+      } else {
+        // 스크롤 내릴 때 → 숨기기
+        setShowTab(false);
+      }
+      lastScrollY = window.scrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const searchPosts = async (searchTerm) => {
     try {
       setSearchLoading(true);
-      
+
       // 전체 커뮤니티에서 검색 (결과 있는지 확인용)
       const allResponse = await instance.get(`/posts/search?title=${encodeURIComponent(searchTerm)}`);
       const hasResults = allResponse.data && allResponse.data.length > 0;
-      
+
       if (hasResults) {
         // 결과가 있으면 각 카테고리별로 검색
         const [tipsResponse, feedResponse] = await Promise.all([
           instance.get(`/posts/search?title=${encodeURIComponent(searchTerm)}&category=TIP`),
           instance.get(`/posts/search?title=${encodeURIComponent(searchTerm)}&category=FEED`)
         ]);
-        
+
         // 검색 결과 데이터 변환
         const transformSearchResults = (results) => (results || []).map(post => ({
           id: post.id,
@@ -45,7 +65,8 @@ export const Community = () => {
           image: post.thumbnailUrl,
           likes: post.likeCount,
           createdAt: post.createdAt,
-          initialLiked: post.liked || false
+          initialLiked: post.liked || false,
+          profileImage: post.profileImage
         }));
 
         setSearchResults({
@@ -54,7 +75,6 @@ export const Community = () => {
         });
         setIsSearching(true);
       } else {
-        // 결과가 없으면 빈 배열로 설정
         setSearchResults({ certification: [], tips: [] });
         setIsSearching(true);
       }
@@ -74,7 +94,7 @@ export const Community = () => {
           fetchFeedPosts(),
           fetchTipPosts()
         ]);
-        
+
         const transformedFeedPosts = (feedPosts || []).map(post => ({
           id: post.id,
           title: post.title,
@@ -83,7 +103,8 @@ export const Community = () => {
           image: post.thumbnailUrl,
           likes: post.likeCount,
           createdAt: post.createdAt,
-          initialLiked: post.liked || false
+          initialLiked: post.liked || false,
+          profileImage: post.profileImage
         }));
 
         const transformedTipPosts = (tipPosts || []).map(post => ({
@@ -94,7 +115,8 @@ export const Community = () => {
           image: post.thumbnailUrl,
           likes: post.likeCount,
           createdAt: post.createdAt,
-          initialLiked: post.liked || false
+          initialLiked: post.liked || false,
+          profileImage: post.profileImage
         }));
 
         if (transformedFeedPosts.length === 0 && transformedTipPosts.length === 0) {
@@ -133,67 +155,86 @@ export const Community = () => {
     navigate(`/community/write?type=${type}`);
   };
 
-  // 검색 중이면 검색 결과를, 아니면 일반 게시글을 표시
   const postsToShow = (isSearching ? searchResults[activeTab] || [] : posts[activeTab] || [])
     .sort((a, b) => {
-      // createdAt 기준 최신순 정렬
       if (a.createdAt && b.createdAt) {
         return new Date(b.createdAt) - new Date(a.createdAt);
       }
-      // createdAt이 없으면 id 기준으로 정렬
       return (b.id || 0) - (a.id || 0);
     });
-  
-  // 검색 결과가 전체적으로 있는지 확인 (탭 네비게이션 표시 여부 결정)
+
   const hasAnySearchResults = isSearching && (
     (searchResults.certification && searchResults.certification.length > 0) ||
     (searchResults.tips && searchResults.tips.length > 0)
   );
 
   return (
-    <div className="p-12 mt-24 mb-12">
+    <div className="px-4 sm:px-6 md:px-12 py-6 pt-50 md:pt-32 pb-24 md:pb-12 ">
       {/* 검색 중이고 결과가 없으면 탭 네비게이션 숨김 */}
       {(!isSearching || hasAnySearchResults) && (
-        <div className="flex justify-between items-center mb-8 max-w-6xl mx-auto">
-          <div className="flex">
-            <button
-              onClick={() => handleTabClick('certification')}
-              className={`cursor-pointer px-6 py-3 mr-4 text-2xl font-semibold border-b-4 transition-colors ${
-                activeTab === 'certification' 
-                  ? 'text-black border-[#1aa752]' 
-                  : 'text-gray-400 border-transparent'
-              }`}
+        <div
+          className={`
+            fixed top-16 left-0 w-full bg-white z-30 px-4 py-3
+            md:static md:bg-transparent md:translate-y-0
+            transform transition-transform duration-300
+            ${showTab ? 'translate-y-0' : '-translate-y-full'}
+          `}
+        >
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center max-w-6xl mx-auto gap-4">
+            <div className="flex w-full md:w-auto">
+              <button
+                onClick={() => handleTabClick('certification')}
+                className={`cursor-pointer px-3 md:px-6 py-2 md:py-3 mr-2 md:mr-4 text-lg md:text-2xl font-semibold border-b-2 md:border-b-4 transition-colors flex-1 md:flex-none ${
+                  activeTab === 'certification'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-gray-400 border-transparent'
+                }`}
+              >
+                인증 피드
+              </button>
+              <button
+                onClick={() => handleTabClick('tips')}
+                className={`cursor-pointer px-3 md:px-6 py-2 md:py-3 text-lg md:text-2xl font-semibold border-b-2 md:border-b-4 transition-colors flex-1 md:flex-none ${
+                  activeTab === 'tips'
+                    ? 'text-black border-[#1aa752]'
+                    : 'text-gray-400 border-transparent'
+                }`}
+              >
+                재배 팁
+              </button>
+            </div>
+            
+            {/* 모바일에서는 간단한 텍스트 버튼 */}
+            <button 
+              onClick={handleWriteClick}
+              className="md:hidden text-sm font-semibold text-[#1aa752] flex items-center gap-1 ml-auto"
             >
-              인증 피드
+              작성하기 
+              <span className="text-[#1aa752] text-lg">+</span>
             </button>
-            <button
-              onClick={() => handleTabClick('tips')}
-              className={`cursor-pointer px-6 py-3 text-2xl font-semibold border-b-4 transition-colors ${
-                activeTab === 'tips' 
-                  ? 'text-black border-[#1aa752]' 
-                  : 'text-gray-400 border-transparent'
-              }`}
-            >
-              재배 팁
-            </button>
+            
+            {/* 데스크톱에서는 Button 컴포넌트 */}
+            <div className="hidden md:block ml-auto">
+              <Button onClick={handleWriteClick} variant="farm">작성하기</Button>
+            </div>
           </div>
-          <Button onClick={handleWriteClick} variant="farm">작성하기</Button>
         </div>
+
       )}
 
       {/* 게시글 그리드 */}
       {searchLoading ? (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center animate-spin">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gray-400">
+        <div className="text-center py-12 md:py-16">
+          <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center animate-spin">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-gray-400 md:w-6 md:h-6">
               <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-6.219-8.56"/>
             </svg>
           </div>
-          <p className="text-gray-500 text-lg">검색 중...</p>
+          <p className="text-gray-500 text-base md:text-lg">검색 중...</p>
         </div>
       ) : postsToShow.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="text-gray-500 text-lg">
+        <div className="text-center py-12 md:py-16">
+          <p className="text-gray-500 text-base md:text-lg px-4">
             {isSearching && !hasAnySearchResults
               ? `'${searchQuery}'로 커뮤니티에서 검색한 결과가 없습니다.`
               : isSearching 
@@ -203,7 +244,7 @@ export const Community = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 max-w-6xl mx-auto">
           {postsToShow.map((post) => (
             <CommunityPostCard key={post.id} {...post} />
           ))}
@@ -215,4 +256,3 @@ export const Community = () => {
     </div>
   );
 };
-

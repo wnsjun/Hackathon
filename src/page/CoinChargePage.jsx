@@ -4,6 +4,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useCoin } from '../contexts/CoinContext';
 import { useCharge, useExchange } from '../hooks/usePayment';
 import tossImage from '../assets/tosspay.png';
+import ChargeSuccessModal from '../components/common/Modal/ChargeSuccessModal';
+import ExchangeSuccessModal from '../components/common/Modal/ExchangeSuccessModal';
 
 const CoinChargePage = () => {
   const { coinBalance } = useCoin();
@@ -13,6 +15,12 @@ const CoinChargePage = () => {
   const [exchangeAmount, setExchangeAmount] = useState('');
   const [selectedAccount, setSelectedAccount] = useState('신한');
   const [isPaymentSelected, setIsPaymentSelected] = useState(false);
+  const [activeTab, setActiveTab] = useState('charge'); // 'charge' or 'exchange'
+  const [showChargeModal, setShowChargeModal] = useState(false);
+  const [showExchangeModal, setShowExchangeModal] = useState(false);
+  const [modalChargeAmount, setModalChargeAmount] = useState(0);
+  const [modalExchangeAmount, setModalExchangeAmount] = useState(0);
+  const [modalReceiveAmount, setModalReceiveAmount] = useState(0);
 
   const FarmCoinIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -61,7 +69,12 @@ const CoinChargePage = () => {
 
   const handleExchangeAmountChange = (e) => {
     const value = e.target.value;
-    setExchangeAmount(value);
+    const numericValue = parseFloat(value);
+    
+    // coinBalance와 비교하여 제한
+    if (!value || value === '' || numericValue <= coinBalance) {
+      setExchangeAmount(value);
+    }
   };
 
   const calculateReceiveAmount = (farmCoinAmount) => {
@@ -91,6 +104,13 @@ const CoinChargePage = () => {
       return;
     }
 
+    // 모달 데이터 설정
+    setModalChargeAmount(farmCoinAmount);
+    
+    // 모달 즉시 표시 (API 호출 전)
+    setShowChargeModal(true);
+    setChargeAmount(''); // 입력 필드 초기화
+    
     // API 호출
     chargeMutation.mutate(farmCoinAmount);
   };
@@ -108,6 +128,14 @@ const CoinChargePage = () => {
       return;
     }
 
+    // 모달 데이터 설정
+    setModalExchangeAmount(exchangeAmountNumber);
+    setModalReceiveAmount(exchangeAmountNumber); // 1:1 환전으로 가정
+
+    // 모달 즉시 표시 (API 호출 전)
+    setShowExchangeModal(true);
+    setExchangeAmount(''); // 입력 필드 초기화
+    
     // API 호출 - 환전할 FarmCoin 금액을 그대로 전송
     exchangeMutation.mutate(exchangeAmountNumber);
   };
@@ -115,34 +143,34 @@ const CoinChargePage = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-white min-h-screen pt-20 pb-20">
-        <div className="flex flex-col items-center gap-12 w-full">
+      <div className="bg-white min-h-screen pt-20 pb-24 md:pb-20">
+        <div className="flex flex-col items-center gap-6 md:gap-12 w-full px-4 md:px-0 max-w-7xl mx-auto">
           {/* Title */}
-          <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic text-[#000000] text-[32px] text-left text-nowrap tracking-[-0.64px] self-start ml-40 mt-8">
+          <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic text-[#000000] text-[24px] md:text-[32px] text-left text-nowrap tracking-[-0.64px] self-start md:ml-20 mt-4 md:mt-8">
             <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">충전·환전</p>
           </div>
 
           {/* FarmCoin Balance & Info */}
-          <div className="box-border content-stretch flex flex-col gap-4 items-start justify-start p-0 w-[423px]">
+          <div className="box-border content-stretch flex flex-col gap-4 items-start justify-start p-0 w-full max-w-[423px]">
             {/* Balance Card */}
-            <div className="bg-[rgba(26,167,82,0.05)] box-border content-stretch flex flex-col gap-2 items-end justify-start pb-5 pt-4 px-6 relative rounded-2xl shrink-0 w-full border border-[#39bb6d]">
+            <div className="bg-[rgba(26,167,82,0.05)] box-border content-stretch flex flex-col gap-2 items-end justify-start pb-5 pt-4 px-4 md:px-6 relative rounded-2xl shrink-0 w-full border border-[#39bb6d]">
               <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
                 <div className="box-border content-stretch flex flex-row gap-2 items-center justify-start p-0 relative shrink-0">
                   <div className="relative shrink-0 size-8">
                     <FarmCoinIcon />
                   </div>
-                  <div className="flex flex-col font-['Outfit:Medium',_sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#1aa752] text-[24px] text-left text-nowrap">
+                  <div className="flex flex-col font-['Outfit:Medium',_sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#1aa752] text-[20px] md:text-[24px] text-left text-nowrap">
                     <p className="block leading-[1.6] whitespace-pre">FarmCoin</p>
                   </div>
                 </div>
-                <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[32px] text-left text-nowrap tracking-[-0.64px]">
+                <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[24px] md:text-[32px] text-left text-nowrap tracking-[-0.64px]">
                   <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{coinBalance?.toLocaleString()}</p>
                 </div>
               </div>
             </div>
 
             {/* Info Section */}
-            <div className="box-border content-stretch flex flex-row gap-2 items-start justify-end p-0 relative shrink-0 w-[294px]">
+            <div className="box-border content-stretch flex flex-row gap-2 items-start justify-end p-0 relative shrink-0 w-full max-w-[294px] self-start md:self-end">
               <div className="flex items-center justify-center relative shrink-0">
                 <div className="flex-none rotate-[180deg]">
                   <div className="relative size-6">
@@ -150,11 +178,11 @@ const CoinChargePage = () => {
                   </div>
                 </div>
               </div>
-              <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#777777] text-left w-[250px]">
-                <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0 text-[16px] tracking-[-0.48px] w-full">
+              <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#777777] text-left flex-1 min-w-0">
+                <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0 text-[14px] md:text-[16px] tracking-[-0.48px] w-full">
                   <p className="block leading-[1.5]">FarmCoin 이란?</p>
                 </div>
-                <div className="font-['Pretendard:Regular',_sans-serif] leading-[1.5] relative shrink-0 text-[14px] tracking-[-0.42px] w-full">
+                <div className="font-['Pretendard:Regular',_sans-serif] leading-[1.5] relative shrink-0 text-[12px] md:text-[14px] tracking-[-0.42px] w-full">
                 <p className="block mb-0">SpaceFarm에서 사용되는 전용 재화로</p>
                 <p className="block mb-0">서비스 내에서 현금처럼 사용할 수 있습니다.</p>
                 <p className="block">현금으로 충전·환전이 가능합니다.</p>
@@ -163,20 +191,56 @@ const CoinChargePage = () => {
             </div>
           </div>
 
+          {/* Mobile Tabs - Only visible on mobile */}
+          <div className="lg:hidden w-full max-w-[360px]">
+            <div className="content-stretch flex items-center justify-between relative w-full">
+              <button 
+                onClick={() => setActiveTab('charge')}
+                className={`box-border content-stretch flex flex-col gap-2.5 h-[52px] items-center justify-center p-[10px] relative shrink-0 w-[180px] ${
+                  activeTab === 'charge' ? 'border-b-2 border-[#1aa752]' : ''
+                }`}
+              >
+                <div className="content-stretch flex items-center justify-center relative shrink-0 w-full">
+                  <div className={`flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[20px] text-center text-nowrap tracking-[-0.6px] ${
+                    activeTab === 'charge' ? 'text-[#000000]' : 'text-[#bbbbbb]'
+                  }`}>
+                    <p className="leading-[1.5] whitespace-pre">충전</p>
+                  </div>
+                </div>
+              </button>
+              <button 
+                onClick={() => setActiveTab('exchange')}
+                className={`box-border content-stretch flex flex-col gap-2.5 h-[52px] items-center justify-center p-[10px] relative shrink-0 w-[180px] ${
+                  activeTab === 'exchange' ? 'border-b-2 border-[#1aa752]' : ''
+                }`}
+              >
+                <div className="content-stretch flex items-center justify-center relative shrink-0 w-full">
+                  <div className={`flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[20px] text-center text-nowrap tracking-[-0.6px] ${
+                    activeTab === 'exchange' ? 'text-[#000000]' : 'text-[#bbbbbb]'
+                  }`}>
+                    <p className="leading-[1.5] whitespace-pre">환전</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
           {/* Main Content - Charge & Exchange Cards */}
-          <div className="box-border content-stretch flex flex-row gap-16 items-start justify-start p-0">
+          <div className="box-border content-stretch flex flex-col lg:flex-row gap-6 lg:gap-16 items-center justify-center p-0 w-full max-w-6xl">
             
             {/* Charge Card */}
-            <div className="bg-[#ffffff] box-border content-stretch flex flex-col h-[650px] items-center justify-between p-[32px] relative rounded-3xl shadow-[0px_4px_20px_0px_rgba(0,0,0,0.1)] shrink-0">
-              <div className="box-border content-stretch flex flex-col gap-12 items-start justify-start p-0 relative shrink-0">
+            <div className={`bg-[#ffffff] box-border content-stretch flex flex-col min-h-[550px] lg:h-[650px] items-center justify-between p-4 md:p-[32px] pb-8 md:pb-[32px] relative rounded-3xl shadow-[0px_4px_20px_0px_rgba(0,0,0,0.1)] shrink-0 w-full lg:w-auto ${
+              activeTab !== 'charge' ? 'lg:flex hidden' : ''
+            }`}>
+              <div className="box-border content-stretch flex flex-col gap-8 md:gap-12 items-start justify-start p-0 relative shrink-0 w-full">
                 {/* Charge Section */}
-                <div className="box-border content-stretch flex flex-col gap-4 items-start justify-start p-0 relative shrink-0 w-[359px]">
-                  <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[20px] text-left tracking-[-0.6px] w-full">
-                    <p className="block leading-[1.5]">충전</p>
+                <div className="box-border content-stretch flex flex-col gap-4 items-start justify-start p-0 relative shrink-0 w-full lg:w-[359px]">
+                  <div className="lg:flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[20px] text-left tracking-[-0.6px] w-full hidden">
+                    <p className="block leading-[1.5] font-bold">충전</p>
                   </div>
                   <div className="box-border content-stretch flex flex-col gap-6 items-start justify-start p-0 relative shrink-0 w-full">
                     {/* Charge Amount Input */}
-                    <div className="box-border content-stretch flex flex-col gap-2 h-20 items-start justify-start p-0 relative shrink-0 w-[359px]">
+                    <div className="box-border content-stretch flex flex-col gap-2 h-20 items-start justify-start p-0 relative shrink-0 w-full">
                       <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[16px] text-left tracking-[-0.48px] w-full">
                         <p className="block leading-[1.5]">충전 금액</p>
                       </div>
@@ -199,9 +263,14 @@ const CoinChargePage = () => {
                       <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] min-w-full not-italic relative shrink-0 text-[#111111] text-[16px] text-left tracking-[-0.48px]" style={{ width: "min-content" }}>
                         <p className="block leading-[1.5]">FarmCoin</p>
                       </div>
-                      <div className="box-border content-stretch flex flex-row gap-1 h-12 items-center justify-start px-2 py-0 relative shrink-0 w-full border-b border-[#bbbbbb]">
-                        <div className="basis-0 flex flex-col font-['Pretendard:SemiBold',_sans-serif] grow justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 text-[#1aa752] text-[20px] text-right tracking-[-0.6px]">
-                          <p className="block leading-[1.5]">{calculateFarmCoin(chargeAmount)}</p>
+                      <div className="box-border content-stretch flex flex-col gap-1 items-start justify-start p-0 relative shrink-0 w-full">
+                        <div className="box-border content-stretch flex flex-row gap-1 h-12 items-center justify-start px-2 py-0 relative shrink-0 w-full border-b border-[#bbbbbb]">
+                          <div className="basis-0 flex flex-col font-['Pretendard:SemiBold',_sans-serif] grow justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 font-bold text-[#1aa752] text-[20px] text-right tracking-[-0.6px]">
+                            <p className="block leading-[1.5]">{calculateFarmCoin(chargeAmount)}</p>
+                          </div>
+                        </div>
+                        <div className="px-2">
+                          <p className="text-[14px] text-[#1aa752] leading-[1.5] tracking-[-0.36px] font-bold">수수료 10%</p>
                         </div>
                       </div>
                     </div>
@@ -209,7 +278,7 @@ const CoinChargePage = () => {
                 </div>
 
                 {/* Payment Method */}
-                <div className="box-border content-stretch flex flex-col gap-4 items-start justify-start p-0 relative shrink-0 w-[359px]">
+                <div className="box-border content-stretch flex flex-col gap-4 items-start justify-start p-0 relative shrink-0 w-full lg:w-[359px]">
                   <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[20px] text-left tracking-[-0.6px] w-full">
                     <p className="block leading-[1.5]">결제 수단</p>
                   </div>
@@ -228,7 +297,7 @@ const CoinChargePage = () => {
               <button 
                 onClick={handleChargeClick}
                 disabled={!chargeAmount || chargeAmount === '' || parseFloat(chargeAmount) <= 0 || chargeMutation.isPending}
-                className={`box-border content-stretch flex flex-col gap-2.5 h-[62px] items-center justify-center px-5 py-2.5 relative rounded-lg shrink-0 w-[359px] transition-colors cursor-pointer ${
+                className={`box-border content-stretch flex flex-col gap-2.5 h-[62px] items-center justify-center px-5 py-2.5 relative rounded-lg shrink-0 w-full lg:w-[359px] transition-colors cursor-pointer ${
                   chargeAmount && chargeAmount !== '' && parseFloat(chargeAmount) > 0 && !chargeMutation.isPending
                     ? 'bg-[#1aa752] text-white'
                     : 'bg-[#f7f7f7] text-[#bbbbbb] cursor-not-allowed'
@@ -243,15 +312,17 @@ const CoinChargePage = () => {
             </div>
 
             {/* Exchange Card */}
-            <div className="bg-[#ffffff] box-border content-stretch flex flex-col h-[650px] gap-12 items-end justify-start p-[32px] relative rounded-3xl shadow-[0px_4px_20px_0px_rgba(0,0,0,0.1)] shrink-0">
+            <div className={`bg-[#ffffff] box-border content-stretch flex flex-col min-h-[550px] lg:h-[650px] items-center justify-between p-4 md:p-[32px] pb-8 md:pb-[32px] relative rounded-3xl shadow-[0px_4px_20px_0px_rgba(0,0,0,0.1)] shrink-0 w-full lg:w-auto ${
+              activeTab !== 'exchange' ? 'lg:flex hidden' : ''
+            }`}>
               {/* Exchange Section */}
-              <div className="box-border content-stretch flex flex-col gap-6 items-start justify-start p-0 relative shrink-0 w-[358px]">
+              <div className="box-border content-stretch flex flex-col gap-8 md:gap-12 items-start justify-start p-0 relative shrink-0 w-full lg:w-[358px]">
                 <div className="box-border content-stretch flex flex-col gap-4 items-start justify-start p-0 relative shrink-0 w-full">
-                  <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[20px] text-left tracking-[-0.6px] w-full">
-                    <p className="block leading-[1.5]">환전</p>
+                  <div className="lg:flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[20px] text-left tracking-[-0.6px] w-full hidden">
+                    <p className="block leading-[1.5] font-bold">환전</p>
                   </div>
                   <div className="box-border content-stretch flex flex-col gap-2 h-20 items-start justify-start p-0 relative shrink-0 w-full">
-                    <div className="box-border content-stretch flex flex-row items-start justify-between leading-[0] not-italic p-0 relative shrink-0 text-[16px] text-left text-nowrap tracking-[-0.48px] w-[350px]">
+                    <div className="box-border content-stretch flex flex-row items-start justify-between leading-[0] not-italic p-0 relative shrink-0 text-[16px] text-left text-nowrap tracking-[-0.48px] w-full">
                       <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center relative shrink-0 text-[#111111]">
                         <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">FarmCoin</p>
                       </div>
@@ -260,19 +331,18 @@ const CoinChargePage = () => {
                       </div>
                     </div>
                     <div className="box-border content-stretch flex flex-row h-12 items-center justify-between px-2 py-0 relative shrink-0 w-full border-b border-[#bbbbbb]">
-                      <div className="box-border content-stretch flex flex-row gap-2 h-full items-center justify-end p-0 relative shrink-0 w-[268px]">
-                        <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start pl-0 pr-4 py-0 relative shrink-0 border-r border-[#f7f7f7]">
-                          <input
-                            type="number"
-                            placeholder="환전 금액 입력"
-                            value={exchangeAmount}
-                            onChange={handleExchangeAmountChange}
-                            className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[16px] text-left text-nowrap tracking-[-0.48px] bg-transparent border-none outline-none"
-                          />
-                        </div>
+                      <div className="flex-1"></div>
+                      <div className="box-border content-stretch flex flex-row gap-2 h-full items-center justify-end p-0 relative shrink-0">
+                        <input
+                          type="number"
+                          placeholder="환전 금액 입력"
+                          value={exchangeAmount}
+                          onChange={handleExchangeAmountChange}
+                          className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[16px] text-right text-nowrap tracking-[-0.48px] bg-transparent border-none outline-none w-32"
+                        />
                       </div>
                       <button 
-                        className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[16px] text-left text-nowrap tracking-[-0.48px] cursor-pointer"
+                        className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[16px] text-left text-nowrap tracking-[-0.48px] cursor-pointer ml-4"
                         onClick={handleAllExchange}
                       >
                         <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">모두 환전</p>
@@ -298,7 +368,7 @@ const CoinChargePage = () => {
               </div>
 
               {/* Account Selection */}
-              <div className="box-border content-stretch flex flex-col gap-4 items-start justify-start p-0 relative shrink-0 w-[358px]">
+              <div className="box-border content-stretch flex flex-col gap-4 items-start justify-start p-0 relative shrink-0 w-full lg:w-[358px]">
                 <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
                   <div className="box-border content-stretch flex flex-row gap-2 items-center justify-start p-0 relative shrink-0">
                     <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[20px] text-left text-nowrap tracking-[-0.6px]">
@@ -348,7 +418,7 @@ const CoinChargePage = () => {
               <button 
                 onClick={handleExchangeClick}
                 disabled={!exchangeAmount || exchangeAmount === '' || parseFloat(exchangeAmount) <= 0 || exchangeMutation.isPending}
-                className={`box-border content-stretch flex flex-col gap-2.5 h-[62px] items-center justify-center px-5 py-2.5 relative rounded-lg shrink-0 w-[358px] transition-colors cursor-pointer ${
+                className={`box-border content-stretch flex flex-col gap-2.5 h-[62px] items-center justify-center px-5 py-2.5 relative rounded-lg shrink-0 w-full lg:w-[358px] transition-colors cursor-pointer ${
                   exchangeAmount && exchangeAmount !== '' && parseFloat(exchangeAmount) > 0 && !exchangeMutation.isPending
                     ? 'bg-[#1aa752] text-white'
                     : 'bg-[#f7f7f7] text-[#bbbbbb] cursor-not-allowed'
@@ -364,6 +434,20 @@ const CoinChargePage = () => {
           </div>
 
         </div>
+
+        {/* Modals */}
+        <ChargeSuccessModal 
+          isOpen={showChargeModal}
+          onClose={() => setShowChargeModal(false)}
+          chargeAmount={modalChargeAmount}
+        />
+        
+        <ExchangeSuccessModal 
+          isOpen={showExchangeModal}
+          onClose={() => setShowExchangeModal(false)}
+          exchangeAmount={modalExchangeAmount}
+          receiveAmount={modalReceiveAmount}
+        />
       </div>
     </>
   );

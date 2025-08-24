@@ -9,7 +9,7 @@ export const useCharge = () => {
   return useMutation({
     mutationFn: (money) => chargeApi(money),
     onSuccess: async (res) => {
-      alert('충전이 완료되었습니다!');
+      // alert('충전이 완료되었습니다!'); // 모달로 대체
       // 충전 후 항상 최신 잔액 조회하여 실시간 업데이트
       try {
         const balanceRes = await getBalanceApi();
@@ -34,7 +34,7 @@ export const useExchange = () => {
   return useMutation({
     mutationFn: (money) => exchangeApi(money),
     onSuccess: async (res) => {
-      alert('환전이 완료되었습니다!');
+      // alert('환전이 완료되었습니다!'); // 모달로 대체
       // 환전 후 항상 최신 잔액 조회하여 실시간 업데이트
       try {
         const balanceRes = await getBalanceApi();

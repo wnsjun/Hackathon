@@ -131,11 +131,11 @@ const Button = ({
         type={type}
         onClick={disabled ? undefined : onClick}
         disabled={disabled}
-        className="bg-[#1aa752] hover:bg-green-600 text-white px-7 py-3 rounded-[100px] font-normal text-[24px] leading-[1.5] tracking-[-0.48px] transition-colors shadow-sm flex items-center gap-2"
+        className={`${disabled ? 'bg-[#bbbbbb]' : 'bg-[#1aa752] hover:bg-green-600'} text-white px-7 py-3 rounded-lg md:rounded-[100px] font-normal text-[20px] md:text-[24px] leading-[1.5] tracking-[-0.48px] transition-colors shadow-sm flex items-center justify-center gap-2 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         {...props}
       >
         {children}
-        {showIcon && (
+        {showIcon && !props.className?.includes('w-full') && (
           <svg
             width="24"
             height="24"

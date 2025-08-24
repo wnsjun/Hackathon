@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { fetchReviewsByFarmId } from '../../apis/reviewApi';
+import profile from '../../assets/profile.png';
 
 const FarmReview = ({ farmId, reviews = [], loading = false, onReviewsUpdate }) => {
   const [sortBy, setSortBy] = useState('latest');
@@ -42,14 +43,14 @@ const FarmReview = ({ farmId, reviews = [], loading = false, onReviewsUpdate }) 
 
   return (
     <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 w-[333px]">
-      <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[24px] text-left tracking-[-0.48px] w-full">
-        <p className="block leading-[1.5]">텃밭 리뷰</p>
+      <div className="flex flex-col font-['Pretendard:Bold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[20px] text-left tracking-[-0.48px] w-full">
+        <p className="block leading-[1.5] ">텃밭 리뷰</p>
       </div>
       <div className="box-border content-stretch flex flex-col gap-16 items-start justify-start p-0 relative shrink-0 w-full">
         <div className="box-border content-stretch flex flex-col gap-2 items-end justify-start p-0 relative shrink-0 w-full">
           <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0 w-[333px]">
             <div 
-              className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0 cursor-pointer"
+              className=" box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0 cursor-pointer"
               onClick={() => handleSortChange('latest')}
             >
               <div className="relative shrink-0 size-1">
@@ -85,11 +86,11 @@ const FarmReview = ({ farmId, reviews = [], loading = false, onReviewsUpdate }) 
                     <div className="box-border content-stretch flex flex-row items-center justify-between p-0 relative shrink-0 w-full">
                       <div className="box-border content-stretch flex flex-row gap-2 items-center justify-center p-0 relative shrink-0">
                         <div className="relative shrink-0 size-8">
-                          <div className="w-8 h-8 bg-[#f7f7f7] rounded-full flex items-center justify-center">
-                            <span className="text-[14px] font-semibold text-[#777777]">
-                              {review.nickname?.charAt(0) || '사'}
-                            </span>
-                          </div>
+                          <img 
+                            alt="profile" 
+                            className="w-full h-full rounded-full object-cover" 
+                            src={review.profileImage || profile} 
+                          />
                         </div>
                         <div className="box-border content-stretch flex flex-row gap-2 items-end justify-center p-0 relative shrink-0">
                           <div className="font-['Pretendard:SemiBold',_sans-serif] leading-[0] not-italic relative shrink-0 text-[16px] text-left text-neutral-900 text-nowrap tracking-[-0.48px]">

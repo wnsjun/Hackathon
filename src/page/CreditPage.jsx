@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import PaymentSection from '../components/common/PaymentSection';
-import { fetchFarmById } from '../apis/home';
+import { getChatRoomFarm } from '../apis/chatApi';
 
 const CreditPage = () => {
-  const { id } = useParams();
+  const { chatRoomId } = useParams(); // URL에서 chatRoomId를 받음
   const navigate = useNavigate();
   const [farmData, setFarmData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,13 +15,29 @@ const CreditPage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // 임시 데이터 사용 (실제로는 결제할 농장 정보를 받아와야 함)
-        if (id) {
-          const farmData = await fetchFarmById(id);
+        if (chatRoomId) {
+          // 채팅방 텃밭 정보 조회 API 사용
+          const response = await getChatRoomFarm(chatRoomId);
+          // API 응답에서 farm 객체를 추출하고 필요한 필드 추가
+          const farmData = {
+            ...response.farm,
+            // thumbnailUrl을 imageUrls 배열로 변환
+            imageUrls: response.farm.thumbnailUrl ? [response.farm.thumbnailUrl] : [],
+            // description이 null인 경우 기본값 설정
+            description: response.farm.description || "텃밭에 대한 설명이 없습니다.",
+            // owner 정보가 없는 경우 기본값 설정 (provider 정보 활용 가능)
+            owner: response.provider || { userId: null, nickname: "농장주" },
+            // 기본값들 설정
+            createdAt: response.createdAt,
+            updatedTime: null,
+            bookmarked: false,
+            isAvailable: true
+          };
           setFarmData(farmData);
         } else {
-          // id가 없는 경우 임시 데이터 사용
+          // chatRoomId가 없는 경우 임시 데이터 사용
           setFarmData({
+            id: 1,
             title: "도심 속 힐링 텃밭",
             description: "도심에서 즐기는 작은 텃밭 체험\n직접 키운 채소를 수확하는 기쁨을 느껴보세요.\n친환경적이고 건강한 농업 체험이 가능합니다.",
             imageUrls: [],
@@ -30,9 +46,14 @@ const CreditPage = () => {
             rentalPeriod: 30,
             size: 10,
             theme: "옥상텃밭",
-            user: {
+            owner: {
+              userId: 1,
               nickname: "농부"
-            }
+            },
+            createdAt: new Date().toISOString(),
+            updatedTime: null,
+            bookmarked: false,
+            isAvailable: true
           });
         }
       } catch (error) {
@@ -43,7 +64,7 @@ const CreditPage = () => {
     };
 
     fetchData();
-  }, [id]);
+  }, [chatRoomId]);
 
   const handleChatButtonClick = () => {
     navigate('/chat');
@@ -89,170 +110,281 @@ const CreditPage = () => {
 
   return (
     <>
-      <div className="bg-white min-h-screen">
-        <div className="relative w-full min-h-screen">
-          
-          {/* Payment title */}
-          <div className="absolute box-border content-stretch flex flex-row items-center left-40 p-0 top-36">
-            <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-              <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">결제하기</p>
-            </div>
-          </div>
-
-          <div className="absolute box-border content-stretch flex flex-col gap-12 items-start justify-start left-40 p-0 top-56">
-            {/* Farm image */}
-            <div
-              className="bg-center bg-cover bg-no-repeat h-[588px] rounded-2xl shrink-0 w-[739px]"
-              style={{ 
-                backgroundImage: farmData.imageUrls && farmData.imageUrls.length > 0 
-                  ? `url('${farmData.imageUrls[0]}')` 
-                  : 'none'
-              }}
-            >
-              {(!farmData.imageUrls || farmData.imageUrls.length === 0) && (
-                <div className="w-full h-full flex items-center justify-center text-[#777777]">
-                  이미지가 없습니다
-                </div>
-              )}
-            </div>
+      <Navbar />
+      <div className="bg-white min-h-screen pt-20 pb-24 md:pb-12">
+        
+        {/* Desktop Layout */}
+        <div className="hidden lg:block">
+          <div className="relative w-full min-h-screen">
             
-            {/* Farm description */}
-            <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#111111] text-left w-full">
-              <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0 text-[36px] tracking-[-0.72px] w-full">
+            {/* Payment title */}
+            <div className="absolute box-border content-stretch flex flex-row items-center left-40 p-0 top-16">
+              <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">결제하기</p>
+              </div>
+            </div>
+
+            <div className="absolute box-border content-stretch flex flex-col gap-12 items-start justify-start left-40 p-0 top-36">
+              {/* Farm image */}
+              <div
+                className="bg-center bg-cover bg-no-repeat h-[588px] rounded-2xl shrink-0 w-[739px]"
+                style={{ 
+                  backgroundImage: farmData.imageUrls && farmData.imageUrls.length > 0 
+                    ? `url('${farmData.imageUrls[0]}')` 
+                    : 'none'
+                }}
+              >
+                {(!farmData.imageUrls || farmData.imageUrls.length === 0) && (
+                  <div className="w-full h-full flex items-center justify-center text-[#777777]">
+                    이미지가 없습니다
+                  </div>
+                )}
+              </div>
+              
+              {/* Farm description */}
+              <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#111111] text-left w-full">
+                <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0 text-[36px] tracking-[-0.72px] w-full">
+                  <p className="block leading-[1.5]">{farmData.title}</p>
+                </div>
+                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[1.5] relative shrink-0 text-[20px] tracking-[-0.6px] w-full">
+                  {farmData.description.split('\n').map((line, index) => (
+                    <p key={index} className="block mb-0">{line || '\u00A0'}</p>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Info Panel */}
+            <div className="absolute box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 top-36 w-[338px]" style={{ left: "calc(66.667% - 18px)" }}>
+              {/* Title */}
+              <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[32px] text-left tracking-[-0.64px] w-full">
                 <p className="block leading-[1.5]">{farmData.title}</p>
               </div>
-              <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[1.5] relative shrink-0 text-[20px] tracking-[-0.6px] w-full">
-                {farmData.description.split('\n').map((line, index) => (
-                  <p key={index} className="block mb-0">{line || '\u00A0'}</p>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Info Panel */}
-          <div className="absolute box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 top-56 w-[338px]" style={{ left: "calc(66.667% - 18px)" }}>
-            {/* Title */}
-            <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[32px] text-left tracking-[-0.64px] w-full">
-              <p className="block leading-[1.5]">{farmData.title}</p>
-            </div>
-            <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 relative shrink-0 w-full">
-              {/* Address */}
-              <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[273px]">
-                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
-                  <p className="block leading-[1.5]">주소</p>
-                </div>
-                <div className="box-border content-stretch flex flex-row gap-2 items-center justify-start p-0 relative shrink-0 w-full">
-                  <div className="overflow-clip relative shrink-0 size-6">
-                    <LocationIcon />
-                  </div>
-                  <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[20px] text-left tracking-[-0.6px]">
-                    <p className="adjustLetterSpacing block leading-[1.5]">{farmData.address}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Rental cost */}
-              <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[181px]">
-                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
-                  <p className="block leading-[1.5]">대여 비용</p>
-                </div>
-                <div className="box-border content-stretch flex flex-row gap-2 items-end justify-start p-0 relative shrink-0 w-full">
-                  <div className="box-border content-stretch flex flex-row gap-1 items-end justify-start leading-[0] not-italic p-0 relative shrink-0 text-left">
-                    <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] h-[31px] justify-center relative shrink-0 text-[#1aa752] text-[32px] tracking-[-0.64px] w-[86px]">
-                      <p className="adjustLetterSpacing block leading-[1.5]">{farmData.price.toLocaleString()}</p>
-                    </div>
-                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-8 justify-center relative shrink-0 text-[#000000] text-[24px] tracking-[-0.48px] w-[18px]">
-                      <p className="adjustLetterSpacing block leading-[1.5]">원</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-[33px] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[20px] text-left tracking-[-0.6px] w-[7px]">
-                    <p className="adjustLetterSpacing block leading-[1.5]">/</p>
-                  </div>
-                  <div className="box-border content-stretch flex flex-row gap-1 h-8 items-center justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                    <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0">
-                      <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">{farmData.rentalPeriod}</p>
-                    </div>
-                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center relative shrink-0">
-                      <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">일</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Area and Theme */}
-              <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0 w-full">
-                <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[104px]">
+              <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 relative shrink-0 w-full">
+                {/* Address */}
+                <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[273px]">
                   <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
-                    <p className="block leading-[1.5]">평수</p>
+                    <p className="block leading-[1.5]">주소</p>
                   </div>
-                  <div className="box-border content-stretch flex flex-col gap-1 items-start justify-start p-0 relative shrink-0 w-full">
-                    <div className="box-border content-stretch flex flex-row gap-1 items-start justify-start p-0 relative shrink-0">
-                      <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0">
-                        <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                          <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.size}</p>
+                  <div className="box-border content-stretch flex flex-row gap-2 items-center justify-start p-0 relative shrink-0 w-full">
+                    <div className="overflow-clip relative shrink-0 size-6">
+                      <LocationIcon />
+                    </div>
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[20px] text-left tracking-[-0.6px]">
+                      <p className="adjustLetterSpacing block leading-[1.5]">{farmData.address}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Rental cost */}
+                <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[181px]">
+                  <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
+                    <p className="block leading-[1.5]">대여 비용</p>
+                  </div>
+                  <div className="box-border content-stretch flex flex-row gap-2 items-end justify-start p-0 relative shrink-0 w-full">
+                    <div className="box-border content-stretch flex flex-row gap-1 items-end justify-start leading-[0] not-italic p-0 relative shrink-0 text-left">
+                      <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] h-[31px] justify-center relative shrink-0 text-[#1aa752] text-[32px] tracking-[-0.64px] w-[86px]">
+                        <p className="adjustLetterSpacing block leading-[1.5]">{farmData.price.toLocaleString()}</p>
+                      </div>
+                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-8 justify-center relative shrink-0 text-[#000000] text-[24px] tracking-[-0.48px] w-[18px]">
+                        <p className="adjustLetterSpacing block leading-[1.5]">원</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-[33px] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[20px] text-left tracking-[-0.6px] w-[7px]">
+                      <p className="adjustLetterSpacing block leading-[1.5]">/</p>
+                    </div>
+                    <div className="box-border content-stretch flex flex-row gap-1 h-8 items-center justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                      <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0">
+                        <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">{farmData.rentalPeriod}</p>
+                      </div>
+                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center relative shrink-0">
+                        <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">일</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Area and Theme */}
+                <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0 w-full">
+                  <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[104px]">
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
+                      <p className="block leading-[1.5]">평수</p>
+                    </div>
+                    <div className="box-border content-stretch flex flex-col gap-1 items-start justify-start p-0 relative shrink-0 w-full">
+                      <div className="box-border content-stretch flex flex-row gap-1 items-start justify-start p-0 relative shrink-0">
+                        <div className="box-border content-stretch flex flex-row gap-1 items-center justify-start p-0 relative shrink-0">
+                          <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                            <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.size}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                          <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">㎡</p>
                         </div>
                       </div>
-                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#000000] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">㎡</p>
+                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
+                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">교실 크기</p>
                       </div>
                     </div>
-                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                      <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">교실 크기</p>
+                  </div>
+                  <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[213px]">
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
+                      <p className="block leading-[1.5]">테마</p>
                     </div>
-                  </div>
-                </div>
-                <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[213px]">
-                  <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[16px] text-left tracking-[-0.48px] w-full">
-                    <p className="block leading-[1.5]">테마</p>
-                  </div>
-                  <div className="box-border content-stretch flex flex-col gap-1 items-start justify-start p-0 relative shrink-0 w-full">
-                    <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0">
-                      <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.theme}</p>
+                    <div className="box-border content-stretch flex flex-col gap-1 items-start justify-start p-0 relative shrink-0 w-full">
+                      <div className="box-border content-stretch flex flex-row gap-4 items-center justify-start p-0 relative shrink-0">
+                        <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                          <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.theme}</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                      <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
-                        아파트 및 건물 옥상, 지붕 위 공간
-                      </p>
+                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
+                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
+                          아파트 및 건물 옥상, 지붕 위 공간
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Chat button - changed text */}
-            <div 
-              className="bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] cursor-pointer"
-              onClick={handleChatButtonClick}
-            >
-              <div className="box-border content-stretch flex flex-row items-center justify-start p-0 relative shrink-0">
-                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">채팅으로 돌아가기</p>
-                </div>
-                <div className="flex items-center justify-center relative shrink-0">
-                  <div className="flex-none rotate-[180deg]">
-                    <div className="relative size-6">
-                      <SendIcon />
+              {/* Chat button - changed text */}
+              <div 
+                className="bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] cursor-pointer"
+                onClick={handleChatButtonClick}
+              >
+                <div className="box-border content-stretch flex flex-row items-center justify-start p-0 relative shrink-0">
+                  <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                    <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">채팅으로 돌아가기</p>
+                  </div>
+                  <div className="flex items-center justify-center relative shrink-0">
+                    <div className="flex-none rotate-[180deg]">
+                      <div className="relative size-6">
+                        <SendIcon />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Payment Section */}
-            <div className="mt-8">
-              <PaymentSection farmData={farmData} />
-            </div>
+              {/* Payment Section */}
+              <div className="mt-8">
+                <PaymentSection farmData={farmData} />
+              </div>
 
+            </div>
           </div>
-
-          {/* ChatbotIcon */}
-          <ChatbotIcon />
         </div>
-        
-        {/* Bottom spacing */}
-        <div className="h-32"></div>
+
+        {/* Mobile Layout */}
+        <div className="lg:hidden px-4 sm:px-6">
+          <div className="max-w-2xl mx-auto">
+            
+            {/* Payment title */}
+            <div className="mb-6">
+              <h1 className="text-xl font-semibold text-black">결제하기</h1>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              {/* Farm image */}
+              <div
+                className="bg-center bg-cover bg-no-repeat h-64 rounded-xl w-full"
+                style={{ 
+                  backgroundImage: farmData.imageUrls && farmData.imageUrls.length > 0 
+                    ? `url('${farmData.imageUrls[0]}')` 
+                    : 'none'
+                }}
+              >
+                {(!farmData.imageUrls || farmData.imageUrls.length === 0) && (
+                  <div className="w-full h-full flex items-center justify-center text-[#777777]">
+                    이미지가 없습니다
+                  </div>
+                )}
+              </div>
+              
+              {/* Farm info */}
+              <div className="flex flex-col gap-4">
+                <h2 className="text-2xl font-semibold text-black break-words">
+                  {farmData.title}
+                </h2>
+                <div className="text-base text-black leading-[1.5] break-words">
+                  {farmData.description.split('\n').map((line, index) => (
+                    <p key={index} className="mb-2">{line || '\u00A0'}</p>
+                  ))}
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="flex flex-col gap-6">
+                {/* Address */}
+                <div className="flex flex-col gap-2">
+                  <div className="text-sm text-[#777777]">주소</div>
+                  <div className="flex flex-row gap-2 items-center">
+                    <LocationIcon />
+                    <div className="text-lg text-black">{farmData.address}</div>
+                  </div>
+                </div>
+
+                {/* Price */}
+                <div className="flex flex-col gap-2">
+                  <div className="text-sm text-[#777777]">대여 비용</div>
+                  <div className="flex flex-row gap-2 items-end">
+                    <div className="flex flex-row gap-1 items-end">
+                      <div className="text-2xl font-semibold text-[#1aa752]">
+                        {farmData.price.toLocaleString()}
+                      </div>
+                      <div className="text-lg text-black">원</div>
+                    </div>
+                    <div className="text-lg text-black">/</div>
+                    <div className="flex flex-row gap-1 items-center">
+                      <div className="text-lg font-semibold text-black">{farmData.rentalPeriod}</div>
+                      <div className="text-lg text-black">일</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Area and Theme */}
+                <div className="flex flex-row gap-6">
+                  <div className="flex flex-col gap-2">
+                    <div className="text-sm text-[#777777]">평수</div>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex flex-row gap-1 items-center">
+                        <div className="text-lg font-semibold text-black">{farmData.size}</div>
+                        <div className="text-lg text-black">㎡</div>
+                      </div>
+                      <div className="text-xs text-[#777777]">교실 크기</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="text-sm text-[#777777]">테마</div>
+                    <div className="flex flex-col gap-1">
+                      <div className="text-lg font-semibold text-black">{farmData.theme}</div>
+                      <div className="text-xs text-[#777777]">아파트 및 건물 옥상, 지붕 위 공간</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chat button */}
+              <div 
+                className="bg-[#1aa752] flex flex-row items-center justify-center gap-2 px-6 py-4 rounded-full cursor-pointer"
+                onClick={handleChatButtonClick}
+              >
+                <div className="text-white text-lg font-medium">채팅으로 돌아가기</div>
+                <div className="rotate-180">
+                  <SendIcon />
+                </div>
+              </div>
+
+              {/* Payment Section */}
+              <div className="mt-4">
+                <PaymentSection farmData={farmData} />
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* ChatbotIcon */}
+        <ChatbotIcon />
       </div>
     </>
   );

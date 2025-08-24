@@ -140,8 +140,8 @@ const Home = () => {
       const matchesTheme = appliedFilters.theme.length === 0 || 
         appliedFilters.theme.includes(farmTheme);
       
-      // 사용 가능한 매물만 표시 (API에서 제공하는 경우)
-      const isAvailable = farm.isAvailable !== false;
+      // 사용 가능한 매물만 표시 (available이 true인 것만)
+      const isAvailable = farm.available !== false && farm.isAvailable !== false;
       
       return matchesLocation && matchesArea && matchesPrice && matchesTheme && isAvailable;
     })
@@ -221,13 +221,13 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 py-6 pt-32">
+      <div className="px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 py-6 pt-24">
         {/* 배너 섹션 */}
-        <div className="mb-8 relative">
+        <div className="mb-10 relative">
         <img
           src={banner}
           alt="SpaceFarm 텃밭 대여 서비스"
-          className="w-full max-w-[1440px] aspect-[1440/437] md:aspect-[1440/437] flex-shrink-0 object-cover rounded-xl"
+          className="w-full aspect-[1440/437] md:aspect-[1440/437] flex-shrink-0 object-cover object-center rounded-xl"
         />
         {/* 배너 위 텍스트 오버레이 */}
         <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8">
@@ -274,7 +274,7 @@ const Home = () => {
             </div>
             {Array.isArray(displayedRecommendedFarms) && displayedRecommendedFarms.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                {displayedRecommendedFarms.map((farm) => (
+                {displayedRecommendedFarms.filter(farm => farm.available !== false && farm.isAvailable !== false).map((farm) => (
                   <RecommendFarmCard key={farm.id} farm={farm} isRecommended={true} />
                 ))}
               </div>
@@ -421,6 +421,9 @@ const Home = () => {
       
       {/* 챗봇 아이콘 */}
       <ChatbotIcon />
+      
+      {/* 하단 여백 */}
+      <div className="h-16"></div>
     </div>
   );
 };

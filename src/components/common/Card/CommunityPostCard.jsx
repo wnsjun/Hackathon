@@ -78,7 +78,7 @@ const HeartButton = ({ isLiked = false, onToggle }) => {
   );
 };
 
-const CommunityPostCard = ({ id, image, username, title, content, initialLiked = false, createdAt }) => {
+const CommunityPostCard = ({ id, image, username, title, content, initialLiked = false, createdAt, profileImage }) => {
   const navigate = useNavigate();
   
   // 서버에서 받은 좋아요 상태로 초기화
@@ -144,19 +144,19 @@ const CommunityPostCard = ({ id, image, username, title, content, initialLiked =
 
       {/* 사용자 정보 */}
       <div className="bg-white flex items-center justify-between pt-6 pb-0 px-6">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full overflow-hidden">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
             <img
               alt="profile"
-              src={imgEllipse83}
+              src={profileImage || imgEllipse83}
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-semibold text-xl text-black tracking-[-0.6px]">
+          <span className="font-semibold text-xl text-black tracking-[-0.6px] truncate">
             {username}
           </span>
         </div>
-        <span className="text-base text-black tracking-[-0.48px]">
+        <span className="text-base text-black tracking-[-0.48px] flex-shrink-0 ml-2 hidden md:block">
           {getTimeAgo(createdAt) }
         </span>
       </div>
@@ -165,7 +165,7 @@ const CommunityPostCard = ({ id, image, username, title, content, initialLiked =
       <div className="bg-white rounded-b-2xl px-6 pt-4 pb-6">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <h3 className="font-semibold text-xl text-black tracking-[-0.6px]">
+            <h3 className="font-semibold text-xl text-black tracking-[-0.6px] truncate md:whitespace-normal">
               {title}
             </h3>
             <div className="flex flex-col gap-2">
@@ -176,7 +176,7 @@ const CommunityPostCard = ({ id, image, username, title, content, initialLiked =
               </div>
             </div>
           </div>
-          <div className="flex items-end justify-end w-full">
+          <div className="hidden md:flex items-end justify-end w-full">
             {/*자세히보기 버튼*/}
             <button
               onClick={handleDetailClick}

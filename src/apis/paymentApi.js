@@ -16,7 +16,7 @@ export const getBalanceApi = async () => {
 export const chargeApi = async (money) => {
   try {
     const response = await axiosInstance.patch('/pay/charge', {
-      money: money
+      money: money,
     });
     return response.data;
   } catch (error) {
@@ -29,11 +29,38 @@ export const chargeApi = async (money) => {
 export const exchangeApi = async (money) => {
   try {
     const response = await axiosInstance.patch('/pay/exchange', {
-      money: money
+      money: money,
     });
     return response.data;
   } catch (error) {
     console.error('Exchange API error:', error);
+    throw error;
+  }
+};
+
+// 텃밭 결제 API
+export const processPayment = async (farmData, ecoScoreUse = 0) => {
+  try {
+    const response = await axiosInstance.patch('/pay', {
+      id: farmData.id,
+      title: farmData.title,
+      address: farmData.address,
+      size: farmData.size,
+      price: farmData.price,
+      rentalPeriod: farmData.rentalPeriod,
+      theme: farmData.theme,
+      description: farmData.description,
+      imageUrls: farmData.imageUrls || [],
+      owner: farmData.owner,
+      createdAt: farmData.createdAt,
+      updatedTime: farmData.updatedTime,
+      bookmarked: farmData.bookmarked || false,
+      isAvailable: farmData.isAvailable !== undefined ? farmData.isAvailable : true,
+      ecoScoreUse: ecoScoreUse,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Payment process API error:', error);
     throw error;
   }
 };
