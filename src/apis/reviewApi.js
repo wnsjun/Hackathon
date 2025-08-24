@@ -50,3 +50,8 @@ export const createReview = async (farmId, content) => {
     throw error;
   }
 };
+
+export const fetchMyReviews = async () => {
+  const response = await axiosInstance.get('/mypage/review');
+  return response.data;
+};

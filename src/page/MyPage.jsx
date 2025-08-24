@@ -8,6 +8,8 @@ import CommunityPostCard from '../components/common/Card/CommunityPostCard';
 import { useCoin } from '../contexts/CoinContext';
 import { Navbar } from '../components/layouts/Navbar';
 import ReviewCard from '../components/common/Card/ReviewCard';
+import { useMyReviews } from '../hooks/useMyPage';
+import { timeAgo } from '../utils/timeAgo';
 
 import {
   useProfile,
@@ -25,6 +27,8 @@ export const MyPage = () => {
   const navigate = useNavigate();
   const [farmToggle, setFarmToggle] = useState('my');
   const [communityToggle, setCommunityToggle] = useState('written');
+
+  const { data: myReviews, isLoading: myReviewsLoading } = useMyReviews();
 
   const { coinBalance } = useCoin(); //코인 잔액
 
@@ -66,6 +70,22 @@ export const MyPage = () => {
   };
 
   // 로딩 상태 체크
+  // if (
+  //   profileLoading ||
+  //   myFarmsLoading ||
+  //   usedFarmsLoading ||
+  //   bookmarkedFarmsLoading ||
+  //   myPostsLoading ||
+  //   likedPostsLoading ||
+  //   ecoScoreLoading
+  // ) {
+  //   return (
+  //     <p className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32">
+  //       로딩 중...
+  //     </p>
+  //   );
+  // }
+
   if (
     profileLoading ||
     myFarmsLoading ||
@@ -73,7 +93,8 @@ export const MyPage = () => {
     bookmarkedFarmsLoading ||
     myPostsLoading ||
     likedPostsLoading ||
-    ecoScoreLoading
+    ecoScoreLoading ||
+    myReviewsLoading
   ) {
     return (
       <p className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32">
@@ -119,9 +140,8 @@ export const MyPage = () => {
   return (
     <div className="min-h-screen ml-40 mr-40">
       <Navbar />
-
       {/* 프로필 영역 */}
-      <div className="px-4 sm:px-8 md:px-16 lg:px-32 xl:px-40 pt-32 pb-8">
+      <div className="px-4 sm:px-8 md:px-16 pt-32 pb-8">
         <div className="relative">
           {/* 로그아웃 & 설정 버튼 */}
           <div className="absolute top-0 right-0 flex items-center gap-3 mb-4">
@@ -212,10 +232,9 @@ export const MyPage = () => {
           </div>
         </div>
       </div>
-
       <div className=" pt-16 md:pt-16">
         {/* 거래 리뷰 */}
-        <div className="flex items-center justify-between mb-6">
+        {/* <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
             거래 리뷰
           </h2>
@@ -241,8 +260,51 @@ export const MyPage = () => {
         ) : (
           <p className="text-gray-500">아직 등록된 리뷰가 없습니다.</p>
         )}
-      </div>
+      </div>*/}
 
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
+            거래 리뷰
+          </h2>
+          <button
+            className="cursor-pointer flex items-center gap-1 text-lg md:text-2xl text-[#777777] tracking-[-0.48px]"
+            onClick={() => navigate('/my-all-reviews')}
+          >
+            전체보기 <ArrowIcon />
+          </button>
+        </div>
+        {/* {myReviews && myReviews.length > 0 ? (
+          <div className="flex flex-col gap-4">
+            {myReviews.slice(0, 3).map((review) => (
+              <ReviewCard
+                key={review.reviewId}
+                profileUrl={'/assets/profile.svg'} // API에 프로필 이미지 없음 → 기본값
+                nickname={review.nickname}
+                timeAgo={new Date(review.createdAt).toLocaleDateString()} // 간단히 날짜 표시
+                content={review.content}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">아직 등록된 리뷰가 없습니다.</p>
+        )} */}
+
+        {myReviews && myReviews.length > 0 ? (
+          <div className="flex flex-row gap-6">
+            {myReviews.slice(0, 3).map((review) => (
+              <ReviewCard
+                key={review.reviewId}
+                profileUrl={'/assets/profile.svg'} // API에 프로필 이미지 없음 → 기본값
+                nickname={review.nickname}
+                timeAgo={timeAgo(review.createdAt)} // @@일 전
+                content={review.content}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">아직 등록된 리뷰가 없습니다.</p>
+        )}
+      </div>
       {/* 텃밭 탭 & 카드 */}
       <div className="flex flex-col pt-18 gap-2 w-full">
         <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
@@ -296,7 +358,6 @@ export const MyPage = () => {
         </div>
       </div>
       <div className="h-6"></div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16">
         {farmToggle === 'my'
           ? myFarms.slice(0, 3).map((farm) => (
@@ -316,7 +377,6 @@ export const MyPage = () => {
                 </div>
               ))}
       </div>
-
       {/* 커뮤니티 */}
       <div className="pt-16 md:pt-18">
         <div className="flex flex-col gap-2 w-full">
@@ -382,7 +442,6 @@ export const MyPage = () => {
             ))}
         </div>
       </div>
-
       {/* 챗봇 아이콘 */}
       <ChatbotIcon />
     </div>

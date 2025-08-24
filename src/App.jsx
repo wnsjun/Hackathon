@@ -19,6 +19,7 @@ import CreditPage from './page/CreditPage';
 import CoinChargePage from './page/CoinChargePage';
 import HomeSearchResult from './page/HomeSearchResult';
 import { CoinProvider } from './contexts/CoinContext';
+import MyAllReviews from './page/MyAllReviews';
 
 const App = () => {
   return (
@@ -47,6 +48,7 @@ const App = () => {
             <Route path="/credit" element={<CreditPage/>}/>
             <Route path="/credit/:chatRoomId" element={<CreditPage/>}/>
             <Route path="/coin-charge" element={<CoinChargePage />} />
+            <Route path="/my-all-reviews" element={<MyAllReviews />} />
           </Route>
         </Routes>
       </BrowserRouter>

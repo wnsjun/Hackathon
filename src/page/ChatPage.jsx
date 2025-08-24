@@ -400,7 +400,7 @@ const ChatPage = () => {
   }, [isMobileView]);
 
   return (
-    <div className="flex flex-col pr-40 pl-40 lg:flex-row flex-1 bg-white h-screen pt-20">
+    <div className="flex flex-col lg:pl-40 lg:pr-40 lg:flex-row flex-1 bg-white h-screen pt-20">
       {/* 모바일: 채팅 목록만 보이거나 채팅 상세만 보임 */}
       {/* 데스크톱: 항상 둘 다 보임 */}
 
