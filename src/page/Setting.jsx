@@ -55,7 +55,7 @@ const Setting = () => {
         setBank(data.bank || '');
         setAccountNumber(data.accountNumber || '');
         setSelectedThemes(data.preferredThemes || []);
-        setProfileUrl(data.imageUrl || '');
+        setProfileUrl(data.profileImage || '');
       } catch (err) {
         console.error('프로필 불러오기 실패', err);
       }
