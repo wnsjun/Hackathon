@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCoin } from '../../contexts/CoinContext';
 import { processPayment } from '../../apis/paymentApi';
 
-const PaymentSection = ({ farmData }) => {
+const PaymentSection = ({ farmData, userData }) => {
   const [ecoPoints, setEcoPoints] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
@@ -77,7 +77,7 @@ const PaymentSection = ({ farmData }) => {
               <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">친환경 점수 사용</p>
             </div>
             <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0 text-[#1aa752]">
-              <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">83점</p>
+              <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">{userData?.ecoScore || 83}점</p>
             </div>
           </div>
           <div className="box-border content-stretch flex flex-row h-12 items-center justify-between px-2 py-0 relative shrink-0 w-full border-b border-[#bbbbbb]">
@@ -97,7 +97,7 @@ const PaymentSection = ({ farmData }) => {
             </div>
             <button 
               className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#1aa752] text-[16px] text-left text-nowrap tracking-[-0.48px] cursor-pointer"
-              onClick={() => setEcoPoints(83)}
+              onClick={() => setEcoPoints(userData?.ecoScore || 83)}
             >
               <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">모두 사용</p>
             </button>

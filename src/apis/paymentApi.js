@@ -50,12 +50,15 @@ export const processPayment = async (farmData, ecoScoreUse = 0) => {
       rentalPeriod: farmData.rentalPeriod,
       theme: farmData.theme,
       description: farmData.description,
+      thumbnailUrl: farmData.thumbnailUrl || null,
       imageUrls: farmData.imageUrls || [],
-      owner: farmData.owner,
+      owner: {
+        userId: farmData.owner?.userId,
+        nickname: farmData.owner?.nickname
+      },
       createdAt: farmData.createdAt,
       updatedTime: farmData.updatedTime,
-      bookmarked: farmData.bookmarked || false,
-      isAvailable: farmData.isAvailable !== undefined ? farmData.isAvailable : true,
+      available: true,
       ecoScoreUse: ecoScoreUse,
     });
     return response.data;
