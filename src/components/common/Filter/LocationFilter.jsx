@@ -21,8 +21,15 @@ const LocationFilter = ({ isOpen, onClose, onLocationToggle, selectedLocations =
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    // 약간의 지연을 두어 클릭 이벤트와 충돌 방지
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isOpen, onClose]);
 
   const handleLocationToggle = (location) => {

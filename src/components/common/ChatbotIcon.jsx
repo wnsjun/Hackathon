@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { sendChatbotMessage, sendChatbotDiagnose } from '../../apis/chatbotApi';
 import chatbotIcon from '../../assets/chatboticon.png?url';
 import chatbotClickIcon from '../../assets/chatbotClickicon.png?url';
 
@@ -21,6 +22,9 @@ const ChatbotIcon = ({ isMobile = false }) => {
     { id: 1, text: "AI 챗봇 새싹이입니다. 무엇을 도와드릴까요?🌱", sender: "bot", time: getCurrentTime() }
   ]);
   const [inputMessage, setInputMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const fileInputRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   const handleChatbotClick = () => {
     setIsPopupOpen(!isPopupOpen);
@@ -35,7 +39,7 @@ const ChatbotIcon = ({ isMobile = false }) => {
     setIsHovered(false);
   };
 
-  const handleMessageSubmit = (e) => {
+  const handleMessageSubmit = async (e) => {
     e.preventDefault();
     if (inputMessage.trim()) {
       const newUserMessage = {
@@ -45,18 +49,29 @@ const ChatbotIcon = ({ isMobile = false }) => {
         time: getCurrentTime()
       };
       
-      setMessages([...messages, newUserMessage]);
+      setMessages(prev => [...prev, newUserMessage]);
+      const userQuery = inputMessage;
       setInputMessage("");
 
-      setTimeout(() => {
+      try {
+        const response = await sendChatbotMessage(userQuery);
+
         const botResponse = {
           id: messages.length + 2,
-          text: getBotResponse(inputMessage),
+          text: response.response,
           sender: "bot",
           time: getCurrentTime()
         };
         setMessages(prev => [...prev, botResponse]);
-      }, 1000);
+      } catch (error) {
+        const errorResponse = {
+          id: messages.length + 2,
+          text: "죄송해요, 일시적인 오류가 발생했습니다. 다시 시도해주세요.",
+          sender: "bot",
+          time: getCurrentTime()
+        };
+        setMessages(prev => [...prev, errorResponse]);
+      }
     }
   };
 
@@ -64,36 +79,100 @@ const ChatbotIcon = ({ isMobile = false }) => {
     setInputMessage(e.target.value);
   };
 
-  const handleSuggestedClick = (text) => {
-    const userMessage = { id: messages.length + 1, text, sender: "user", time: getCurrentTime()  };
-    setMessages([...messages, userMessage]);
-    
-    setTimeout(() => {
+  const handleSuggestedClick = async (text) => {
+    if (text === "병해진단을 해줘") {
+      const userMessage = { id: messages.length + 1, text, sender: "user", time: getCurrentTime() };
+      setMessages(prev => [...prev, userMessage]);
+      
       const botResponse = {
         id: messages.length + 2,
-        text: getBotResponse(text),
+        text: "증상 사진을 업로드해 주세요. 📷",
         sender: "bot",
         time: getCurrentTime()
       };
       setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+      
+      setTimeout(() => {
+        fileInputRef.current?.click();
+      }, 500);
+      return;
+    }
+
+    const userMessage = { id: messages.length + 1, text, sender: "user", time: getCurrentTime() };
+    setMessages(prev => [...prev, userMessage]);
+    
+    try {
+      const response = await sendChatbotMessage(text);
+
+      const botResponse = {
+        id: messages.length + 2,
+        text: response.response,
+        sender: "bot",
+        time: getCurrentTime()
+      };
+      setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      const errorResponse = {
+        id: messages.length + 2,
+        text: "죄송해요, 일시적인 오류가 발생했습니다. 다시 시도해주세요.",
+        sender: "bot",
+        time: getCurrentTime()
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    }
   };
 
-  const getBotResponse = (userMessage) => {
-    const lowerMessage = userMessage.toLowerCase();
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    setSelectedImage(file);
     
-    if (lowerMessage.includes("대여 방법")) {
-      return "텃밭 대여 방법을 안내드릴게요!\n\n원하는 텃밭 매물을 선택하고 위치, 가격, 평수 등을 확인합니다.\n텃밭을 올린 사용자와 채팅을 나눈 뒤 텃밭 대여를 확정할 수 있습니다.\n더 궁금한 게 있으신가요?"; 
-    }
-    if (lowerMessage.includes("재배 방법")) {
-      return "작물 재배 방법을 알려드릴게요! 🌱\n\n기본 재배 단계:\n1. 토양 준비: 배수가 잘 되는 비옥한 토양\n2. 씨앗 파종: 작물별 적정 심기 깊이 유지\n3. 물주기: 토양이 마르지 않도록 적절히 급수\n4. 관리: 잡초 제거, 병충해 방지\n5. 수확: 작물이 충분히 자란 후 수확\n\n어떤 작물을 기르실 계획인가요?";
-    }
-    if (lowerMessage.includes("작물") && lowerMessage.includes("추천")) {
-      return "초보자에게 추천하는 작물들이에요! 🥬\n\n🌿 쉬운 작물:\n• 상추, 시금치 - 빨리 자라고 관리 쉬움\n• 무, 배추 - 병충해에 강함\n• 토마토 - 수확량이 많음\n\n🌱 계절별 추천:\n• 봄: 상추, 시금치, 완두콩\n• 여름: 토마토, 오이, 호박\n• 가을: 무, 배추, 당근\n\n어떤 계절에 시작하실 예정인가요?";
-    }
+    // 이미지 URL 생성
+    const imageUrl = URL.createObjectURL(file);
     
-    return "죄송해요, 잘 이해하지 못했어요 😅\n\n아래 질문들을 클릭해보시거나 구체적으로 질문해주세요!\n• 대여 방법을 알려줘\n• 재배 방법을 알려줘\n• 기를 작물을 추천해줘";
+    const userMessage = { 
+      id: messages.length + 1, 
+      text: `이미지를 업로드했습니다: ${file.name}`, 
+      sender: "user", 
+      time: getCurrentTime(),
+      image: imageUrl
+    };
+    setMessages(prev => [...prev, userMessage]);
+
+    try {
+      const response = await sendChatbotDiagnose(file);
+
+      const botResponse = {
+        id: messages.length + 2,
+        text: response.response,
+        sender: "bot",
+        time: getCurrentTime()
+      };
+      setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      const errorResponse = {
+        id: messages.length + 2,
+        text: "죄송해요, 병해진단 중 오류가 발생했습니다. 다시 시도해주세요.",
+        sender: "bot",
+        time: getCurrentTime()
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setSelectedImage(null);
+      event.target.value = '';
+      // URL 정리 (메모리 누수 방지)
+      setTimeout(() => {
+        URL.revokeObjectURL(imageUrl);
+      }, 60000); // 1분 후 URL 해제
+    }
   };
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -128,6 +207,12 @@ const ChatbotIcon = ({ isMobile = false }) => {
     };
   }, [isPopupOpen, isClicked]);
 
+  // 메시지 변경 시 스크롤을 맨 아래로
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   if (isMobile) {
     return (
@@ -164,18 +249,25 @@ const ChatbotIcon = ({ isMobile = false }) => {
                       </div>
                     )}
                     <div 
-                      className={`backdrop-blur-[5px] backdrop-filter flex flex-row items-start justify-center pb-5 pt-4 px-7 relative shrink-0 ${
+                      className={`backdrop-blur-[5px] backdrop-filter flex flex-row items-start justify-center pb-5 pt-4 px-7 relative max-w-[400px] ${
                         message.sender === 'user' 
                           ? 'bg-[#1aa752] rounded-bl-[40px] rounded-br-[40px] rounded-tl-[40px]' 
                           : 'bg-[#f7f7f7] border border-[#bbbbbb] border-solid rounded-bl-[40px] rounded-br-[40px] rounded-tr-[40px]'
                       }`}
                     >
-                      <div className="flex flex-col gap-1 items-start justify-start relative shrink-0">
+                      <div className="flex flex-col gap-1 items-start justify-start relative">
+                        {message.image && (
+                          <img 
+                            src={message.image} 
+                            alt="업로드된 이미지" 
+                            className="max-w-full max-h-[200px] rounded-2xl object-contain mb-2"
+                          />
+                        )}
                         <div 
-                          className={`font-['Pretendard:Regular',_sans-serif] leading-[1.5] not-italic relative shrink-0 text-[16px] text-left tracking-[-0.48px] ${
+                          className={`font-['Pretendard:Regular',_sans-serif] leading-[1.5] not-italic relative text-[16px] text-left tracking-[-0.48px] break-words ${
                             message.sender === 'user' ? 'text-[#ffffff]' : 'text-[#000000]'
                           }`}
-                          style={{ whiteSpace: 'pre-wrap' }}
+                          style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
                         >
                           {message.text}
                         </div>
@@ -190,12 +282,13 @@ const ChatbotIcon = ({ isMobile = false }) => {
                     )}
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* 하단 입력 영역 */}
               <div className="p-6 flex flex-col gap-6">
                 {/* 추천 질문 버튼들 */}
-                <div className="flex flex-row gap-2 ">
+                <div className="flex flex-row gap-2 flex-wrap">
                   <button
                     onClick={() => handleSuggestedClick("대여 방법을 알려줘")}
                     className="flex items-center justify-center px-3 py-1.5 rounded-full border border-[#1AA752] flex-1 cursor-pointer"
@@ -218,6 +311,14 @@ const ChatbotIcon = ({ isMobile = false }) => {
                   >
                     <span className="font-semibold text-[#1AA752] text-[12px] text-nowrap tracking-[-0.36px]">
                       작물을 추천해줘
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => handleSuggestedClick("병해진단을 해줘")}
+                    className="flex items-center justify-center px-3 py-1.5 rounded-full border border-[#1AA752] flex-1 cursor-pointer"
+                  >
+                    <span className="font-semibold text-[#1AA752] text-[12px] text-nowrap tracking-[-0.36px]">
+                      병해진단을 해줘
                     </span>
                   </button>
                 </div>
@@ -243,6 +344,15 @@ const ChatbotIcon = ({ isMobile = false }) => {
                     </button>
                   </div>
                 </form>
+
+                {/* 숨겨진 파일 입력 */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
               </div>
             </div>
           </div>
@@ -306,18 +416,25 @@ const ChatbotIcon = ({ isMobile = false }) => {
                   </div>
                 )}
                 <div 
-                  className={`backdrop-blur-[5px] backdrop-filter flex flex-row items-start justify-center pb-5 pt-4 px-7 relative shrink-0 ${
+                  className={`backdrop-blur-[5px] backdrop-filter flex flex-row items-start justify-center pb-5 pt-4 px-7 relative max-w-[400px] ${
                     message.sender === 'user' 
                       ? 'bg-[#1aa752] rounded-bl-[40px] rounded-br-[40px] rounded-tl-[40px]' 
                       : 'bg-[#f7f7f7] border border-[#bbbbbb] border-solid rounded-bl-[40px] rounded-br-[40px] rounded-tr-[40px]'
                   }`}
                 >
-                  <div className="flex flex-col gap-1 items-start justify-start relative shrink-0">
+                  <div className="flex flex-col gap-1 items-start justify-start relative">
+                    {message.image && (
+                      <img 
+                        src={message.image} 
+                        alt="업로드된 이미지" 
+                        className="max-w-full max-h-[200px] rounded-2xl object-contain mb-2"
+                      />
+                    )}
                     <div 
-                      className={`font-['Pretendard:Regular',_sans-serif] leading-[1.5] not-italic relative shrink-0 text-[16px] text-left tracking-[-0.48px] ${
+                      className={`font-['Pretendard:Regular',_sans-serif] leading-[1.5] not-italic relative text-[16px] text-left tracking-[-0.48px] break-words ${
                         message.sender === 'user' ? 'text-[#ffffff]' : 'text-[#000000]'
                       }`}
-                      style={{ whiteSpace: 'pre-wrap' }}
+                      style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
                     >
                       {message.text}
                     </div>
@@ -332,12 +449,13 @@ const ChatbotIcon = ({ isMobile = false }) => {
                 )}
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* 하단 입력 영역 */}
           <div className="p-6 flex flex-col gap-6">
             {/* 추천 질문 버튼들 */}
-            <div className="flex flex-row gap-2 ">
+            <div className="flex flex-row gap-2 flex-wrap">
               <button
                 onClick={() => handleSuggestedClick("대여 방법을 알려줘")}
                 className="flex items-center justify-center px-3 py-1.5 rounded-full border border-[#1AA752] flex-1 cursor-pointer"
@@ -360,6 +478,14 @@ const ChatbotIcon = ({ isMobile = false }) => {
               >
                 <span className="font-semibold text-[#1AA752] text-[12px] text-nowrap tracking-[-0.36px]">
                   작물을 추천해줘
+                </span>
+              </button>
+              <button
+                onClick={() => handleSuggestedClick("병해진단을 해줘")}
+                className="flex items-center justify-center px-3 py-1.5 rounded-full border border-[#1AA752] flex-1 cursor-pointer"
+              >
+                <span className="font-semibold text-[#1AA752] text-[12px] text-nowrap tracking-[-0.36px]">
+                  병해진단을 해줘
                 </span>
               </button>
             </div>
@@ -385,6 +511,15 @@ const ChatbotIcon = ({ isMobile = false }) => {
                 </button>
               </div>
             </form>
+
+            {/* 숨겨진 파일 입력 */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="hidden"
+            />
           </div>
         </div>
       )}

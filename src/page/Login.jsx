@@ -1,4 +1,3 @@
-import kakaoLogo from '../assets/kakao-icon.svg?url';
 import { useNavigate } from 'react-router-dom';
 import SpaceFarm from '../assets/SpaceFarm.svg?url';
 import { useState } from 'react';
@@ -29,11 +28,6 @@ export const Login = () => {
     );
   };
 
-  // 카카오 소셜 로그인
-  const backendKakaoURL = '/oauth2/authorization/kakao';
-  const handleLogin = () => {
-    window.location.href = backendKakaoURL;
-  };
 
   // 로고 클릭 시 홈으로
   const handleTitleClick = () => {
@@ -105,17 +99,6 @@ export const Login = () => {
           {loginMutation.isPending ? '로그인 중...' : '로그인 하기'}
         </button>
 
-        {/* 카카오 로그인 */}
-        <button
-          type="button"
-          onClick={handleLogin}
-          className="flex items-center h-[62px] justify-center gap-2 w-[280px] py-3 cursor-pointer rounded-md bg-[#FEE500] text-[#191919] hover:opacity-90 transition mt-4"
-        >
-          <img src={kakaoLogo} alt="kakao" className="w-6 h-6" />
-          <span className="text-base font-semibold">
-            카카오톡으로 간편로그인
-          </span>
-        </button>
 
         {/* 회원가입 버튼 */}
         <button

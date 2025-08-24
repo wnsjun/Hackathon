@@ -3,16 +3,18 @@ import { useState, useEffect } from 'react';
 import { Navbar } from '../components/layouts/Navbar';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import FarmReview from '../components/common/FarmReview';
-import { fetchFarmById } from '../apis/home';
+import { fetchFarmById, premiumUpFarm } from '../apis/home';
 import { fetchReviewsByFarmId, createReview } from '../apis/reviewApi';
 import { toggleBookmark, removeBookmark } from '../apis/bookmark';
 import { createChatRoom } from '../apis/chatApi';
+import { useCoin } from '../contexts/CoinContext';
 import profile from '../assets/profile.png';
 import ReviewModal from '../components/common/ReviewModal';
 
 const PlantDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { updateCoinBalance, coinBalance } = useCoin();
   const [farmData, setFarmData] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +23,8 @@ const PlantDetail = () => {
   const location = useLocation();
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isMyFarm, setIsMyFarm] = useState(false);
+  const [premiumUpCount, setPremiumUpCount] = useState(0);
 
   const getTimeDifference = (createdAt) => {
     const now = new Date();
@@ -56,6 +60,27 @@ const PlantDetail = () => {
 
         // 서버에서 받은 북마크 상태 사용
         setIsBookmarked(farmData.bookmarked);
+
+        // 내 매물인지 확인 (authorNickname과 내 nickname 비교)
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const myNickname = userData.nickname;
+        
+        console.log('===== 매물 소유자 확인 =====');
+        console.log('farmData:', farmData);
+        console.log('farmData.authorNickname:', farmData.authorNickname);
+        console.log('farmData.owner:', farmData.owner);
+        console.log('farmData.owner?.nickname:', farmData.owner?.nickname);
+        console.log('farmData.premiumCount:', farmData.premiumCount);
+        console.log('userData:', userData);
+        console.log('myNickname:', myNickname);
+        console.log('========================');
+        
+        setIsMyFarm(farmData.owner?.nickname === myNickname);
+        
+        // API에서 받은 premiumCount 설정
+        if (farmData.premiumCount !== undefined) {
+          setPremiumUpCount(farmData.premiumCount);
+        }
 
         try {
           const reviewsData = await fetchReviewsByFarmId(id, 'createdAt_desc');
@@ -158,11 +183,41 @@ const PlantDetail = () => {
         state: {
           chatRoomId: response.chatRoomId,
           farmData: farmData,
+          openChatRoom: true,
         },
       });
     } catch (error) {
       console.error('채팅방 생성 실패:', error);
       alert('채팅방 생성에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const handlePremiumUpClick = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+
+    // 코인 부족 체크
+    if (coinBalance < 100) {
+      alert('코인이 부족합니다. 코인을 충전해주세요.');
+      return;
+    }
+
+    try {
+      const response = await premiumUpFarm(farmData.id);
+      setPremiumUpCount(response);
+      
+      // 코인 100 감소 (navbar에 즉시 반영)
+      const newCoinBalance = coinBalance - 100;
+      updateCoinBalance(newCoinBalance);
+      
+      alert(`프리미엄 매물 UP 완료! 오늘 업한 횟수: ${response}회`);
+    } catch (error) {
+      console.error('프리미엄 UP 실패:', error);
+      alert('프리미엄 UP에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -438,7 +493,7 @@ const PlantDetail = () => {
           </div>
 
           {/* Reviews section - Info Panel 아래 */}
-          <div className="w-full px-8 pt-12 ">
+          <div className="w-full px-8 pt-16 ">
             <FarmReview 
               farmId={id}
               reviews={reviews} 
@@ -447,14 +502,62 @@ const PlantDetail = () => {
             />
           </div>
 
-          {/* Chat button - 리뷰 바로 아래 */}
+          {/* Chat button or Premium UP section - 리뷰 바로 아래 */}
           <div className="w-full px-8 pt-8 pb-25">
-            <button 
-              className="w-full bg-[#1aa752] text-white text-[20px] font-semibold py-4 rounded-lg"
-              onClick={handleChatButtonClick}
-            >
-              채팅하기
-            </button>
+            {isMyFarm ? (
+              <div className="flex flex-col gap-1 items-start w-full">
+                <div className="flex flex-col gap-2 items-start w-full">
+                  <button 
+                    className={`w-full text-white text-[16px] font-semibold py-3 rounded-full ${
+                      coinBalance < 100 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-[#1aa752] hover:bg-[#178a44]'
+                    }`}
+                    onClick={coinBalance >= 100 ? handlePremiumUpClick : undefined}
+                    disabled={coinBalance < 100}
+                  >
+                    프리미엄 매물 UP
+                  </button>
+                  {coinBalance < 100 && (
+                    <p className="text-red-500 text-[14px] font-medium">
+                      코인을 충전해주세요
+                    </p>
+                  )}
+                  <div className="flex gap-4 items-end justify-start w-full">
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-7 justify-center text-[#111111] text-[16px] tracking-[-0.48px]">
+                      <p className="leading-[1.5]">오늘 남은 횟수</p>
+                    </div>
+                    <div className="flex gap-0.5 items-end justify-start text-[#111111]">
+                      <div className="flex gap-0.5 items-end justify-start">
+                        <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] h-[34px] justify-center text-[24px] tracking-[-0.48px]">
+                          <p className="leading-[1.5]">{premiumUpCount}</p>
+                        </div>
+                        <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center text-[20px] tracking-[-0.6px]">
+                          <p className="leading-[1.5]">/</p>
+                        </div>
+                        <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center text-[20px] tracking-[-0.6px]">
+                          <p className="leading-[1.5]">5</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center text-[20px] tracking-[-0.6px]">
+                        <p className="leading-[1.5]">회</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[1.5] text-[#777777] text-[14px] tracking-[-0.42px] w-full">
+                  <p className="mb-0 whitespace-nowrap">사용자들의 매물 목록에 내 텃밭이 상단에 떠요.</p>
+                  <p className="text-[#1aa752] mb-0">100 Coin 소요</p>
+                </div>
+              </div>
+            ) : (
+              <button 
+                className="w-full bg-[#1aa752] text-white text-[20px] font-semibold py-4 rounded-lg"
+                onClick={handleChatButtonClick}
+              >
+                채팅하기
+              </button>
+            )}
           </div>
         </div>
 
@@ -687,29 +790,80 @@ const PlantDetail = () => {
             </div>
           </div>
 
-          {/* Chat button */}
-          <div
-            className="absolute bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] top-[752px] cursor-pointer"
-            style={{ left: 'calc(83.333% - 78px)' }}
-            onClick={handleChatButtonClick}
-          >
-            <div className="box-border content-stretch flex flex-row items-center justify-start p-0 relative shrink-0">
-              <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-left text-nowrap tracking-[-0.48px]">
-                <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">채팅하기</p>
+          {/* Chat button or Premium UP section */}
+          {isMyFarm ? (
+            <div className="absolute top-[650px]" style={{ left: 'calc(66.667% - 13px)' }}>
+              <div className="flex flex-col gap-1 items-start w-[174px]">
+                <div className="flex flex-col gap-2 items-start w-full">
+                  <div 
+                    className={`box-border flex gap-2.5 items-center justify-center px-6 py-3 rounded-[100px] ${
+                      coinBalance < 100 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-[#1aa752] cursor-pointer hover:bg-[#178a44]'
+                    }`}
+                    onClick={coinBalance >= 100 ? handlePremiumUpClick : undefined}
+                  >
+                    <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center text-[#ffffff] text-[16px] text-nowrap tracking-[-0.48px]">
+                      <p className="leading-[1.5] whitespace-pre">프리미엄 매물 UP</p>
+                    </div>
+                  </div>
+                  {coinBalance < 100 && (
+                    <p className="text-red-500 text-[14px] font-medium">
+                      코인을 충전해주세요
+                    </p>
+                  )}
+                  <div className="flex gap-4 items-end justify-start w-full">
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-7 justify-center text-[#111111] text-[16px] tracking-[-0.48px]">
+                      <p className="leading-[1.5]">오늘 남은 횟수</p>
+                    </div>
+                    <div className="flex gap-0.5 items-end justify-start text-[#111111]">
+                      <div className="flex gap-0.5 items-end justify-start">
+                        <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] h-[34px] justify-center text-[24px] tracking-[-0.48px]">
+                          <p className="leading-[1.5]">{premiumUpCount}</p>
+                        </div>
+                        <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center text-[20px] tracking-[-0.6px]">
+                          <p className="leading-[1.5]">/</p>
+                        </div>
+                        <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center text-[20px] tracking-[-0.6px]">
+                          <p className="leading-[1.5]">5</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center text-[20px] tracking-[-0.6px]">
+                        <p className="leading-[1.5]">회</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[1.5] text-[#777777] text-[14px] tracking-[-0.42px] w-full">
+                  <p className="mb-0 whitespace-nowrap">사용자들의 매물 목록에 내 텃밭이 상단에 떠요.</p>
+                  <p className="text-[#1aa752] mb-0">100 Coin 소요</p>
+                </div>
               </div>
-              <div className="flex items-center justify-center relative shrink-0">
-                <div className="flex-none rotate-[180deg]">
-                  <div className="relative size-6">
-                    <SendIcon />
+            </div>
+          ) : (
+            <div
+              className="absolute bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] top-[650px] cursor-pointer"
+              style={{ left: 'calc(66.667% - 13px)' }}
+              onClick={handleChatButtonClick}
+            >
+              <div className="box-border content-stretch flex flex-row items-center justify-start p-0 relative shrink-0">
+                <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-left text-nowrap tracking-[-0.48px]">
+                  <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">채팅하기</p>
+                </div>
+                <div className="flex items-center justify-center relative shrink-0">
+                  <div className="flex-none rotate-[180deg]">
+                    <div className="relative size-6">
+                      <SendIcon />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Reviews section */}
           <div
-            className="absolute top-[873px]"
+            className="absolute top-[850px]"
             style={{ left: 'calc(66.667% - 13px)' }}
           >
             <FarmReview

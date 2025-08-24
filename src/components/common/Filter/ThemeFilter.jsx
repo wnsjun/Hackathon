@@ -4,6 +4,13 @@ import CheckSquareContained from '../CheckSquareContained';
 const ThemeFilter = ({ isOpen, onClose, onThemeToggle, selectedThemes = [] }) => {
   const filterRef = useRef(null);
 
+  const themeMapping = {
+    '옥상': 'ROOFTOP',
+    '화단': 'FLOWER_BED', 
+    '공터': 'EMPTY_LOT',
+    '공원': 'PARK'
+  };
+
   const themes = ['옥상', '화단', '공터', '공원'];
 
   useEffect(() => {
@@ -15,12 +22,20 @@ const ThemeFilter = ({ isOpen, onClose, onThemeToggle, selectedThemes = [] }) =>
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    // 약간의 지연을 두어 클릭 이벤트와 충돌 방지
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isOpen, onClose]);
 
   const handleThemeToggle = (theme) => {
-    onThemeToggle(theme);
+    const englishTheme = themeMapping[theme];
+    onThemeToggle(englishTheme);
   };
 
   if (!isOpen) return null;
@@ -53,7 +68,7 @@ const ThemeFilter = ({ isOpen, onClose, onThemeToggle, selectedThemes = [] }) =>
                   onClick={() => handleThemeToggle(theme)}
                   className="relative shrink-0 size-6 ml-auto"
                 >
-                  <CheckSquareContained check={selectedThemes.includes(theme) ? "on" : "off"} />
+                  <CheckSquareContained check={selectedThemes.includes(themeMapping[theme]) ? "on" : "off"} />
                 </button>
               </div>
             ))}
