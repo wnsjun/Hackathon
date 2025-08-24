@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ChatbotIcon from '../components/common/ChatbotIcon';
 import setting from '../assets/setting.svg';
 import FarmCard from '../components/common/Card/FarmCard';
+import RentingFarmCard from '../components/common/Card/RentingFarmCard';
 import CommunityPostCard from '../components/common/Card/CommunityPostCard';
 import ReviewCard from '../components/common/Card/ReviewCard';
 import { useCoin } from '../contexts/CoinContext';
@@ -400,7 +401,7 @@ export const MyPage = () => {
         </div>
 
         {/* 텃밭 */}
-        <div className="flex  ml-40 mr-40 flex-col pt-18 gap-2 w-full">
+        <div className="pt-16 ml-40 mr-40 md:pt-18">
           <h2 className="text-2xl md:text-3xl font-semibold text-black tracking-[-0.64px]">
             텃밭
           </h2>
@@ -433,19 +434,19 @@ export const MyPage = () => {
             </button>
           </div>
           <div className="h-6"></div>
-          {(farmToggle === 'my'
-            ? myFarms
-            : farmToggle === 'renting'
-              ? usedFarms
-              : bookmarkedFarms
-          ).length > 0 ? (
+          {farmToggle === 'renting' ? (
+            usedFarms.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {usedFarms.slice(0, 3).map((farm) => (
+                  <RentingFarmCard key={farm.id} farm={farm} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 py-6">대여중인 텃밭이 없습니다.</p>
+            )
+          ) : (farmToggle === 'my' ? myFarms : bookmarkedFarms).length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {(farmToggle === 'my'
-                ? myFarms
-                : farmToggle === 'renting'
-                  ? usedFarms
-                  : bookmarkedFarms
-              )
+              {(farmToggle === 'my' ? myFarms : bookmarkedFarms)
                 .slice(0, 3)
                 .map((farm) => (
                   <FarmCard key={farm.id} farm={farm} />
