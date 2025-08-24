@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/layouts/Navbar';
 import { useAuth } from '../hooks/useAuth';
 import { useCoin } from '../contexts/CoinContext';
 import { useCharge, useExchange } from '../hooks/usePayment';
+import { getBankAccount } from '../apis/payApi';
 import tossImage from '../assets/tosspay.png';
 import ChargeSuccessModal from '../components/common/Modal/ChargeSuccessModal';
 import ExchangeSuccessModal from '../components/common/Modal/ExchangeSuccessModal';
 
 const CoinChargePage = () => {
+  const navigate = useNavigate();
   const { coinBalance } = useCoin();
   const chargeMutation = useCharge();
   const exchangeMutation = useExchange();
@@ -21,6 +24,22 @@ const CoinChargePage = () => {
   const [modalChargeAmount, setModalChargeAmount] = useState(0);
   const [modalExchangeAmount, setModalExchangeAmount] = useState(0);
   const [modalReceiveAmount, setModalReceiveAmount] = useState(0);
+  const [bankAccount, setBankAccount] = useState('신한은행 123-456-789');
+
+  // 계좌 정보 조회
+  useEffect(() => {
+    const fetchBankAccount = async () => {
+      try {
+        const accountData = await getBankAccount();
+        setBankAccount(accountData);
+      } catch (error) {
+        console.error('계좌 조회 실패:', error);
+        // 실패 시 기본값 유지
+      }
+    };
+
+    fetchBankAccount();
+  }, []);
 
   const FarmCoinIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -88,6 +107,15 @@ const CoinChargePage = () => {
 
   const handlePaymentMethodClick = () => {
     setIsPaymentSelected(!isPaymentSelected);
+  };
+
+  const handleAccountSettingClick = () => {
+    alert('계좌를 수정해주세요');
+    navigate('/setting', { 
+      state: { 
+        message: '계좌를 수정해주세요' 
+      } 
+    });
   };
 
   const handleChargeClick = () => {
@@ -375,7 +403,7 @@ const CoinChargePage = () => {
                       <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">받는 계좌</p>
                     </div>
                   </div>
-                  <div className="overflow-clip relative shrink-0 size-6 cursor-pointer">
+                  <div className="overflow-clip relative shrink-0 size-6 cursor-pointer" onClick={handleAccountSettingClick}>
                     <PlusIcon />
                   </div>
                 </div>
@@ -389,25 +417,7 @@ const CoinChargePage = () => {
                     </div>
                     <div className="box-border content-stretch flex flex-row font-['Pretendard:Regular',_sans-serif] gap-2 items-center justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#000000] text-[14px] text-left text-nowrap tracking-[-0.42px]">
                       <div className="flex flex-col justify-center relative shrink-0">
-                        <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">신한</p>
-                      </div>
-                      <div className="flex flex-col justify-center relative shrink-0">
-                        <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">110-345-434154</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Other Account */}
-                  <div className="box-border content-stretch flex flex-row gap-4 h-[72px] items-center justify-start px-6 py-4 relative rounded-2xl shrink-0 w-full border border-[#bbbbbb] cursor-pointer">
-                    <div className="relative shrink-0 size-6">
-                      <CheckCircleOff />
-                    </div>
-                    <div className="box-border content-stretch flex flex-row font-['Pretendard:Regular',_sans-serif] gap-2 items-center justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#000000] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                      <div className="flex flex-col justify-center relative shrink-0">
-                        <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">우리</p>
-                      </div>
-                      <div className="flex flex-col justify-center relative shrink-0">
-                        <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">110-345-434154</p>
+                        <p className="adjustLetterSpacing block leading-[1.5] text-nowrap whitespace-pre">{bankAccount}</p>
                       </div>
                     </div>
                   </div>

@@ -172,16 +172,25 @@ const Home = () => {
       return matchesLocation && matchesArea && matchesPrice && matchesTheme && isAvailable;
     })
     .sort((a, b) => {
-      // createdAt 기준 최신순 정렬
-      if (a.createdAt && b.createdAt) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
+      // updateTime 기준 최신순 정렬
+      if (a.updateTime && b.updateTime) {
+        return new Date(b.updateTime) - new Date(a.updateTime);
       }
-      // createdAt이 없으면 id 기준으로 정렬
+      
+      // 없으면 id 기준으로 정렬
       return (b.id || 0) - (a.id || 0);
     });
 
   const handleFilterDropdownChange = (filterType) => {
-    setOpenFilter(openFilter === filterType ? null : filterType);
+    setOpenFilter(prevOpenFilter => {
+      if (prevOpenFilter === filterType) {
+        // 이미 열린 필터를 다시 클릭하면 닫기
+        return null;
+      } else {
+        // 다른 필터 클릭하면 해당 필터 열기
+        return filterType;
+      }
+    });
   };
 
   const handleLocationToggle = (location) => {
@@ -251,7 +260,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 py-6 pt-24">
+      <div className="px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 py-6 pt-32">
         {/* 배너 섹션 */}
         <div className="mb-10 relative">
         <img

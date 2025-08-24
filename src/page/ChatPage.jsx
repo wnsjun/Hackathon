@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useStompClient from '../hooks/useStompClient';
 import {
   getChatRooms,
@@ -23,6 +23,7 @@ import right from '../assets/right-icon.svg';
 
 const ChatPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // JWT 토큰에서 사용자 ID 추출 함수 (메모이제이션)
   const getUserIdFromToken = useCallback((token) => {
@@ -103,12 +104,24 @@ const ChatPage = () => {
     try {
       const data = await getChatRooms();
       setRooms(Array.isArray(data) ? data : []);
-      if (!selected && data?.length) setSelected(data[0]);
+      
+      // PlantDetail에서 온 경우 특정 채팅방 선택
+      if (location.state?.openChatRoom && location.state?.chatRoomId) {
+        const targetRoom = data?.find(room => room.chatroomId === location.state.chatRoomId);
+        if (targetRoom) {
+          setSelected(targetRoom);
+          setIsMobileView(true); // 모바일에서 바로 채팅 상세 화면으로
+        }
+        // state 정리
+        navigate(location.pathname, { replace: true });
+      } else if (!selected && data?.length) {
+        setSelected(data[0]);
+      }
     } catch (e) {
       console.error('채팅방 목록 로드 실패:', e);
       setRooms([]);
     }
-  }, [selected]);
+  }, [selected, location.state, location.pathname, navigate]);
 
   /** 메시지 초기/재입장 로드 */
   const loadInitialMessages = useCallback(
@@ -230,10 +243,22 @@ const ChatPage = () => {
         imageUrls: incoming.imageUrls || null,
       };
 
-      // 내가 보낸 메시지가 아닌 경우에만 추가 (중복 방지)
-      if (String(msg.senderId) !== String(userId)) {
-        setMessages((prev) => [...prev, msg]);
-      }
+      setMessages((prev) => {
+        // 중복 메시지 확인 (messageId 또는 내용+시간으로 체크)
+        const isDuplicate = prev.some(existingMsg => 
+          existingMsg.messageId === msg.messageId ||
+          (existingMsg.message === msg.message && 
+           existingMsg.senderId === msg.senderId &&
+           Math.abs(new Date(existingMsg.createdAt) - new Date(msg.createdAt)) < 5000) // 5초 이내 같은 내용
+        );
+        
+        if (isDuplicate) {
+          console.log('중복 메시지 무시:', msg);
+          return prev;
+        }
+        
+        return [...prev, msg];
+      });
 
       setRooms((prev) =>
         prev.map((r) =>
@@ -290,17 +315,6 @@ const ChatPage = () => {
     }
 
     const messageText = input.trim();
-    const newMsg = {
-      messageId: Date.now(),
-      message: messageText,
-      senderId: userId,
-      senderNickname: userData.nickname || '나',
-      createdAt: new Date().toISOString(),
-      messageType: 'TEXT',
-    };
-
-    // 화면에 바로 표시 (낙관적 업데이트)
-    setMessages((prev) => [...prev, newMsg]);
     setInput('');
 
     try {
@@ -314,7 +328,7 @@ const ChatPage = () => {
             ? {
                 ...r,
                 lastMessage: messageText,
-                lastMessageAt: newMsg.createdAt,
+                lastMessageAt: new Date().toISOString(),
               }
             : r
         )
@@ -322,15 +336,11 @@ const ChatPage = () => {
     } catch (e) {
       console.error('메시지 전송 실패:', e);
       alert('메시지 전송 실패');
-      // 실패 시 화면에서 제거
-      setMessages((prev) =>
-        prev.filter((msg) => msg.messageId !== newMsg.messageId)
-      );
       setInput(messageText); // 입력값 복원
     }
 
     setTimeout(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), 0);
-  }, [input, selected, userId, connected, sendText, userData.nickname]);
+  }, [input, selected, userId, connected, sendText]);
 
   /** 이미지 전송 */
   const onPickImages = async (e) => {

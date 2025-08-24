@@ -133,3 +133,14 @@ export const createFarm = async (farmData, imageFiles) => {
     throw error;
   }
 };
+
+// 프리미엄 매물 UP 
+export const premiumUpFarm = async (farmId) => {
+  try {
+    const response = await instance.patch(`/farm/${farmId}/up`);
+    return response.data;
+  } catch (error) {
+    console.error('프리미엄 UP 실패:', error);
+    throw error;
+  }
+};
