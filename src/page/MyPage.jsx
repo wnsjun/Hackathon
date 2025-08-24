@@ -108,7 +108,13 @@ export const MyPage = () => {
   const MobileLayout = () => (
     <div className="sm:hidden flex pt-30 pb-39 flex-col w-[430px] h-[932px] mx-auto overflow-y-auto pt-6 px-4">
       {/* 설정 버튼 */}
-      <div className="flex ml-90 top-4 right-4">
+      <div className="flex ml-75 top-4 right-4">
+        <button
+          onClick={handleLogout}
+          className="text-red-500 text-sm md:text-base mr-3 font-semibold whitespace-nowrap cursor-pointer"
+        >
+          로그아웃
+        </button>
         <img
           src={setting}
           alt="설정"
