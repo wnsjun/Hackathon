@@ -20,6 +20,7 @@ const PlantDetail = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const location = useLocation();
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const getTimeDifference = (createdAt) => {
     const now = new Date();
@@ -73,6 +74,32 @@ const PlantDetail = () => {
 
     fetchData();
   }, [id]);
+
+  // 이미지 캐러셀 함수들
+  const handlePrevImage = () => {
+    if (farmData?.imageUrls?.length > 1) {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === 0 ? farmData.imageUrls.length - 1 : prevIndex - 1
+      );
+    }
+  };
+
+  const handleNextImage = () => {
+    if (farmData?.imageUrls?.length > 1) {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === farmData.imageUrls.length - 1 ? 0 : prevIndex + 1
+      );
+    }
+  };
+
+  const handleImageIndexChange = (index) => {
+    setCurrentImageIndex(index);
+  };
+
+  // 팜 데이터가 변경될 때 이미지 인덱스 초기화
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [farmData]);
 
   const handleBookmarkToggle = async () => {
     const isLoggedIn = !!localStorage.getItem('accessToken');
@@ -218,17 +245,65 @@ const PlantDetail = () => {
       <div className="bg-white min-h-screen">
         {/* Mobile Layout */}
         <div className="md:hidden pt-20">
-          {/* Farm image - 맨 위 */}
+          {/* Farm image carousel - 맨 위 */}
           <div className="w-full px-5">
-            <div
-              className="bg-center bg-cover bg-no-repeat h-64 rounded-lg w-full"
-              style={{ 
-                backgroundImage: farmData.imageUrls && farmData.imageUrls.length > 0 
-                  ? `url('${farmData.imageUrls[0]}')` 
-                  : 'none'
-              }}
-            >
-              {(!farmData.imageUrls || farmData.imageUrls.length === 0) && (
+            <div className="relative h-64 rounded-lg overflow-hidden">
+              {farmData.imageUrls && farmData.imageUrls.length > 0 ? (
+                <>
+                  {/* Images */}
+                  <div 
+                    className="flex transition-transform duration-300 ease-in-out h-full"
+                    style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                  >
+                    {farmData.imageUrls.map((imageUrl, index) => (
+                      <div
+                        key={index}
+                        className="w-full h-full flex-shrink-0 bg-center bg-cover bg-no-repeat"
+                        style={{ backgroundImage: `url('${imageUrl}')` }}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Navigation Buttons - only show if more than 1 image */}
+                  {farmData.imageUrls.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrevImage}
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                      <button
+                        onClick={handleNextImage}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                  
+                  {/* Image Indicators - only show if more than 1 image */}
+                  {farmData.imageUrls.length > 1 && (
+                    <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5">
+                      {farmData.imageUrls.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleImageIndexChange(index)}
+                          className={`w-1.5 h-1.5 rounded-full transition-all ${
+                            index === currentImageIndex 
+                              ? 'bg-white' 
+                              : 'bg-white bg-opacity-50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
                 <div className="w-full h-full flex items-center justify-center text-[#777777] rounded-lg bg-[#f5f5f5]">
                   이미지가 없습니다
                 </div>
@@ -413,21 +488,70 @@ const PlantDetail = () => {
           </div>
 
           <div className="absolute box-border content-stretch flex flex-col gap-12 items-start justify-start left-40 p-0 top-56">
-            {/* Farm image */}
-            <div
-              className="bg-center bg-cover bg-no-repeat h-[588px] rounded-2xl shrink-0 w-[739px]"
-              style={{
-                backgroundImage:
-                  farmData.imageUrls && farmData.imageUrls.length > 0
-                    ? `url('${farmData.imageUrls[0]}')`
-                    : 'none',
-              }}
-            >
-              {(!farmData.imageUrls || farmData.imageUrls.length === 0) && (
-                <div className="w-full h-full flex items-center justify-center text-[#777777]">
-                  이미지가 없습니다
-                </div>
-              )}
+            {/* Farm image carousel */}
+            <div className="relative w-[739px] h-[588px]">
+              <div className="relative h-full rounded-2xl overflow-hidden">
+                {farmData.imageUrls && farmData.imageUrls.length > 0 ? (
+                  <>
+                    {/* Images */}
+                    <div 
+                      className="flex transition-transform duration-300 ease-in-out h-full"
+                      style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                    >
+                      {farmData.imageUrls.map((imageUrl, index) => (
+                        <div
+                          key={index}
+                          className="w-full h-full flex-shrink-0 bg-center bg-cover bg-no-repeat"
+                          style={{ backgroundImage: `url('${imageUrl}')` }}
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Navigation Buttons - only show if more than 1 image */}
+                    {farmData.imageUrls.length > 1 && (
+                      <>
+                        <button
+                          onClick={handlePrevImage}
+                          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                        <button
+                          onClick={handleNextImage}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                      </>
+                    )}
+                    
+                    {/* Image Indicators - only show if more than 1 image */}
+                    {farmData.imageUrls.length > 1 && (
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                        {farmData.imageUrls.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleImageIndexChange(index)}
+                            className={`w-2 h-2 rounded-full transition-all ${
+                              index === currentImageIndex 
+                                ? 'bg-white' 
+                                : 'bg-white bg-opacity-50'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[#777777] bg-[#f5f5f5] rounded-2xl">
+                    이미지가 없습니다
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Farm description */}
