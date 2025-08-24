@@ -6,6 +6,7 @@ import FarmCard from '../components/common/Card/FarmCard';
 import ReviewCard from '../components/common/Card/ReviewCard';
 import { useMyFarms, useMyReviews } from '../hooks/useMyPage';
 import { timeAgo } from '../utils/timeAgo';
+import profileImg from '../assets/profile.png';
 
 // 모달 컴포넌트
 const ReviewModal = ({ isOpen, onClose, reviews }) => {
@@ -31,7 +32,7 @@ const ReviewModal = ({ isOpen, onClose, reviews }) => {
           {reviews.map((review) => (
             <ReviewCard
               key={review.reviewId}
-              profileUrl={review.profileUrl || '/assets/profile.svg'}
+              profileUrl={review.profileImage || profileImg}
               nickname={review.nickname}
               timeAgo={timeAgo(review.createdAt)}
               content={review.content}
@@ -121,9 +122,7 @@ const MyAllReviews = () => {
                       visibleReviews.map((review) => (
                         <ReviewCard
                           key={review.reviewId}
-                          profileUrl={
-                            review.profileUrl || '/assets/profile.svg'
-                          }
+                          profileUrl={review.profileImage || profileImg}
                           nickname={review.nickname}
                           timeAgo={timeAgo(review.createdAt)}
                           content={review.content}

@@ -10,6 +10,7 @@ import { Navbar } from '../components/layouts/Navbar';
 import ReviewCard from '../components/common/Card/ReviewCard';
 import { useMyReviews } from '../hooks/useMyPage';
 import { timeAgo } from '../utils/timeAgo';
+import profileImg from '../assets/profile.png';
 
 import {
   useProfile,
@@ -163,7 +164,7 @@ export const MyPage = () => {
           <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 pt-12 md:pt-8">
             <img
               className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full mx-auto md:mx-0"
-              src={profile.imageUrl || '/assets/profile.svg'}
+              src={profile.profileImage || profileImg}
               alt="Profile"
             />
             <div className="flex flex-col items-center md:items-start text-center md:text-left flex-1">
@@ -294,7 +295,7 @@ export const MyPage = () => {
             {myReviews.slice(0, 3).map((review) => (
               <ReviewCard
                 key={review.reviewId}
-                profileUrl={'/assets/profile.svg'} // API에 프로필 이미지 없음 → 기본값
+                profileUrl={review.profileImage || profileImg} // API에 프로필 이미지 없음 → 기본값
                 nickname={review.nickname}
                 timeAgo={timeAgo(review.createdAt)} // @@일 전
                 content={review.content}

@@ -37,8 +37,8 @@ const ReviewCard = ({ profileUrl, nickname, timeAgo, content }) => {
       <div className="flex items-center mb-2">
         <img
           src={profileUrl}
-          alt="프로필"
-          className="w-10 h-10 rounded-full object-cover mr-3"
+          alt="profile"
+          className="w-8 h-8 rounded-full object-cover"
         />
         <span className="font-pretendard font-semibold text-[20px] leading-[150%] tracking-[-0.6px] text-black mr-2">
           {nickname}
