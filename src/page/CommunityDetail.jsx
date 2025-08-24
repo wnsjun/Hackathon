@@ -18,6 +18,7 @@ const CommunityDetail = () => {
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
 
   // Assets from Figma design
@@ -40,6 +41,7 @@ const CommunityDetail = () => {
         id: comment.id || comment.commentId || `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 실제 댓글 ID 사용
         userId: comment.userId,
         username: comment.authorNickname || '사용자',
+        profileImage: comment.authorProfileImage || comment.profileImage || imgEllipse82,
         timeAgo: formatTimeAgo(comment.createdAt),
         content: comment.content,
         isAuthor: false // This would need to be determined based on current user
@@ -65,7 +67,8 @@ const CommunityDetail = () => {
           title: response.title,
           content: response.content,
           username: response.authorNickname,
-          image: response.imageUrls?.[0] || imgRectangle161125945,
+          profileImage: response.authorProfileImage || response.profileImage || imgEllipse82,
+          images: response.imageUrls || [imgRectangle161125945],
           timeAgo: formatTimeAgo(response.createdAt),
           likeCount: response.likeCount || 0
         };
@@ -116,10 +119,32 @@ const CommunityDetail = () => {
     timeAgo: '방금 전',
     title: '게시글을 찾을 수 없습니다',
     content: '요청하신 게시글을 찾을 수 없습니다.',
-    image: imgRectangle161125945
+    images: [imgRectangle161125945]
   };
 
   const currentPost = postData || defaultPostData;
+
+  // 캐러셀 네비게이션 함수들
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? currentPost.images.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === currentPost.images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handleImageIndexChange = (index) => {
+    setCurrentImageIndex(index);
+  };
+
+  // 게시글이 변경될 때 이미지 인덱스 초기화
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [postData]);
 
   const handleLikeToggle = async () => {
     const isLoggedIn = !!localStorage.getItem('accessToken');
@@ -160,6 +185,7 @@ const CommunityDetail = () => {
         id: comment.id || comment.commentId || `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 실제 댓글 ID 사용
         userId: comment.userId,
         username: comment.authorNickname || '사용자',
+        profileImage: comment.authorProfileImage || comment.profileImage || imgEllipse82,
         timeAgo: formatTimeAgo(comment.createdAt),
         content: comment.content,
         isAuthor: false
@@ -190,6 +216,7 @@ const CommunityDetail = () => {
         id: comment.id || comment.commentId || `${comment.userId}-${comment.postId}-${index}-${comment.createdAt}`, // 실제 댓글 ID 사용
         userId: comment.userId,
         username: comment.authorNickname || '사용자',
+        profileImage: comment.authorProfileImage || comment.profileImage || imgEllipse82,
         timeAgo: formatTimeAgo(comment.createdAt),
         content: comment.content,
         isAuthor: false
@@ -266,14 +293,14 @@ const CommunityDetail = () => {
         <div className="max-w-6xl mx-auto">
           
           {/* Desktop Layout */}
-          <div className="hidden lg:flex flex-col gap-6">
+          <div className="hidden lg:flex flex-col gap-6 pt-8">
             {/* Post Header */}
             <div className="flex flex-row items-end justify-between w-full">
               <div className="flex flex-row items-center justify-between w-full">
                 <div className="flex flex-row gap-4 items-center">
                   <div className="flex flex-row gap-3 items-center">
                     <div className="size-12">
-                      <img alt="" className="block max-w-none size-full" height="48" src={imgEllipse82} width="48" />
+                      <img alt="" className="block max-w-none size-full rounded-full" height="48" src={currentPost.profileImage || imgEllipse82} width="48" />
                     </div>
                     <div className="font-semibold text-2xl text-black tracking-[-0.48px]">
                       {currentPost.username}
@@ -291,10 +318,63 @@ const CommunityDetail = () => {
 
             {/* Post Content */}
             <div className="flex flex-col gap-12 w-full">
-              <div
-                className="bg-center bg-cover bg-no-repeat h-[588px] rounded-2xl w-full max-w-[739px]"
-                style={{ backgroundImage: `url('${currentPost.image}')` }}
-              />
+              {/* Image Carousel */}
+              <div className="relative w-full max-w-[739px]">
+                <div className="relative h-[588px] rounded-2xl overflow-hidden">
+                  {/* Images */}
+                  <div 
+                    className="flex transition-transform duration-300 ease-in-out h-full"
+                    style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                  >
+                    {currentPost.images.map((imageUrl, index) => (
+                      <div
+                        key={index}
+                        className="w-full h-full flex-shrink-0 bg-center bg-cover bg-no-repeat"
+                        style={{ backgroundImage: `url('${imageUrl}')` }}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Navigation Buttons - only show if more than 1 image */}
+                  {currentPost.images.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrevImage}
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                          <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                      <button
+                        onClick={handleNextImage}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                          <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                  
+                  {/* Image Indicators - only show if more than 1 image */}
+                  {currentPost.images.length > 1 && (
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                      {currentPost.images.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleImageIndexChange(index)}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            index === currentImageIndex 
+                              ? 'bg-white' 
+                              : 'bg-white bg-opacity-50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className="flex flex-col gap-8 w-full max-w-[739px]">
                 <div className="flex flex-row gap-8 items-center w-full">
                   <div className="font-semibold text-4xl text-[#111111] tracking-[-0.72px] overflow-hidden">
@@ -313,17 +393,69 @@ const CommunityDetail = () => {
           {/* Mobile Layout */}
           <div className="lg:hidden">
             <div className="flex flex-col gap-4">
-              {/* Image at the top */}
-              <div
-                className="bg-center bg-cover bg-no-repeat h-64 rounded-xl w-full"
-                style={{ backgroundImage: `url('${currentPost.image}')` }}
-              />
+              {/* Image Carousel at the top */}
+              <div className="relative w-full">
+                <div className="relative h-64 rounded-xl overflow-hidden">
+                  {/* Images */}
+                  <div 
+                    className="flex transition-transform duration-300 ease-in-out h-full"
+                    style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                  >
+                    {currentPost.images.map((imageUrl, index) => (
+                      <div
+                        key={index}
+                        className="w-full h-full flex-shrink-0 bg-center bg-cover bg-no-repeat"
+                        style={{ backgroundImage: `url('${imageUrl}')` }}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Navigation Buttons - only show if more than 1 image */}
+                  {currentPost.images.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrevImage}
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                      <button
+                        onClick={handleNextImage}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                  
+                  {/* Image Indicators - only show if more than 1 image */}
+                  {currentPost.images.length > 1 && (
+                    <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5">
+                      {currentPost.images.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleImageIndexChange(index)}
+                          className={`w-1.5 h-1.5 rounded-full transition-all ${
+                            index === currentImageIndex 
+                              ? 'bg-white' 
+                              : 'bg-white bg-opacity-50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
               
               {/* Post Header */}
               <div className="flex flex-row items-center justify-between w-full">
                 <div className="flex flex-row gap-3 items-center">
                   <div className="size-10">
-                    <img alt="" className="block max-w-none size-full rounded-full" height="40" src={imgEllipse82} width="40" />
+                    <img alt="" className="block max-w-none size-full rounded-full" height="40" src={currentPost.profileImage || imgEllipse82} width="40" />
                   </div>
                   <div className="flex flex-col">
                     <div className="font-semibold text-lg text-black tracking-[-0.36px]">
