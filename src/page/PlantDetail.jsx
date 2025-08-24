@@ -684,8 +684,8 @@ const PlantDetail = () => {
 
           {/* Right Column - Info Panel */}
           <div className="absolute box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 top-56 w-[338px]" style={{ left: "calc(66.667% - 18px)" }}>
-            <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[32px] text-left tracking-[-0.64px] w-full">
-              <p className="block leading-[1.5]">{farmData.title}</p>
+            <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[1.5] not-italic relative shrink-0 text-[#111111] text-[32px] text-left tracking-[-0.64px] w-full">
+              <p className="block leading-[1.5] break-words">{farmData.title}</p>
             </div>
             <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start p-0 relative shrink-0 w-full">
               {/* Address */}
@@ -711,13 +711,13 @@ const PlantDetail = () => {
                   <p className="block leading-[1.5]">대여 비용</p>
                 </div>
                 <div className="box-border content-stretch flex flex-row gap-2 items-end justify-start p-0 relative shrink-0 w-full">
-                  <div className="box-border content-stretch flex flex-row gap-1 items-end justify-start leading-[0] not-italic p-0 relative shrink-0 text-left">
-                    <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] h-[31px] justify-center relative shrink-0 text-[#1aa752] text-[32px] tracking-[-0.64px] w-[86px]">
+                  <div className="box-border content-stretch flex flex-row gap-2 items-end justify-start leading-[0] not-italic p-0 relative shrink-0 text-left">
+                    <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] h-[31px] justify-center relative shrink-0 text-[#1aa752] text-[32px] tracking-[-0.64px]">
                       <p className="adjustLetterSpacing block leading-[1.5]">
                         {farmData.price.toLocaleString()}
                       </p>
                     </div>
-                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-8 justify-center relative shrink-0 text-[#000000] text-[24px] tracking-[-0.48px] w-[18px]">
+                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] h-8 justify-center relative shrink-0 text-[#000000] text-[24px] tracking-[-0.48px]">
                       <p className="adjustLetterSpacing block leading-[1.5]">
                         원
                       </p>
@@ -792,7 +792,7 @@ const PlantDetail = () => {
 
           {/* Chat button or Premium UP section */}
           {isMyFarm ? (
-            <div className="absolute top-[650px]" style={{ left: 'calc(66.667% - 13px)' }}>
+            <div className="absolute top-[750px]" style={{ left: 'calc(66.667% - 13px)' }}>
               <div className="flex flex-col gap-1 items-start w-[174px]">
                 <div className="flex flex-col gap-2 items-start w-full">
                   <div 
@@ -842,7 +842,7 @@ const PlantDetail = () => {
             </div>
           ) : (
             <div
-              className="absolute bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] top-[650px] cursor-pointer"
+              className="absolute bg-[#1aa752] box-border content-stretch flex flex-col gap-2.5 items-center justify-center pl-7 pr-6 py-3 rounded-[100px] top-[750px] cursor-pointer"
               style={{ left: 'calc(66.667% - 13px)' }}
               onClick={handleChatButtonClick}
             >
@@ -863,7 +863,7 @@ const PlantDetail = () => {
 
           {/* Reviews section */}
           <div
-            className="absolute top-[850px]"
+            className="absolute top-[1000px]"
             style={{ left: 'calc(66.667% - 13px)' }}
           >
             <FarmReview

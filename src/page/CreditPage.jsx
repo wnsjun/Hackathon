@@ -167,7 +167,7 @@ const CreditPage = () => {
               </div>
               
               {/* Farm description */}
-              <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#111111] text-left w-full">
+              <div className="box-border content-stretch flex flex-col gap-8 items-start justify-start leading-[0] not-italic p-0 relative shrink-0 text-[#111111] text-left w-[739px]">
                 <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center relative shrink-0 text-[36px] tracking-[-0.72px] w-full">
                   <p className="block leading-[1.5]">{farmData.title}</p>
                 </div>

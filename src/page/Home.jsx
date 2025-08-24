@@ -177,7 +177,20 @@ const Home = () => {
         return new Date(b.updateTime) - new Date(a.updateTime);
       }
       
-      // 없으면 id 기준으로 정렬
+      // updateTime이 없는 경우 createdAt 사용
+      if (a.updateTime && !b.updateTime) {
+        return b.createdAt ? new Date(b.createdAt) - new Date(a.updateTime) : -1;
+      }
+      if (!a.updateTime && b.updateTime) {
+        return a.createdAt ? new Date(b.updateTime) - new Date(a.createdAt) : 1;
+      }
+      
+      // 둘 다 updateTime이 없으면 createdAt 기준으로 정렬
+      if (a.createdAt && b.createdAt) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      
+      // createdAt도 없으면 id 기준으로 정렬
       return (b.id || 0) - (a.id || 0);
     });
 
