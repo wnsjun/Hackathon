@@ -1,6 +1,6 @@
 # 🌱 SpaceFarm - 텃밭 대여 서비스 플랫폼
 
-도시 속 버려진 공간을 활용한 텃밭 대여 서비스 플랫폼입니다. 옥상, 마당, 자투리 공간을 나만의 텃밭으로 만들어 도시 속 자연을 되찾을 수 있습니다.
+마포구 내 버려진 공간을 활용한 텃밭 대여 서비스 플랫폼입니다. 옥상, 마당, 자투리 공간을 나만의 텃밭으로 만들어 도시 속 자연을 되찾을 수 있습니다.
 
 ## 📋 목차
 
@@ -57,7 +57,6 @@ SpaceFarm은 도시의 유휴 공간을 활용하여 개인이 텃밭을 대여�
 
 - **코인 충전**: 토스페이 연동 결제 시스템
 - **대여 결제**: 코인을 활용한 텃밭 대여 결제
-- **거래 내역**: 충전 및 결제 내역 조회
 
 ## 🛠 기술 스택
 
@@ -103,7 +102,7 @@ SpaceFarm은 도시의 유휴 공간을 활용하여 개인이 텃밭을 대여�
 │   │   ├── spacefarm_logo_image.png
 │   │   ├── banner.png
 │   │   ├── FarmCoin.svg
-│   │   └── ...                 # 기타 자산
+│   │   └── ...                 
 │   ├── components/             # 재사용 가능한 컴포넌트
 │   │   ├── common/             # 공통 컴포넌트
 │   │   │   ├── Button.jsx      # 버튼 컴포넌트
@@ -179,33 +178,9 @@ npm run dev
 # 또는
 yarn dev
 
-# 빌드
-npm run build
-# 또는
-yarn build
-
-# 린트 검사
-npm run lint
-# 또는
-yarn lint
-
-# 프리뷰 (빌드 후 확인)
-npm run preview
-# 또는
-yarn preview
-```
 
 개발 서버는 기본적으로 `http://localhost:3000`에서 실행됩니다.
 
-## 🔧 환경 변수 설정
-
-`.env` 파일을 생성하고 다음 환경 변수를 설정하세요:
-
-```env
-VITE_API_URL=http://your-api-server.com/api
-```
-
-- `VITE_API_URL`: 백엔드 API 서버 주소
 
 ## 📖 페이지별 기능 상세
 
@@ -431,22 +406,7 @@ VITE_API_URL=http://your-api-server.com/api
 - **Tailwind CSS 4.1.11** 사용
 - **@tailwindcss/vite** 플러그인 적용
 - 커스텀 색상 및 폰트 설정
-
-### 스타일링 규칙 (CLAUDE.md 기반)
-
-#### ✅ 권장사항
-
-- Tailwind 클래스 기반 스타일링 사용
-- `flex`, `grid` 레이아웃 활용
-- `gap` 속성으로 간격 조절
-- 컴포넌트별 일관된 디자인 시스템
-
-#### ❌ 지양사항
-
-- 인라인 스타일 (`style={{ }}`) 사용 금지
-- `relative`, `absolute` 포지셔닝 최소화
-- `margin`, `padding` 대신 `gap` 사용 권장
-
+- 
 ### 반응형 디자인
 
 - **Mobile First** 접근 방식
@@ -461,48 +421,6 @@ VITE_API_URL=http://your-api-server.com/api
 - **Secondary Text**: `#777777`, `#BBBBBB`
 - **Background**: `#F9FAFB` (페이지 배경)
 
-## 📋 개발 가이드라인
-
-### 코딩 컨벤션 (CLAUDE.md 기반)
-
-#### ✅ 필수 규칙
-
-1. **150줄 초과 컴포넌트 분리**: 내부 hooks나 서브 컴포넌트로 분할
-2. **인라인 함수 지양**: 핸들러 함수로 분리
-   - 네이밍: `handle` + 대상 + 이벤트명 (예: `handleCTAButtonClick`)
-3. **React 모듈 import**: `React.useState` ❌ → `import { useState }` ✅
-4. **타입스크립트 사용 금지**: JavaScript만 사용
-5. **주석 추가 금지**: 코드 자체로 의도를 명확히 표현
-
-#### 📁 디렉토리 규칙
-
-- 페이지는 `src/page/[PageName].jsx` 형태
-- 재사용 컴포넌트는 `src/components/common/` 배치
-- API 관련 코드는 `src/apis/` 디렉토리에 모듈별로 분리
-
-#### 🎨 에셋 관리
-
-- Figma에서 SVG 코드 복사하여 컴포넌트화
-- `.svg` 파일 직접 생성 금지
-- 이미지는 `src/assets/` 디렉토리에 배치
-
-### Git 워크플로우
-
-- **main** 브랜치가 메인 브랜치
-- 기능별 브랜치 생성 후 PR을 통한 머지
-
-### 코드 품질 관리
-
-- **ESLint** 규칙 준수
-- **Prettier** 자동 포매팅
-- 커밋 전 린트 검사 실행
-
-### 성능 최적화
-
-- TanStack Query를 통한 API 응답 캐싱
-- 이미지 최적화 (`?url` 파라미터 활용)
-- 컴포넌트 지연 로딩 (필요시)
-
 ## 🌐 배포 정보
 
 ### Vercel 배포
@@ -511,63 +429,7 @@ VITE_API_URL=http://your-api-server.com/api
 - 자동 배포 파이프라인 구성
 - 환경 변수는 Vercel 대시보드에서 관리
 
-### 빌드 설정
-
-```json
-{
-  "scripts": {
-    "build": "vite build",
-    "preview": "vite preview"
-  }
-}
 ```
-
-### 환경 구성
-
-- **개발**: `npm run dev` (localhost:3000)
-- **빌드**: `npm run build`
-- **프리뷰**: `npm run preview`
-
-## 🤝 기여 방법
-
-### 개발 환경 설정
-
-1. 저장소 Fork
-2. 로컬 개발 환경 구성
-3. 기능 개발 및 테스트
-4. PR 생성
-
-### 기여 규칙
-
-- **CLAUDE.md** 개발 가이드라인 준수
-- 기능별 작은 단위 PR 권장
-- 코드 리뷰 필수
-- 테스트 코드 작성 권장
-
-### 이슈 리포팅
-
-- GitHub Issues를 통한 버그 리포트
-- 기능 제안 및 개선사항 제출
-- 재현 가능한 상세한 정보 제공
-
-## 📞 연락처 및 지원
-
-개발 관련 문의사항이나 지원이 필요한 경우:
-
-- GitHub Issues를 통한 문의
-- 프로젝트 관리자에게 직접 연락
-
----
-
-## 🔄 최신 업데이트
-
-### 현재 버전: v1.0.0
-
-- 기본 텃밭 대여 서비스 구현 완료
-- 실시간 채팅 시스템 구현
-- 커뮤니티 기능 구현
-- 코인 충전/결제 시스템 구현
-- 반응형 디자인 적용
 
 ### 향후 계획
 
