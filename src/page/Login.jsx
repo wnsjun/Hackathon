@@ -18,6 +18,7 @@ export const Login = () => {
         onSuccess: (data) => {
           localStorage.setItem('accessToken', data.accessToken);
           localStorage.setItem('userData', JSON.stringify(data));
+          navigate('/home');
         },
         onError: () => {
           alert('로그인 실패! 이메일과 비밀번호를 확인하세요.');
