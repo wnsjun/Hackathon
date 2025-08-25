@@ -101,6 +101,14 @@ const AddInfo = () => {
           </div>
         ))}
 
+        {/* 에러 메시지 */}
+        {signup2Mutation.isError && (
+          <div className="text-red-600 text-center text-sm">
+            {signup2Mutation.error?.response?.data?.message ||
+              '회원가입에 실패했습니다. 다시 시도해주세요.'}
+          </div>
+        )}
+
         {/* 제출 버튼 */}
         <button
           type="submit"
