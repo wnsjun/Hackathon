@@ -18,8 +18,6 @@ export const Login = () => {
         onSuccess: (data) => {
           localStorage.setItem('accessToken', data.accessToken);
           localStorage.setItem('userData', JSON.stringify(data));
-          alert('로그인 성공!');
-          navigate('/home');
         },
         onError: () => {
           alert('로그인 실패! 이메일과 비밀번호를 확인하세요.');
@@ -27,7 +25,6 @@ export const Login = () => {
       }
     );
   };
-
 
   // 로고 클릭 시 홈으로
   const handleTitleClick = () => {
@@ -98,7 +95,6 @@ export const Login = () => {
         >
           {loginMutation.isPending ? '로그인 중...' : '로그인 하기'}
         </button>
-
 
         {/* 회원가입 버튼 */}
         <button

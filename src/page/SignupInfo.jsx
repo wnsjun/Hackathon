@@ -90,7 +90,7 @@ const SignupInfo = () => {
             연락처<span className="text-red-500">*</span>
           </label>
           <input
-            placeholder="010-1234-5678"
+            placeholder="010-XXXX-XXXX"
             value={phone}
             onChange={handlePhoneChange}
             maxLength={13}
@@ -128,17 +128,20 @@ const SignupInfo = () => {
                 은행
               </option>
               {banks.map((b) => (
-                <option key={b} value={b}>{b}</option>
+                <option key={b} value={b}>
+                  {b}
+                </option>
               ))}
             </select>
             <input
-              placeholder="계좌번호 (예: 123-456-789012)"
+              placeholder="XXX-XXX-XXXXXX"
               value={accountNumber}
               onChange={handleAccountNumberChange}
               maxLength={20}
               className="flex-grow border-b py-2 px-2"
             />
           </div>
+          <span className="">하이픈 기호(-)를 반드시 넣어주세요</span>
         </div>
 
         {signup1Mutation.isError && (
