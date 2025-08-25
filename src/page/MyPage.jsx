@@ -106,7 +106,7 @@ export const MyPage = () => {
 
   /** ----------------- 모바일 레이아웃 ----------------- **/
   const MobileLayout = () => (
-    <div className="sm:hidden flex flex-col min-h-screen w-full max-w-full overflow-x-hidden pt-20 pb-25 px-4">
+    <div className="sm:hidden flex flex-col min-h-screen w-full max-w-full overflow-x-hidden pt-20cc pb-25 px-4">
       {/* 설정 버튼 */}
       <div className="flex justify-end items-center">
         <button
