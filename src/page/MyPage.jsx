@@ -211,7 +211,7 @@ export const MyPage = () => {
         <div className="flex flex-col gap-2 w-full">
           <div className="flex gap-2 mb-2">
             <button
-              className={`flex-1 px-2 py-1 text-sm rounded-lg border ${
+              className={`flex-1 px-2 cursor-pointer py-1 text-sm rounded-lg border ${
                 farmToggle === 'my'
                   ? 'bg-[#1aa752] text-white'
                   : 'bg-gray-100 text-gray-600'
@@ -221,7 +221,7 @@ export const MyPage = () => {
               내 텃밭
             </button>
             <button
-              className={`flex-1 px-2 py-1 text-sm rounded-lg border ${
+              className={`flex-1 px-2 py-1 cursor-pointer text-sm rounded-lg border ${
                 farmToggle === 'renting'
                   ? 'bg-[#1aa752] text-white'
                   : 'bg-gray-100 text-gray-600'
@@ -231,7 +231,7 @@ export const MyPage = () => {
               대여중
             </button>
             <button
-              className={`flex-1 px-2 py-1 text-sm rounded-lg border ${
+              className={`flex-1 px-2 py-1 cursor-pointer text-sm rounded-lg border ${
                 farmToggle === 'bookmark'
                   ? 'bg-[#1aa752] text-white'
                   : 'bg-gray-100 text-gray-600'
@@ -416,7 +416,7 @@ export const MyPage = () => {
               {['my', 'renting', 'bookmark'].map((type) => (
                 <div key={type} className="relative">
                   <button
-                    className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
+                    className={`px-4 py-2 cursor-pointer text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
                       farmToggle === type
                         ? 'text-black border-[#1aa752]'
                         : 'text-[#bbbbbb] border-transparent'
@@ -474,7 +474,7 @@ export const MyPage = () => {
                 {['written', 'liked'].map((type) => (
                   <div key={type} className="relative">
                     <button
-                      className={`px-4 py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
+                      className={`px-4 cursor-pointer py-2 text-lg md:text-xl font-semibold tracking-[-0.48px] border-b-2 transition-colors ${
                         communityToggle === type
                           ? 'text-black border-[#1aa752]'
                           : 'text-[#bbbbbb] border-transparent'
