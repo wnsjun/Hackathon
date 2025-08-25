@@ -119,7 +119,8 @@ const CommunityDetail = () => {
     timeAgo: '방금 전',
     title: '게시글을 찾을 수 없습니다',
     content: '요청하신 게시글을 찾을 수 없습니다.',
-    images: [imgRectangle161125945]
+    images: [imgRectangle161125945],
+    likeCount:0
   };
 
   const currentPost = postData || defaultPostData;
@@ -310,8 +311,9 @@ const CommunityDetail = () => {
                     {currentPost.timeAgo}
                   </div>
                 </div>
-                <div className="cursor-pointer" onClick={handleLikeToggle}>
+                <div className="cursor-pointer text-center" onClick={handleLikeToggle}>
                   <HeartIcon isLiked={isLiked} />
+                  {currentPost.likeCount}
                 </div>
               </div>
             </div>
@@ -466,8 +468,9 @@ const CommunityDetail = () => {
                     </div>
                   </div>
                 </div>
-                <div className="cursor-pointer" onClick={handleLikeToggle}>
+                <div className="cursor-pointer text-center" onClick={handleLikeToggle}>
                   <HeartIcon isLiked={isLiked} />
+                  {currentPost.likeCount}
                 </div>
               </div>
 

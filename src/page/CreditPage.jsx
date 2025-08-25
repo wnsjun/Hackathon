@@ -207,7 +207,7 @@ const CreditPage = () => {
                     <p className="block leading-[1.5]">대여 비용</p>
                   </div>
                   <div className="box-border content-stretch flex flex-row gap-2 items-end justify-start p-0 relative shrink-0 w-full">
-                    <div className="box-border content-stretch flex flex-row gap-1 items-end justify-start leading-[0] not-italic p-0 relative shrink-0 text-left">
+                    <div className="box-border content-stretch flex flex-row gap-3 items-end justify-start leading-[0] not-italic p-0 relative shrink-0 text-left">
                       <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] h-[31px] justify-center relative shrink-0 text-[#1aa752] text-[32px] tracking-[-0.64px] w-[86px]">
                         <p className="adjustLetterSpacing block leading-[1.5]">{farmData.price.toLocaleString()}</p>
                       </div>
@@ -246,9 +246,6 @@ const CreditPage = () => {
                           <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">㎡</p>
                         </div>
                       </div>
-                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">교실 크기</p>
-                      </div>
                     </div>
                   </div>
                   <div className="box-border content-stretch flex flex-col gap-2 items-start justify-start p-0 relative shrink-0 w-[213px]">
@@ -260,11 +257,6 @@ const CreditPage = () => {
                         <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#111111] text-[24px] text-left text-nowrap tracking-[-0.48px]">
                           <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">{farmData.theme}</p>
                         </div>
-                      </div>
-                      <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                        <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
-                          아파트 및 건물 옥상, 지붕 위 공간
-                        </p>
                       </div>
                     </div>
                   </div>
@@ -352,7 +344,7 @@ const CreditPage = () => {
                 <div className="flex flex-col gap-2">
                   <div className="text-sm text-[#777777]">대여 비용</div>
                   <div className="flex flex-row gap-2 items-end">
-                    <div className="flex flex-row gap-1 items-end">
+                    <div className="flex flex-row gap-3 items-end">
                       <div className="text-2xl font-semibold text-[#1aa752]">
                         {farmData.price.toLocaleString()}
                       </div>
@@ -375,14 +367,12 @@ const CreditPage = () => {
                         <div className="text-lg font-semibold text-black">{farmData.size}</div>
                         <div className="text-lg text-black">㎡</div>
                       </div>
-                      <div className="text-xs text-[#777777]">교실 크기</div>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="text-sm text-[#777777]">테마</div>
                     <div className="flex flex-col gap-1">
                       <div className="text-lg font-semibold text-black">{farmData.theme}</div>
-                      <div className="text-xs text-[#777777]">아파트 및 건물 옥상, 지붕 위 공간</div>
                     </div>
                   </div>
                 </div>

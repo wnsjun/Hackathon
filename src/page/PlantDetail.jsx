@@ -468,9 +468,6 @@ const PlantDetail = () => {
                         <p className="leading-[1.5] whitespace-pre">㎡</p>
                       </div>
                     </div>
-                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic text-[#777777] text-[12px] text-nowrap tracking-[-0.36px]">
-                      <p className="leading-[1.5] whitespace-pre">교실 크기</p>
-                    </div>
                   </div>
                 </div>
                 <div className="flex flex-col gap-1 flex-1">
@@ -482,9 +479,6 @@ const PlantDetail = () => {
                       <div className="flex flex-col font-['Pretendard:SemiBold',_sans-serif] justify-center leading-[0] not-italic text-[#111111] text-[20px] text-nowrap tracking-[-0.6px]">
                         <p className="leading-[1.5] whitespace-pre">{farmData.theme}</p>
                       </div>
-                    </div>
-                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic text-[#777777] text-[12px] text-nowrap tracking-[-0.36px]">
-                      <p className="leading-[1.5] whitespace-pre">아파트 및 건물 옥상, 지붕 위 공간</p>
                     </div>
                   </div>
                 </div>
@@ -763,9 +757,6 @@ const PlantDetail = () => {
                       </div>
                     </div>
                     <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                      <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">
-                        교실 크기
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -780,9 +771,6 @@ const PlantDetail = () => {
                           {farmData.theme}
                         </p>
                       </div>
-                    </div>
-                    <div className="flex flex-col font-['Pretendard:Regular',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#777777] text-[14px] text-left text-nowrap tracking-[-0.42px]">
-                      <p className="adjustLetterSpacing block leading-[1.5] whitespace-pre">아파트 및 건물 옥상, 지붕 위 공간</p>
                     </div>
                   </div>
                 </div>
