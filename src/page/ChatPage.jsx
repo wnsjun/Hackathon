@@ -12,6 +12,7 @@ import {
   getMessages,
   markAsRead,
   uploadImages,
+  getChatRoomFarm,
 } from '../apis/chatApi';
 import ChatRoomList from '../components/common/chat/ChatRoomList';
 import ChatMessage from '../components/common/chat/ChatMessage';
@@ -68,6 +69,7 @@ const ChatPage = () => {
   const [input, setInput] = useState('');
   const [isMobileView, setIsMobileView] = useState(false); // 모바일에서 채팅 상세 보기 상태
   const [showFarmInfo, setShowFarmInfo] = useState(false); // 모바일에서 농장 정보 보기 상태
+  const [farmData, setFarmData] = useState(null); // 농장 정보
 
   const listRef = useRef(null);
   const endRef = useRef(null);
@@ -212,7 +214,19 @@ const ChatPage = () => {
     return () => observer.disconnect();
   }, [loadMore]);
 
-  /** 방 선택 시 메시지 로드 + STOMP 구독 */
+  /** 농장 정보 로드 함수 */
+  const loadFarmInfo = useCallback(async (chatRoomId) => {
+    if (!chatRoomId) return;
+    try {
+      const data = await getChatRoomFarm(chatRoomId);
+      setFarmData(data.farm || data);
+    } catch (error) {
+      console.error('농장 정보 로드 실패:', error);
+      setFarmData(null);
+    }
+  }, []);
+
+  /** 방 선택 시 메시지 로드 + STOMP 구독 + 농장 정보 로드 */
   useEffect(() => {
     if (!selected) return;
 
@@ -220,11 +234,14 @@ const ChatPage = () => {
 
     // STOMP 연결 여부와 관계없이 메시지 로드
     loadInitialMessages(selected.chatroomId);
+    
+    // 농장 정보 로드
+    loadFarmInfo(selected.chatroomId);
 
     return () => {
       // cleanup 필요시 처리
     };
-  }, [selected, loadInitialMessages]);
+  }, [selected, loadInitialMessages, loadFarmInfo]);
 
   // STOMP 연결 후 구독 처리를 분리
   useEffect(() => {
@@ -521,19 +538,21 @@ const ChatPage = () => {
                   : selected.provider?.nickname}
               </span>
 
-              <button
-                onClick={() => navigate(`/credit/${selected.chatroomId}`)}
-                className="flex flex-row justify-center items-center gap-2 sm:gap-[10px] px-4 sm:px-[20px] lg:px-[28px] pr-3 sm:pr-[18px] lg:pr-[24px] py-2 sm:py-[8px] lg:py-[12px] rounded-full bg-[#1AA752]"
-              >
-                <span className="text-white font-pretendard text-[14px] sm:text-[18px] lg:text-[24px] font-normal leading-[1.5] tracking-[-0.48px] whitespace-nowrap">
-                  결제하기
-                </span>
-                <img
-                  src={right}
-                  alt="right"
-                  className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8"
-                />
-              </button>
+              {farmData?.owner?.nickname !== userNickname && (
+                <button
+                  onClick={() => navigate(`/credit/${selected.chatroomId}`)}
+                  className="flex flex-row justify-center items-center gap-2 sm:gap-[10px] px-4 sm:px-[20px] lg:px-[28px] pr-3 sm:pr-[18px] lg:pr-[24px] py-2 sm:py-[8px] lg:py-[12px] rounded-full bg-[#1AA752]"
+                >
+                  <span className="text-white font-pretendard text-[14px] sm:text-[18px] lg:text-[24px] font-normal leading-[1.5] tracking-[-0.48px] whitespace-nowrap">
+                    결제하기
+                  </span>
+                  <img
+                    src={right}
+                    alt="right"
+                    className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8"
+                  />
+                </button>
+              )}
             </div>
 
             {/* 모바일 채팅 상대방 정보 */}
@@ -554,27 +573,29 @@ const ChatPage = () => {
                     : selected.provider?.nickname}
                 </span>
               </div>
-              <button
-                onClick={() => navigate(`/credit/${selected.chatroomId}`)}
-                className="flex items-center gap-1 text-[#1aa752] font-semibold text-base tracking-[-0.48px]"
-              >
-                결제하기
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
+              {farmData?.owner?.nickname !== userNickname && (
+                <button
+                  onClick={() => navigate(`/credit/${selected.chatroomId}`)}
+                  className="flex items-center gap-1 text-[#1aa752] font-semibold text-base tracking-[-0.48px]"
                 >
-                  <path
-                    d="M6 12L10 8L6 4"
-                    stroke="#1AA752"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
+                  결제하기
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                  >
+                    <path
+                      d="M6 12L10 8L6 4"
+                      stroke="#1AA752"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              )}
             </div>
 
             {/* 채팅 메시지 영역 */}
