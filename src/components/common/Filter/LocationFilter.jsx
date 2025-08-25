@@ -8,7 +8,7 @@ const LocationFilter = ({ isOpen, onClose, onLocationToggle, selectedLocations =
     '공덕동', '노고산동', '도화동',
     '동교동', '망원동', '상수동',
     '상암동', '서교동', '성산동',
-    '아현동', '연남동', '창천동',
+    '아현동', '연남동', '창전동',
     '합정동'
   ];
 
