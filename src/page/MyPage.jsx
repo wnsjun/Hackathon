@@ -106,9 +106,9 @@ export const MyPage = () => {
 
   /** ----------------- 모바일 레이아웃 ----------------- **/
   const MobileLayout = () => (
-    <div className="sm:hidden flex pt-30 pb-39 flex-col w-[430px] h-[932px] mx-auto overflow-y-auto pt-6 px-4">
+    <div className="sm:hidden flex flex-col min-h-screen w-full max-w-full overflow-x-hidden pt-20 pb-25 px-4">
       {/* 설정 버튼 */}
-      <div className="flex ml-75 top-4 right-4">
+      <div className="flex justify-end items-center">
         <button
           onClick={handleLogout}
           className="text-red-500 text-sm md:text-base mr-3 font-semibold whitespace-nowrap cursor-pointer"
@@ -145,8 +145,8 @@ export const MyPage = () => {
             {ecoScore}점
           </span>
         </div>
-        <div className="">
-          <div className="bg-[rgba(26,167,82,0.05)] border border-[#39bb6d] rounded-2xl p-4 w-[320px] flex flex-col items-center mb-4">
+        <div className="w-full">
+          <div className="bg-[rgba(26,167,82,0.05)] border border-[#39bb6d] rounded-2xl p-4 w-full max-w-[320px] mx-auto flex flex-col items-center mb-4">
             <div className="flex justify-between w-full mb-2">
               <h3 className="text-lg font-medium text-[#1aa752]">FarmCoin</h3>
               <div className="text-lg font-semibold text-[#1aa752]">
